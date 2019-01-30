@@ -49,7 +49,7 @@ img,
 /*************************************************************************/
 
 #footer-quote p:before {
-  width: $l-h-baseline-half * 5;
+  width: $l-h-baseline-half * 7;
   height: $l-h-baseline-half * 5;
 }
 
@@ -70,7 +70,7 @@ img,
 
 article,
 #footer-quote {
-  max-width: $media-query-med-2;
+  max-width: $media-query-max;
 }
 
 .paginator ul,

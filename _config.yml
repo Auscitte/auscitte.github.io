@@ -10,8 +10,8 @@ owner: Ry Auscitte
 # To disable set enable to false
 quote:
   enable: true
-  quote: Some fancy quote
-  author: John Doe
+  quote: Arthur felt happy. He was terribly pleased that the day was for once working out so much according to plan. Only twenty minutes ago he had decided he would go mad, and now here he was already chasing a Chesterfield sofa across the fields of prehistoric Earth.
+  author: Douglas Adams, Life, the Universe and Everything 
 
 # Set this to your main site title. If page doesn't have its own title,
 # then this title will be used.

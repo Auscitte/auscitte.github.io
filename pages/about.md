@@ -4,8 +4,8 @@ title: About
 description: More information about me and this website.
 ---
 
-Under construction.
+Under construction
 
-## Contact form
+<!-- ## Contact form -->
 
-{% include contact_form.html %}
+<!-- {% include contact_form.html %} -->
