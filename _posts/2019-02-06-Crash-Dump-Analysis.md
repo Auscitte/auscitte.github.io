@@ -1532,7 +1532,7 @@ The CommandLine field does not contain any refereces to basesrv leaving no doubt
 
 ## Conclusion
 
-In this article I walked you, my dear reader, though the steps taken to diagnose a critical error in Window boot process using a command line debugger from Debugging Tools for Windows and crash dumps. We have come a long way, commencing with a standard bug check analysis, navigated to the offending by computing offsets, then meticulously examined the stack dump to fish out an error code, scrutinized subroutines one by one to figure out which might have caused the error, employed a clever trick to identify the faulty DLL and, finally, designed an experiment to test our hypothesis. I hope, it made for an entertaining journey.
+In this article I walked you, my dear reader, though the steps taken to diagnose a critical error in Window boot process using a command line debugger from Debugging Tools for Windows and crash dumps. We have come a long way, commencing with a standard bug check analysis, traced back the execution path by navigating through a maze of offsets and jumps, then meticulously examined a stack dump to fish out the error code, scrutinized subroutines one by one to figure out which might be at the heart of the issue based on side effects, employed a clever trick to identify the faulty DLL, and, finally, designed an experiment to test our hypothesis. I hope, it made for an entertaining journey.
 
 In the end, we were able to localize the issue to a particular function. It turns out, the function ServerDllInitialization() exported by basesrv.dll returns STATUS_OBJECT_NAME_NOT_FOUND error code thereby causing a critical Windows process, csrss.exe, to terminate.
 
