@@ -19,15 +19,15 @@ So I broke my 64-bit Windows 10 system by accidentally tapping on a wrong menu i
   <img src="/resources/images/Boot_menu.png" alt="A boot menu" style="width:682px;height:138px;display:inline-block">
 </figure> 
 
-Result of this unfortunate choice was that Windows failed to boot with a `CRITICAL_PROCESS_DIED` bug check code. With no recent restore points the task of getting my system back became rather complicated; further complexity arose from the fact that I did not have another computer at my disposal to use as host for kernel-mode debugging. Software-wise my meager setup included a copy of Ubuntu and WinRE (Windows Recovery Environment), that is, most of Windows applications were out of reach.  Luckily, the crash dump driver stack remained intact, hence there was a dump file, ready for analysis, on the system hard drive. 
+Result of this unfortunate choice was that Windows failed to boot, displaying a BSOD with `CRITICAL_PROCESS_DIED` bug check code instead. With no recent restore points the task of getting my system back became rather complicated; further complexity arose from the fact that I did not have another computer at my disposal to use as host for kernel-mode debugging. Software-wise my meager setup included a copy of Ubuntu and WinRE (Windows Recovery Environment), that is, most of Windows applications were out of reach. Luckily, the crash dump driver stack remained intact, hence there was a dump file, ready for analysis, on the system hard drive. 
 
 Let us see how far one can get given the lack of proper environment for debugging. 
 
-This write-up will be detailed enough for a person without prior reversing experience (apart from that in basic assembler) to follow the analysis without any difficulty. 
+This write-up will be detailed enough for a person without prior reversing experience (apart from that in basic assembler) to follow without any difficulty. 
 
 ## Getting Started
 
-From the very beginning, we are faced with the problem of parsing the dump file. On Linux, two tools are available for that purpose: [volatility](https://www.volatilityfoundation.org/) and [rekall](http://www.rekall-forensic.com/), powerful open source memory forensic frameworks implemented in python. However, at the time of writing, both were limited in the type of dump files they could handle. [Microsoft's documentation](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/varieties-of-kernel-mode-dump-files) names four types of dump files based on what is included in them (in the order decreasing size): complete, active, kernel, small. What is not mentioned is another classification criterion – how physical pages are stored, i.e. differences in the file format. The structure `_DMP_HEADER64` ([a dump header](https://computer.forensikblog.de/en/2008/02/64bit-crash-dumps.html)), contains `_PHYSICAL_MEMORY_DESCRIPTOR` as its substructure that, in turn, represents physical memory in a form of runs list, each run being a sequence of pages in a continuous region of physical address space. Attempting to parse a dump file created by Windows 10, one is likely to find the contents of `_PHYSICAL_MEMORY_DESCRIPTOR` initialized with invalid values: the space occupied by the structure is filled with an ASCII string “PAGE”, while the presence/absence of a physical memory page in the dump is indicated by a bit in a bitmap (stored in the SDMP/FDMP subheader). 
+From the very beginning, we are faced with the problem of parsing the dump file. On Linux, two tools are available for that purpose: [volatility](https://www.volatilityfoundation.org/) and [rekall](http://www.rekall-forensic.com/), powerful open source memory forensic frameworks implemented in python. However, at the time of writing, both were limited in the type of dump files they could handle. [Microsoft's documentation](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/varieties-of-kernel-mode-dump-files) names four types of dump files based on what is included in them (in order of decreasing size): complete, active, kernel, small, but not mentioned there is another classification criterion – how physical pages are stored, i.e. differences in the file format. The structure `_DMP_HEADER64` ([a dump header](https://computer.forensikblog.de/en/2008/02/64bit-crash-dumps.html)), contains `_PHYSICAL_MEMORY_DESCRIPTOR` as its substructure that, in turn, represents physical memory in a form of runs list, each run being a sequence of pages in a continuous region of physical address space. Attempting to parse a dump file created by Windows 10, one is likely to find the contents of `_PHYSICAL_MEMORY_DESCRIPTOR` initialized with invalid values: the space occupied by the structure is filled with an ASCII string “PAGE”, while the presence/absence of a physical memory page in the dump is indicated by a bit in a bitmap (stored in the SDMP/FDMP subheader). 
 
 <div class="env-header"> Invalid Physical Memory Descriptor (offset 0x88) </div>
 {% highlight none linenos %}
@@ -55,11 +55,11 @@ hexdump -C -n 1000 MEMORY.dmp
 {% endhighlight %}
 
 
-Two values for the `DumpType` field were introduced to represent files of this new format – 5 (full dump) and 6 (kernel dump). As of today, anyone faced with the same problem would be out of luck since the support for the new file format has not been fully implemented in the aforementioned forensic software. 
+Two values for the `DumpType` field were introduced to represent files of this new format – 5 (full dump) and 6 (kernel dump). As of today, anyone faced with the same problem would be out of luck since the new file format is not fully supported in the aforementioned forensic software. 
 
 {::options parse_block_html="true" /}
 <div class="info alert">
-**INFO:** As side note, a little [tweaking to the registry](https://support.microsoft.com/en-us/help/254649/overview-of-memory-dump-file-options-for-windows) will produce a so-called “full bitmap dump” (DumpType = 5) rekall recognizes. All it takes is setting the value of `CrashDumpEnabled` to 1 in `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\CrashControl` and rebooting the system twice. During the first boot the “harvested” memory pages are written to the Windows pagefile in response to the critical error; it is the second boot that will create the crash dump file itself. Recall (and volatility) is rather a versatile framework, thus significant insights into the core of many issues can be gained by employing it and the reader is encouraged to do the experiment in his/hers spare time. However, in this case I will be using another tool, WinDbg, chosen for the added convenience of a disassembler. 
+**INFO:** On a side note, a little [tweaking to the registry](https://support.microsoft.com/en-us/help/254649/overview-of-memory-dump-file-options-for-windows) will produce a so-called “full bitmap dump” (DumpType = 5) rekall recognizes. All it takes is setting the value of `CrashDumpEnabled` to 1 in `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\CrashControl` and rebooting the system twice. During the first boot relevant (or all, in the case of a full dump) memory pages are written to the Windows pagefile in response to the critical error; it is the second boot that will create the crash dump file itself. Recall (and volatility) is rather a versatile framework, thus significant insights into the core of many issues can be gained by employing it and the reader is encouraged to do the experiment in his/hers spare time. However, in this case I will be using another tool, WinDbg, chosen for the added convenience of a disassembler. 
 </div>
 {::options parse_block_html="false" /}
 
@@ -67,7 +67,7 @@ This is when WinDbg came to the rescue! Part of the Debugging Tool for Windows s
 
 {::options parse_block_html="true" /}
 <div class="info alert">
-**INFO:** **_pdbparse_** relies on another library called **_construct_**, but not the newest version of it: **_construct_** has undergone major modifications interface-wise rendering itself incompatible with some of the software that was using it. There is a corresponding restriction specified in the **_pdbparse's_** setup script, given that the latest version is pulled from the repository. If not, just preinstall **_construct_** manually by typing `sudo pip install 'construct<2.7.0'`
+**INFO:** **_pdbparse_** relies on another library called **_construct_**, but not the newest version of it: **_construct_** has undergone major modifications interface-wise thus rendering itself incompatible with some of the software that was using it. There is a corresponding restriction specified in the **_pdbparse's_** setup script, given that the latest version is pulled from the repository. If not, just preinstall **_construct_** manually by typing `sudo pip install 'construct<2.7.0'`
 </div>
 {::options parse_block_html="false" /}
 
@@ -75,7 +75,7 @@ This is when WinDbg came to the rescue! Part of the Debugging Tool for Windows s
 
 ### At a Glance
 
-Unless you are able to set up a connection to Microsofts' symbol, a good idea is to download symbols for the essential Windows modules: _ntoskrnl.exe_, _ntdll.dll_, _hal.dll_ and then add the rest upon call stack inspection. For example, having noticed calls to _csrsrv.dll_, I used symchk.py script to retrieve a matching .pdb file. Let us begin by telling  **_cdb_** where the dubugging symbol files are located.
+Unless you are able to set up a connection to Microsofts' symbol, a good idea is to download symbols for the essential Windows modules: _ntoskrnl.exe_, _ntdll.dll_, _hal.dll_ and then add the rest upon call stack inspection. For example, having noticed calls to _csrsrv.dll_, I used symchk.py script to retrieve a matching .pdb file. Let us begin by telling  **_cdb_** where the debugging symbol files are located.
 
 <div class="env-header">cdb: Configuring Debug Symbols</div>
 {% highlight html linenos %}
@@ -258,10 +258,10 @@ Followup:     MachineOwner
 
 A cursory glance reveals the following points of interest:
 - Line **8** confirms that the bugcheck code matches the one seen on the BSOD.
-- Lines **24** and **128** give us exact Windows edition and build.
-- Lines **38** and **40** identify **_csrss_** as the culprit. **_Csrss_** is a so-called [Client/Server Runtime Subsystem](https://docs.microsoft.com/en-us/sysinternals/learn/windows-internals) whose task is to provide the Windows susbsystem functionality (I/O, windowing, process creation, etc) to applications and other subsystems. It is an essential OS component other subsystems rely on and, therefore, csrss is marked as a critical process meaning that its termination will lead to a system crash. It explains the bug check code perfectly well. Despite being "critical", csrss still runs in user mode; we should keep it in mind. 
+- Lines **24** and **128** give us the exact Windows edition and build.
+- Lines **38** and **40** identify **_csrss_** as the culprit. **_Csrss_** is a so-called [Client/Server Runtime Subsystem](https://docs.microsoft.com/en-us/sysinternals/learn/windows-internals) whose task is to provide the Windows subsystem functionality (I/O, windowing, process creation, etc) to applications and other subsystems. It is an essential OS component other subsystems rely on and, therefore, csrss is marked as a critical process meaning that its termination will lead to a system crash. It explains the bug check code perfectly well. Despite being "critical", csrss still runs in user mode; we should keep it in mind. 
 
-Of course, the most significant finding at this stage is the offset of instruction calling _NtTerminateProcess_ -- it is located in the function **_csrss!main_** at offset `0x3d4 - <length of call instruction>` (see line **70**). The next logical step would be an analysis of **_csrss!main_** disassembly in the hope of tracing back the error origin.
+Of course, the most significant finding at this stage is an offset of instruction calling _NtTerminateProcess_ -- it is located in the function **_csrss!main_** at offset `0x3d4 - <length of call instruction>` (see line **70**). The next logical step would be an analysis of **_csrss!main_** disassembly in the hope of tracing back the error origin.
 
 ### Identifying the Faulty Function and Retrieving its Error Code
 
@@ -408,7 +408,7 @@ fffff800`a6bc274d 7411            je      nt!KiSystemCall64+0xa0 (fffff800`a6bc2
 
 {% endhighlight %}
 
-The disaassember listing looks promising: line **20** clearly indicates that the value of **_edx_** was saved on kernel stack. So was the value of **_eax_** that could be used as a marker to make sure our stack offset calculations are correct. Windows keeps two separate stacks for user- and kermel-mode code to use, with switch between the two observable in the form of address change (see lines **68**-**69** of the Bugcheck Analysis listing) during a syscall as the transitions into ketnel mode takes place. In line **4** rsp is initialized with the top of kernel-mode stack and this is where we start.
+The disaassember listing looks promising: line **20** clearly indicates that the value of **_edx_** was saved on kernel stack. So was the value of **_eax_**, that could be used as a marker to make sure our stack offset calculations are correct. Windows keeps two separate stacks for user- and kermel-mode code to use, with switch between the two observable in the form of address change (see lines **68**-**69** of the Bugcheck Analysis listing) during a syscall, as the transitions into ketnel mode takes place. In line **4** rsp is initialized with the top of kernel-mode stack and this is where we start.
 
 <div class="env-header">cdb: Top of Kernel-mode Stack Before the Call to TerminateProcess</div>
 {% highlight nasm linenos %}
@@ -438,11 +438,11 @@ ffffbc88`eeb10c50  0000014e`4a4055f5 00000000`00000000 ; rbp = 0
 ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ; supposedly, rcx and reserved space (what is passed in rcx? it is equal to 00007ff9`cbf2a474)
 ffffbc88`eeb10c70  00000000`00000033 00000000`00000246 ; r11 and 33h
 ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ;<-- here are the 2Bh marker and user stack rsp, exactly in the order the way they were pushed 
-ffffbc88`eeb10c90  ffffbc88`eeb11000                   ;free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller adresses
+ffffbc88`eeb10c90  ffffbc88`eeb11000                   ;free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses
                    ------top-------- 
 {% endhighlight %}
 
-Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack and rbp == 0 seems to be suspecious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are probably still on the right track. The last instruction tracable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
+Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack, and, to top it all off, rbp == 0 seems to be suspecious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are, probably, still on the right track. The last instruction tracable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
 
 <div class="env-header"> cdb: Stack Dump #2 </div>
 {% highlight nasm linenos %}
@@ -473,7 +473,7 @@ fffff800`a6bc2718 488955c0        mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40
 
 {% endhighlight %}
 
-It looks like we are golden. 0x2c is the index of TerminateProcess in Microsoft's system calls table as indicated by the `mov eax,2Ch` instruction in line **14** of _NtTerminateProcess_ disassembly. **_rcx_** holds the value of the ProcessHandle argument passed to _NtTerminateProcess_. [Take a look at](https://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProcess%2FNtTerminateProcess.html) the function prototype: `NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(IN HANDLE ProcessHandle, IN NTSTATUS ExitStatus);` The first argument is the process handle which can be set to INVALID_HANDLE (0xffffffffffffffff) if the calling process intends to terminate itself and it is exactly what is being done in this case. Finally, exist status is supplied in _rdx_ (recall Windows calling convention). Going back to csrss!main, we notice that the value _CsrServerInitialization_ returns (in _eax_) is copied to _ebx_ (line **37**) and not overwritten throughtout the remainder of the funcion body, hence both, _edx_ and _ebx_, should contrain the same value, ExitStatus. And they, indeed, do.
+It looks like we are golden. 0x2c is the index of TerminateProcess in Microsoft's system calls table as indicated by the `mov eax,2Ch` instruction in line **14** of _NtTerminateProcess_ disassembly. **_rcx_** holds the value of the ProcessHandle argument passed to _NtTerminateProcess_. [Take a look at](https://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProcess%2FNtTerminateProcess.html) the function prototype: `NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(IN HANDLE ProcessHandle, IN NTSTATUS ExitStatus);` The first argument is a handle of the process being terminated, which can be set to INVALID_HANDLE (0xffffffffffffffff) if the calling process intends to terminate itself, and it is exactly what has been done in this case. Finally, exist status is supplied in _rdx_ (recall Windows calling convention). Going back to csrss!main, we notice that the value _CsrServerInitialization_ returns (in _eax_) is copied to _ebx_ (line **37**) and not overwritten throughtout the remainder of the funcion body, hence both, _edx_ and _ebx_, should contrain the same value, ExitStatus. And they, indeed, do.
 
 ### The Culprit Under a Microscope 
 
@@ -733,7 +733,7 @@ CSRSRV!guard_dispatch_icall_nop+0x308:
 
 {% endhighlight %}
 
-The function seems so long and tedious that one might lose heart in the entire endeavour of ever getting to the root of the crash. But wait till you get to the line number **202**! Here we must stop and thank Microsoft for kindly providing us with debug symbols for the entire set of OS modules. <!-- The benefits it brings to the craft of kernel-mode debugging can hardly be overestimated.--> The name "CSRSRV!CsrInitFailReason" is more than telling of its purpose -- it stores an error index indicating which part of the function had failed. Why, we should check its value! 
+The function seems so long and tedious that one might lose heart in the entire endeavour of ever getting to the root of the crash. But wait till you get to the line number **202**! Here we must stop and thank Microsoft for kindly providing us with debug symbols for the entire set of OS modules. <!-- The benefits it brings to the craft of kernel-mode debugging can hardly be overestimated.--> The name "CSRSRV!CsrInitFailReason" is more than telling of its purpose -- it stores an error index indicating which part of the function has failed. Why, we should check its value! 
 
 <div class="env-header">cdb: CSRSRV!CsrInitFailReason</div>
 {% highlight nasm linenos %}
@@ -743,7 +743,7 @@ The function seems so long and tedious that one might lose heart in the entire e
 
 {% endhighlight %}
 
-The value stored in _CSRSRV!CsrInitFailReason_ is 7. Using the trick with computing an offest for the case of `if (error) ProcessError()` pattern I showed earlier, we quickly identify the call to **_CSRSRV!CsrParseServerCommandLine_** as the one ending in an error. Granted the role implied by this rather expressive function name, perhaps, it would be beneficial to take a look at the command line arguments passed to csrss.exe before we plunge into decyphering the disassembly listings. It is achieved using !peb command.
+The value stored in _CSRSRV!CsrInitFailReason_ is 7. Using the trick with computing an offest for the case of `if (error) ProcessError()` pattern I showed earlier, we quickly identify the call to **_CSRSRV!CsrParseServerCommandLine_** in line **67** as the one ending in an error. Granted the role implied by this rather expressive function name, perhaps, it would be beneficial to take a look at the command line arguments passed to csrss.exe before we plunge into decyphering the disassembly listings. It is achieved using !peb command.
 
 <div class="env-header">cdb: Retrieving a Command Line</div>
 {% highlight none linenos %}
@@ -775,7 +775,7 @@ PEB at 00000023514db000
 
 {% endhighlight %}
 
-The command line in question is `%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16`. It is a well-formed commnad line without any syntactical errors as established by comparing to other Windows 10 instances, therefore the cause of the problem must lie somewhere else. Let us examine _CsrParseServerCommandLine_. 
+The command line in question is `%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16`. It is a well-formed command line without any syntactical errors as established by comparing to other Windows 10 instances, therefore the cause of the problem must lie somewhere else. Let us examine _CsrParseServerCommandLine_. 
 
 I have read through the disassembly of _CsrParseServerCommandLine_ in an attempt to figure out what it was doing, but will not bore you with my "execution flow analysis". Instead, a source code of the matching function from [ReactOS](https://www.reactos.org/) will be provided; I copied the code from [here](https://doxygen.reactos.org/dd/dab/subsystems_2win32_2csrsrv_2init_8c_source.html). ReactOS has been designed to run Windows applications and drivers and as such is very similar in its architecture and implementation; however, one should not expect to find one-to-one correspondence between ReactOS and Windows code. In this particular case, I found it to be pretty close (but not an exact match!). 
  
@@ -975,7 +975,7 @@ As we see, not only is this function responsible for parsing, it also, contrary 
 * _MaxRequestThreads_ value is simply recorded in CSRSRV!CsrMaxApiRequestThreads variable, so it should not cause any issues.
 * _ProfileControl_ and _SubSystemType_ seem to be ignored.
 
-A brief inspection of CsrParseServerCommandLine() shows that the command line arguments are processed one by one with the routine terminating right away should the prosessing step be unsucessful, therefore, we must find the earliest of usucessful operations. So why don't we start with the first of the arguments? 
+A brief inspection of CsrParseServerCommandLine() shows that the command line arguments are processed one by one with the routine terminating right away should the prosessing step fail, therefore, we must find the earliest of usucessful operations. So why don't we start with the first of the arguments? 
 
 Below is an experpt from _CSRSRV!CsrParseServerCommandLine_ that handles the ObjectDirectory parameter. 
 
@@ -1040,7 +1040,7 @@ CSRSRV!CsrParseServerCommandLine+0x304:
 
 {% endhighlight %}
 
-Notice that in the beginning variable CSRSRV!CsrObjectDirectory is initialized to NULL (line **3**) and then used to store a handle of the newly created directory object (lines **44** and **47**). Non-NULL CSRSRV!CsrObjectDirectory will imply that the call to _NtCreateDirectoryObject()_ has suceeded and as we shall see in a moment it, indeed, has.
+Notice that in the beginning variable CSRSRV!CsrObjectDirectory is initialized to NULL (line **3**) and then used to store a handle of the newly created directory object (lines **44** and **47**). Non-NULL CSRSRV!CsrObjectDirectory will imply that the call to _NtCreateDirectoryObject()_ has suceeded and, as we shall see in a moment it, indeed, has.
 
 <div class="env-header">cdb: Checking if NtCreateDirectoryObject("\Windows") succeeded </div>
 {% highlight none linenos %}
@@ -1062,7 +1062,7 @@ A similar technique can be used to analyze CsrSrvCreateSharedSection(). Let us l
 
 ### A Breakthrough
 
-Now we move to the most interesting part -- processing of _ServerDll_ entries. Each _ServerDll_ gives a DLL name, index, and an optional name of a function to call ("ServerDllInitialization" is used by default). Again, for the sake of readability, I use [ReactOS code](https://doxygen.reactos.org/d1/db2/subsystems_2win32_2csrsrv_2server_8c_source.html) to accompany the verbal description, but of course one is advised to go over the disassembly listings to make sure the Windows and ReactOS implementations agree. 
+Now we move to the most interesting part -- processing of _ServerDll_ entries. Each _ServerDll_ gives a DLL name, index, and an optional name of a function to call ("ServerDllInitialization" is used by default). Again, for the sake of readability, I use [ReactOS code](https://doxygen.reactos.org/d1/db2/subsystems_2win32_2csrsrv_2server_8c_source.html) to accompany the verbal description, but, of course, one is advised to go over the disassembly listings to make sure the Windows and ReactOS implementations agree. 
 
 <div class="env-header">ReactOS: CsrLoadServerDll()</div>
 {% highlight c linenos %}
@@ -1225,7 +1225,7 @@ Now we move to the most interesting part -- processing of _ServerDll_ entries. E
 {% endhighlight %}
 
 Notice that in line **53** the DLL is loaded, in line **106** a pointer to the initialization function is retrieved, and in line **122** the latter is called with its return value recorded in the _Status_ variable. Failing to load the DLL or locate the specified initialiation function as well as that function returning an error 
-will cause CsrParseServerCommandLine() to terminate immediately without proceeding to deal with the rest of the command line arguments. Following this logic, it is suggested to consult the csrss' list of loaded modules in order to dermine which _ServerDll_ entries were actually processed. Among those, the last one will be a likely culprit. Hold on! But in the case of an error _CsrLoadServerDll_ unloads the DLL (see line **146**) and, thus, it will no longer be on the list. Luckily for us, Windows maintains a DLL load history. Being able to track down the unloaded modules is useful for debugging and play a crucial role in memory forensics (and malware detection, in particular) as indicated in [this post](https://volatility-labs.blogspot.com/2013/05/movp-ii-22-unloaded-windows-kernel_22.html). 
+will cause CsrParseServerCommandLine() to terminate immediately without proceeding to deal with the rest of the command line arguments. Following this logic, it is suggested to consult the csrss' list of loaded modules in order to dermine which _ServerDll_ entries were actually processed. Among those, the last one will be a likely culprit. Hold on! But in the case of an error _CsrLoadServerDll_ unloads the DLL (see line **146**) and, thus, it will no longer be on the list. Luckily for us, Windows maintains a DLL load history. Being able to track down the unloaded modules is useful for debugging and plays a crucial role in memory forensics (and malware detection, in particular) as indicated in [this post](https://volatility-labs.blogspot.com/2013/05/movp-ii-22-unloaded-windows-kernel_22.html). 
 
 <div class="env-header">cdb: List of Unloaded Modules </div>
 {% highlight none linenos %}
@@ -1256,11 +1256,11 @@ fffff808`9f550000 fffff808`9f55f000   hwpolicy.sys
 
 {% endhighlight %}
 
-**Lm** will give us a rather lenthy list of both loaded and unloaded mudules; scroll down to the very end in order to find the latter. What do we see here? The only module found in the command line is **_basesrv_**. Take a note of the letter case: "basesrv" part is in lower case, exactly as it was specified in the command line; letters forming the ".DLL" postfix, on the other hand, are all capital, the reason being that the extension was added later, most likely, by LdrLoadDll(). There is a fairly good chance that basesrv's DllInitializtion() routine returns an error thereby causing csrss' untimely death. How do we check this hypothesis? Easy! Simply remove the `ServerDll=basesrv,1` substring from csrss' command line and check if anything changes. 
+**Lm** will give us a rather lenthy list of both loaded and unloaded modules; scroll down to the very end in order to find the latter. What do we see here? The only module found in the command line is **_basesrv_**. Take a note of the letter case: "basesrv" part is in lower case, exactly as it was specified in the command line; letters forming the ".DLL" postfix, on the other hand, are all capital, the reason being that the extension was added later, most likely, by LdrLoadDll(). There is a fairly good chance that basesrv's DllInitializtion() routine returns an error thereby causing csrss' untimely death. How do we check this hypothesis? Easy! Simply remove the `ServerDll=basesrv,1` substring from csrss' command line and check if anything changes. 
 
 {::options parse_block_html="true" /}
 <div class="warning alert">
-**WARNING:** The reason the boot process terminates in a crash is to prevent potential data loss associated with running a faulty system. Tampering with Windows configuration in such an intrusive manner is asking for trouble, therefore, one is most insistently advised to backup his data before engaging in this dubious activity. In fact, the best thing to do is clone the entire sytem volume using Linux "dd" command provided you have extra space to store the image.
+**WARNING:** The reason the boot process terminates in a crash is to prevent potential data loss associated with running a faulty system. Tampering with Windows configuration in such an intrusive manner is asking for trouble, therefore, one is most insistently advised to backup his data before engaging in this dubious activity. In fact, the best thing to do is clone the entire sytem volume using Linux "dd" command, provided you have extra space to store the image.
 </div>
 {::options parse_block_html="false" /}
 
@@ -1268,7 +1268,7 @@ A quick research online will locate the place from where csrss' command line is 
 
 {::options parse_block_html="true" /}
 <div class="info alert">
-**INFO** In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in the WinRE's HKLM hive. 
+**INFO** In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in WinRE's HKLM hive. 
 </div>
 {::options parse_block_html="false" /}
 
@@ -1438,7 +1438,7 @@ Followup:     MachineOwner
 ---------
 {% endhighlight %}
 
-A DLL is failing to initilize which should not surprise us for we have just stripped Windows subsystem of one of its key components, basesrv.dll. While a tempting promt to dig deeper into the inner workings of Windows kernel, this error by itself is of no importance here for it will not contribute much to figuring out the reason behind the original crash. More interesting to us, is the loaded modules list. 
+A DLL is failing to initilize, which should not surprise us for we have just stripped Windows subsystem of one of its key components, basesrv.dll. While a tempting promt to dig deeper into the inner workings of Windows kernel, this error by itself is of no importance here for it will not contribute much to figuring out the reason behind the original crash. More interesting to us, is the loaded modules list. 
 
 <div class="env-header">cdb: List of Unloaded Modules #2</div>
 {% highlight none linenos %}
@@ -1528,11 +1528,11 @@ PEB at 00000093c6d50000
 
 {% endhighlight %}
 
-The CommandLine field does not contain any refereces to basesrv leaving no doubt validity of our conclusion.
+The CommandLine field does not contain any refereces to basesrv leaving no doubt about validity of our conclusion.
 
 ## Conclusion
 
-In this article I walked you, my dear reader, though the steps taken to diagnose a critical error in Window boot process using a command line debugger from Debugging Tools for Windows and crash dumps. We have come a long way, commencing with a standard bug check analysis, traced back the execution path by navigating through a maze of offsets and jumps, then meticulously examined a stack dump to fish out the error code, scrutinized subroutines one by one to figure out which might be at the heart of the issue based on side effects, employed a clever trick to identify the faulty DLL, and, finally, designed an experiment to test our hypothesis. I hope, it made for an entertaining journey.
+In this article I walked you, my dear reader, though the steps taken to diagnose a critical error in Window boot process using a command line debugger from Debugging Tools for Windows and crash dumps. We have come a long way. Commencing with a standard bug check analysis, we traced back the execution path by navigating through a maze of offsets and jumps, then meticulously examined a stack dump to fish out the error code, scrutinized subroutines one by one to figure out (based on side effects only) which might be at the heart of the issue, employed a clever trick to identify the faulty DLL, and, finally, designed an experiment to test our hypothesis. I hope, it made for an entertaining journey.
 
 In the end, we were able to localize the issue to a particular function. It turns out, the function ServerDllInitialization() exported by basesrv.dll returns STATUS_OBJECT_NAME_NOT_FOUND error code thereby causing a critical Windows process, csrss.exe, to terminate.
 
