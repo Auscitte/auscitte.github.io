@@ -66,7 +66,6 @@ Finally, run the following script passing it a path to a predownloaded wheel fil
 <div class="env-header">Installing a Wheel</div>
 {% highlight python linenos %}
 
-import pip._internal
 import pip._internal as p
 
 w = p.wheel.Wheel(sys.argv[1])
@@ -78,3 +77,7 @@ else:
 {% endhighlight %}
 
 Using these simple code snippets, one can easily put together an installation script tailored to the task at hand. 
+
+##References:
+Brett Cannon, [The challenges in designing a library for PEP 425 (aka wheel tags)](https://snarky.ca/the-challenges-in-designing-a-library-for-pep-425/), 2019
+
