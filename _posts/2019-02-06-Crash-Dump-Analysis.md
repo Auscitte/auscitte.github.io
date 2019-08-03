@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Bringing My OS Back from the Abyss &#58 Windows Crash Dump Analysis (Part 1)
-category: case studies
+category: systems blog
 comments: true
 description: A Windows crash dump analysis walkthrough
 tags:
@@ -333,7 +333,7 @@ csrss!main+0x3c8:
 
 {% endhighlight %}
 
-Csrss!main's entry point is at 0x00007ff6eb571330. A simple offset calculation `0x00007ff6eb571330 + 0x3d4 = 0x7ff6eb571704` leads us to an address of the instruction following the call to _NtTerminateProcess_ in line **60**. How did we get here? Obviuosly, by executing a statement like this one: `if (error_occured) TeminateProcess(...)`  Cbd disassember automatically creates labels for targets of jump instructions, so all that needs to be done is to go up unlil such a label is encountered (_csrss!main+0x3c8_ in line **57**) and find all the jump instructions referencing it. In this case, there is only one -- in line **39**. Quick examination of the the nearby code allows us to determine the only possible scenario: _CsrServerInitialization_ returns with an error code and causes _csrss_ to terminate itself.  Voilà! Easy!
+Csrss!main's entry point is at 0x00007ff6eb571330. A simple offset calculation `0x00007ff6eb571330 + 0x3d4 = 0x7ff6eb571704` leads us to an address of the instruction following the call to _NtTerminateProcess_ in line **60**. How did we get here? Obviuosly, by executing a statement like this one: `if (error_occured) TeminateProcess(...)`  Cbd disassember automatically creates labels for targets of jump instructions, so all that needs to be done is to go up until such a label is encountered (_csrss!main+0x3c8_ in line **57**) and find all the jump instructions referencing it. In this case, there is only one -- in line **39**. Quick examination of the the nearby code allows us to determine the only possible scenario: _CsrServerInitialization_ returns with an error code and causes _csrss_ to terminate itself.  Voilà! Easy!
 
 {::options parse_block_html="true" /}
 <div class="info alert">
@@ -408,7 +408,7 @@ fffff800`a6bc274d 7411            je      nt!KiSystemCall64+0xa0 (fffff800`a6bc2
 
 {% endhighlight %}
 
-The disaassember listing looks promising: line **20** clearly indicates that the value of **_edx_** was saved on kernel stack. So was the value of **_eax_**, that could be used as a marker to make sure our stack offset calculations are correct. Windows keeps two separate stacks for user- and kermel-mode code to use, with switch between the two observable in the form of address change (see lines **68**-**69** of the Bugcheck Analysis listing) during a syscall, as the transitions into ketnel mode takes place. In line **4** rsp is initialized with the top of kernel-mode stack and this is where we start.
+The disassember listing looks promising: line **20** clearly indicates that the value of **_edx_** was saved on kernel stack. So was the value of **_eax_**, that could be used as a marker to make sure our stack offset calculations are correct. Windows keeps two separate stacks for user- and kermel-mode code to use, with switch between the two observable in the form of address change (see lines **68**-**69** of the Bugcheck Analysis listing) during a syscall, as the transitions into kernel mode takes place. In line **4** rsp is initialized with the top of kernel-mode stack and this is where we start.
 
 <div class="env-header">cdb: Top of Kernel-mode Stack Before the Call to TerminateProcess</div>
 {% highlight nasm linenos %}
@@ -442,7 +442,7 @@ ffffbc88`eeb10c90  ffffbc88`eeb11000                   ;free stack space begins 
                    ------top-------- 
 {% endhighlight %}
 
-Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack, and, to top it all off, rbp == 0 seems to be suspecious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are, probably, still on the right track. The last instruction tracable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
+Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack, and, to top it all off, rbp == 0 seems to be suspicious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are, probably, still on the right track. The last instruction traceable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
 
 <div class="env-header"> cdb: Stack Dump #2 </div>
 {% highlight nasm linenos %}
@@ -473,7 +473,7 @@ fffff800`a6bc2718 488955c0        mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40
 
 {% endhighlight %}
 
-It looks like we are golden. 0x2c is the index of TerminateProcess in Microsoft's system calls table as indicated by the `mov eax,2Ch` instruction in line **14** of _NtTerminateProcess_ disassembly. **_rcx_** holds the value of the ProcessHandle argument passed to _NtTerminateProcess_. [Take a look at](https://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProcess%2FNtTerminateProcess.html) the function prototype: `NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(IN HANDLE ProcessHandle, IN NTSTATUS ExitStatus);` The first argument is a handle of the process being terminated, which can be set to INVALID_HANDLE (0xffffffffffffffff) if the calling process intends to terminate itself, and it is exactly what has been done in this case. Finally, exist status is supplied in _rdx_ (recall Windows calling convention). Going back to csrss!main, we notice that the value _CsrServerInitialization_ returns (in _eax_) is copied to _ebx_ (line **37**) and not overwritten throughtout the remainder of the funcion body, hence both, _edx_ and _ebx_, should contrain the same value, ExitStatus. And they, indeed, do.
+It looks like we are golden. 0x2c is the index of TerminateProcess in Microsoft's system calls table as indicated by the `mov eax,2Ch` instruction in line **14** of _NtTerminateProcess_ disassembly. **_rcx_** holds the value of the ProcessHandle argument passed to _NtTerminateProcess_. [Take a look at](https://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FProcess%2FNtTerminateProcess.html) the function prototype: `NTSYSAPI NTSTATUS NTAPI NtTerminateProcess(IN HANDLE ProcessHandle, IN NTSTATUS ExitStatus);` The first argument is a handle of the process being terminated, which can be set to INVALID_HANDLE (0xffffffffffffffff) if the calling process intends to terminate itself, and it is exactly what has been done in this case. Finally, exist status is supplied in _rdx_ (recall Windows calling convention). Going back to csrss!main, we notice that the value _CsrServerInitialization_ returns (in _eax_) is copied to _ebx_ (line **37**) and not overwritten throughout the remainder of the function body, hence both, _edx_ and _ebx_, should contrain the same value, ExitStatus. And they, indeed, do.
 
 ### The Culprit Under a Microscope 
 
@@ -733,7 +733,7 @@ CSRSRV!guard_dispatch_icall_nop+0x308:
 
 {% endhighlight %}
 
-The function seems so long and tedious that one might lose heart in the entire endeavour of ever getting to the root of the crash. But wait till you get to the line number **202**! Here we must stop and thank Microsoft for kindly providing us with debug symbols for the entire set of OS modules. <!-- The benefits it brings to the craft of kernel-mode debugging can hardly be overestimated.--> The name "CSRSRV!CsrInitFailReason" is more than telling of its purpose -- it stores an error index indicating which part of the function has failed. Why, we should check its value! 
+The function seems so long and tedious that one might lose heart in the entire endeavor of ever getting to the root of the crash. But wait till you get to the line number **202**! Here we must stop and thank Microsoft for kindly providing us with debug symbols for the entire set of OS modules. <!-- The benefits it brings to the craft of kernel-mode debugging can hardly be overestimated.--> The name "CSRSRV!CsrInitFailReason" is more than telling of its purpose -- it stores an error index indicating which part of the function has failed. Why, we should check its value! 
 
 <div class="env-header">cdb: CSRSRV!CsrInitFailReason</div>
 {% highlight nasm linenos %}
@@ -967,11 +967,11 @@ CsrParseServerCommandLine(IN ULONG ArgumentCount,
 
 {% endhighlight %}
 
-As we see, not only is this function responsible for parsing, it also, contrary to what its name suggests, performs the inititilization steps specified by the command line arguments. Anything could have gone wrong here. Below is a quick survery of the command line options: 
+As we see, not only is this function responsible for parsing, it also, contrary to what its name suggests, performs the initialization steps specified by the command line arguments. Anything could have gone wrong here. Below is a quick survey of the command line options: 
 * _ObjectDirectory_. Csrss calls NtCreateDirectoryObject() with whatever name follows the equal sign ("\Windows" in our case) supplied as a parameter.
 * _SharedSection_ determines the sizes of system-wide and desktop heaps as well as the heap for non-interactive Windows entities such as services, according to [this article](https://www.ibm.com/support/knowledgecenter/en/SSZJPZ_11.7.0/com.ibm.swg.im.iis.productization.iisinfsv.install.doc/topics/wsisinst_config_winreg.html). 
 * _Windows_, an "On/Off" switch, only determines how an integer CSRSRV!SessionFirstProcessImageType is initialized (here Windows 10 and ReactOS diverge) and does not generate any erros.
-* _ServerDll_ entries specify dlls to load. I will ellaborate on their role later. 
+* _ServerDll_ entries specify dlls to load. I will elaborate on their role later. 
 * _MaxRequestThreads_ value is simply recorded in CSRSRV!CsrMaxApiRequestThreads variable, so it should not cause any issues.
 * _ProfileControl_ and _SubSystemType_ seem to be ignored.
 
@@ -1040,7 +1040,7 @@ CSRSRV!CsrParseServerCommandLine+0x304:
 
 {% endhighlight %}
 
-Notice that in the beginning variable CSRSRV!CsrObjectDirectory is initialized to NULL (line **3**) and then used to store a handle of the newly created directory object (lines **44** and **47**). Non-NULL CSRSRV!CsrObjectDirectory will imply that the call to _NtCreateDirectoryObject()_ has suceeded and, as we shall see in a moment it, indeed, has.
+Notice that in the beginning variable CSRSRV!CsrObjectDirectory is initialized to NULL (line **3**) and then used to store a handle of the newly created directory object (lines **44** and **47**). Non-NULL CSRSRV!CsrObjectDirectory will imply that the call to _NtCreateDirectoryObject()_ has succeeded and, as we shall see in a moment it, indeed, has.
 
 <div class="env-header">cdb: Checking if NtCreateDirectoryObject("\Windows") succeeded </div>
 {% highlight none linenos %}
@@ -1224,8 +1224,8 @@ Now we move to the most interesting part -- processing of _ServerDll_ entries. E
 
 {% endhighlight %}
 
-Notice that in line **53** the DLL is loaded, in line **106** a pointer to the initialization function is retrieved, and in line **122** the latter is called with its return value recorded in the _Status_ variable. Failing to load the DLL or locate the specified initialiation function as well as that function returning an error 
-will cause CsrParseServerCommandLine() to terminate immediately without proceeding to deal with the rest of the command line arguments. Following this logic, it is suggested to consult the csrss' list of loaded modules in order to dermine which _ServerDll_ entries were actually processed. Among those, the last one will be a likely culprit. Hold on! But in the case of an error _CsrLoadServerDll_ unloads the DLL (see line **146**) and, thus, it will no longer be on the list. Luckily for us, Windows maintains a DLL load history. Being able to track down the unloaded modules is useful for debugging and plays a crucial role in memory forensics (and malware detection, in particular) as indicated in [this post](https://volatility-labs.blogspot.com/2013/05/movp-ii-22-unloaded-windows-kernel_22.html). 
+Notice that in line **53** the DLL is loaded, in line **106** a pointer to the initialization function is retrieved, and in line **122** the latter is called with its return value recorded in the _Status_ variable. Failing to load the DLL or locate the specified initialization function as well as that function returning an error 
+will cause CsrParseServerCommandLine() to terminate immediately without proceeding to deal with the rest of the command line arguments. Following this logic, it is suggested to consult the csrss' list of loaded modules in order to determine which _ServerDll_ entries were actually processed. Among those, the last one will be a likely culprit. Hold on! But in the case of an error _CsrLoadServerDll_ unloads the DLL (see line **146**) and, thus, it will no longer be on the list. Luckily for us, Windows maintains a DLL load history. Being able to track down the unloaded modules is useful for debugging and plays a crucial role in memory forensics (and malware detection, in particular) as indicated in [this post](https://volatility-labs.blogspot.com/2013/05/movp-ii-22-unloaded-windows-kernel_22.html). 
 
 <div class="env-header">cdb: List of Unloaded Modules </div>
 {% highlight none linenos %}
@@ -1438,7 +1438,7 @@ Followup:     MachineOwner
 ---------
 {% endhighlight %}
 
-A DLL is failing to initilize, which should not surprise us for we have just stripped Windows subsystem of one of its key components, basesrv.dll. While a tempting promt to dig deeper into the inner workings of Windows kernel, this error by itself is of no importance here for it will not contribute much to figuring out the reason behind the original crash. More interesting to us, is the loaded modules list. 
+A DLL is failing to initilize, which should not surprise us for we have just stripped Windows subsystem of one of its key components, basesrv.dll. While a tempting prompt to dig deeper into the inner workings of Windows kernel, this error by itself is of no importance here for it will not contribute much to figuring out the reason behind the original crash. More interesting to us, is the loaded modules list. 
 
 <div class="env-header">cdb: List of Unloaded Modules #2</div>
 {% highlight none linenos %}
@@ -1472,7 +1472,7 @@ fffff80e`76e90000 fffff80e`76e9f000   hwpolicy.sys
 
 {% endhighlight %}
 
-No longer stalled by the error in basesrv's initialization routine, csrss went ahead and attempted to load the next mudule on the list -- **_winsrv_** (notice the same letter case pattern with a combination of small and capital letters). An observant reader will have noticed that basesrv.dll was also loaded and then unloaded, the difference in letter case suggesting it was done as a part of another use case scenario. It is reasonable to suggest that winsrv.dll imports symbols from basesrv. Let us check this assumption using [pefile](https://github.com/erocarrera/pefile) python library by Ero Carrera.
+No longer stalled by the error in basesrv's initialization routine, csrss went ahead and attempted to load the next module on the list -- **_winsrv_** (notice the same letter case pattern with a combination of small and capital letters). An observant reader will have noticed that basesrv.dll was also loaded and then unloaded, the difference in letter case suggesting it was done as a part of another use case scenario. It is reasonable to suggest that winsrv.dll imports symbols from basesrv. Let us check this assumption using [pefile](https://github.com/erocarrera/pefile) python library by Ero Carrera.
 
 <div class="env-header">winsrv.dll's Import List</div>
 {% highlight python linenos %}
@@ -1498,7 +1498,7 @@ api-ms-win-core-delayload-l1-1-0.dll
 
 {% endhighlight %}
 
-Line **7** indicates that our assumption was correct. By now it is safe to declare that the experiment above has successfuly confirmed our hypothesis, but to be on the safe side, let us run a quick final test to see if the command line was indeed modified the way we meant it. 
+Line **7** indicates that our assumption was correct. By now it is safe to declare that the experiment above has successfully confirmed our hypothesis, but to be on the safe side, let us run a quick final test to see if the command line was indeed modified the way we meant it. 
 
 <div class="env-header">cdb: New Nommand Line for csrss</div>
 {% highlight none linenos %}
@@ -1528,7 +1528,7 @@ PEB at 00000093c6d50000
 
 {% endhighlight %}
 
-The CommandLine field does not contain any refereces to basesrv leaving no doubt about validity of our conclusion.
+The CommandLine field does not contain any references to basesrv leaving no doubt about validity of our conclusion.
 
 ## Conclusion
 
