@@ -435,9 +435,9 @@ ffffbc88`eeb10c20  00000000`00000000 00000000`00000000
 ffffbc88`eeb10c30  00000000`00000000 00000000`00000000
 ffffbc88`eeb10c40  00000000`c0000034 00000000`0000000a 
 ffffbc88`eeb10c50  0000014e`4a4055f5 00000000`00000000 ; rbp = 0 
-ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ; supposedly, rcx and reserved space (what is passed in rcx? it is equal to 00007ff9`cbf2a474)
+ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ; supposedly, rcx and reserved space
 ffffbc88`eeb10c70  00000000`00000033 00000000`00000246 ; r11 and 33h
-ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ;<-- here are the 2Bh marker and user stack rsp, exactly in the order the way they were pushed 
+ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ;<-- here are the 2Bh marker and user stack rsp, exactly in the order they were pushed 
 ffffbc88`eeb10c90  ffffbc88`eeb11000                   ;free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses
                    ------top-------- 
 {% endhighlight %}
@@ -1268,7 +1268,7 @@ A quick research online will locate the place from where csrss' command line is 
 
 {::options parse_block_html="true" /}
 <div class="info alert">
-**INFO** In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in WinRE's HKLM hive. 
+**INFO** In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM\System, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in WinRE's HKLM hive. 
 </div>
 {::options parse_block_html="false" /}
 
@@ -1447,12 +1447,12 @@ A DLL is failing to initilize, which should not surprise us for we have just str
 start             end                 module name
 00007ff6`ad0c0000 00007ff6`ad0c7000   csrss      (deferred)
 00007ffa`35010000 00007ffa`35027000   CSRSRV     (deferred)
-00007ffa`38d20000 00007ffa`38f01000   ntdll      (pdb symbols)          c:\temp\debuggers\ntdll.pdb
+00007ffa`38d20000 00007ffa`38f01000   ntdll      (pdb symbols)          d:\WinRestore\Symbols\ntdll.pdb
 ffffe0df`81c00000 ffffe0df`81f8f000   win32kfull   (deferred)
 ffffe0df`81fe0000 ffffe0df`8205c000   win32k     (deferred)
 ffffe0df`82c20000 ffffe0df`82e54000   win32kbase   (deferred)
 fffff802`05e16000 fffff802`05ea2000   hal        (deferred)
-fffff802`05ea2000 fffff802`067f5000   nt         (pdb symbols)          c:\temp\debuggers\ntkrnlmp.pdb
+fffff802`05ea2000 fffff802`067f5000   nt         (pdb symbols)          d:\WinRestore\Symbols\ntkrnlmp.pdb
 
 [...]
 
