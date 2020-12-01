@@ -58,12 +58,12 @@ abbr {
 /*************************************************************************/
 
 //---------------------------WIDTH=4PX
-article > .blockquote {
+article > blockquote {
   border-left: $b-w-sep;
 }
 
 //---------------------------STYLE
-article > .blockquote {
+article > blockquote {
   border-left-style: solid;
 }
 

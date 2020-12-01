@@ -20,7 +20,7 @@ article {
 /*************************************************************************/
 
 //---------------------------BASELINE-DOUBLE
-article > .blockquote {
+article > blockquote {
   margin-left: $l-h-baseline-double;
   margin-right: $l-h-baseline-double;
 
@@ -55,7 +55,7 @@ article > .blockquote {
 }
 
 //---------------------------BASELINE-DOUBLE
-article > .blockquote,
+article > blockquote,
 .table,
 figure,
 .alert {
@@ -118,7 +118,7 @@ article ol li:before {
 }
 
 //---------------------------BASELINE
-article > .blockquote,
+article > blockquote,
 .alert,
 .env-header,
 #wrapper > header {
@@ -226,7 +226,7 @@ article > h3,
 
 //---------------------------BASELINE-DOUBLE
 article:not(.preview) > p,
-article > .blockquote p,
+article > blockquote p,
 article > ul,
 article > ol {
   padding-bottom: $l-h-baseline-double;

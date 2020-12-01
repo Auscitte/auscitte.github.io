@@ -110,7 +110,7 @@ sub {
 /*************************************************************************/
 
 //----------------------------STYLE-ITALIC
-article > .blockquote {
+article > blockquote {
    font-style: italic;
 }
 
@@ -180,7 +180,7 @@ sup,
 //----------------------------SMALLER
 .definition,
 .highlighter-rouge,
-article > .blockquote,
+article > blockquote,
 abbr {
   font-size: smaller;
 }
