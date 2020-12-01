@@ -12,7 +12,7 @@ tags:
 
 ## Preface
 
-Recently a need arose for a method of procuring function prototypes from Microsoft **_pdb_** files, a method that could be used under Linux, preferably, in a form of a python script. As I had already been using [Brendan Dolan-Gavitt’s python library](https://github.com/moyix/pdbparse) for parsing pdb files, all that needed to be done was to extend it with the code that would handle prototype-related information. While I was on it, I added retrieving global variable declarations and structure definitions to the pile. This post walks you through the steps I took in order to reverse pdb file format and suggests one of possible implementations. That said, provided here is not a complete implementation, but merely a demonstration that is intended to assist in getting you started should you face a similar task. This is also the reason why I decided against submitting a pull request to the pdbparse repository on github. Without further ado, let us begin.
+Recently a need arose for a method of extracting function prototypes from Microsoft **_pdb_** files, a method that could be used under Linux, preferably, in a form of a python script. As I had already been using [Brendan Dolan-Gavitt’s python library](https://github.com/moyix/pdbparse) for parsing pdb files, all that needed to be done was to extend it with the code that would handle prototype-related information. While I was on it, I added retrieving global variable declarations and structure definitions to the pile. This post walks you through the steps I took in order to reverse pdb file format and suggests one of possible implementations. That said, provided here is not a complete implementation, but merely a demonstration that is intended to assist in getting you started should you face a similar task. This is also the reason why I decided against submitting a pull request to the pdbparse repository on github. Without further ado, let us begin.
 
 ## Introduction
 
@@ -605,7 +605,7 @@ typedef enum SYM_ENUM_e {
 So `PROCSYM32` is immediately followed by some extra stack frame information and zero or more register-relative addresses, one for each function parameter and local variable, then goes a list of call sights. I declared “constructs” for each of these entities in case they would be needed in the future (following the definitions found in `cvinfo.h`). Here we go.
 
 <div class="env-header"> Construct Declarations for Parsing FRAMEPROCSYM, REGREL32, CALLSITEINFO </div>
-{% highlight c linenos %}
+{% highlight python linenos %}
 ProcFrameData = cs.Struct(
     "rectyp" / cs.Enum(cs.Int16ul, S_FRAMEPROC = 0x1012, S_CALLSITEINFO = 0x1139, S_REGREL32 = 0x1111), 
     "reminder" / cs.Switch(

@@ -15,7 +15,7 @@ quote:
 
 # Set this to your main site title. If page doesn't have its own title,
 # then this title will be used.
-title: A cosy home to my notes
+title: A Cosy Home for My Notes
 
 
 # Following needed for disqus integration
@@ -32,7 +32,7 @@ url: https://auscitte.github.io
 # Change this to your base URL starting with forward slash if site is in gh-pages branch
 # For example /branchName
 # NOTE! only change if site is NOT in master's branch
-baseurl: https://auscitte.github.io
+#baseurl: 
 
 # Change this to your google analytics ID
 google_analytics:
