@@ -16,8 +16,6 @@ tags:
 I think, the best way to start this post is with a quote from “Undocumented Windows 2000 Secrets” by Sven B. Schreiber:
 > Normally, a compiler tends to keep the code of a function in a monolithic block, and doesn’t split up if/else branches. In the Windows 2000 kernel modules, however, it can be easily observed that large functions with numerous if/else branches are heavily fragmented. [...] My assumption is that this split is supposed to aid the processor’s instruction prefetch. [...] If the less frequently executed branches are separated from the more frequently used ones, the CPU can perform more effective instruction prefetch.
 
-
- 
 Having worked with Windows 10 system libraries for some time now, I can confirm that long functions in them are, too, split into non-adjacent blocks of instructions. Suppose, a task of recovering all such blocks (that belong to a particular function) from a binary module arises. Of course, armed with a good disassembler, one could reconstruct a control flow graph by following the various jump instructions within the function body. For Windows modules, however, seeing that they come with _symbol files_ which often contain information about code fragments/function associations, there is an easier way. 
 
 Presently, I am using a python library called [**_pdbparse_**](https://github.com/moyix/pdbparse) to extract data from _pdb files_. Independent of Microsoft’s APIs, it allows to do so under any operating system that runs a python interpreter.  In this short post I will show how, given a function name, one could retrieve addresses of all the code fragments comprising this function. 
@@ -165,7 +163,7 @@ def list_code_blocks(pdb, base, fname):
         print()
 {% endhighlight %}
 
-To conclude our discussion, let us, so to speak, demonstrate the method in action.
+To conclude our little discourse on the subject of separated code, let us, so to speak, demonstrate the method in action.
 
 <div class="env-header"> list_code_blocks() Demo </div>
 {% highlight shell linenos %}

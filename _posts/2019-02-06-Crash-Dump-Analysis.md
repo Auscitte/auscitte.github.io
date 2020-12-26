@@ -462,14 +462,14 @@ Recovered from the stack dump are: rax == 0x2c (at 0xffffbc88eeb10b30), rcx == 0
 <div class="env-header">cdb: a Fragment of nt!KiSystemCall64</div>
 {% highlight nasm linenos %}
 
-fffff800`a6bc26ec 4881ec58010000  sub     rsp,158h		    ;  allocating 0x158 bytes for lacal data, rsp -= 0x158
-fffff800`a6bc26f3 488dac2480000000 lea     rbp,[rsp+80h]	    ; rbp = ffffbc88`eeb10b80
-fffff800`a6bc26fb 48899dc0000000  mov     qword ptr [rbp+0C0h],rbx  ; rbp + 0xC0 = ffffbc88`eeb10c40, holds 0x00000000c0000034
-fffff800`a6bc2702 4889bdc8000000  mov     qword ptr [rbp+0C8h],rdi
-fffff800`a6bc2709 4889b5d0000000  mov     qword ptr [rbp+0D0h],rsi
-fffff800`a6bc2710 488945b0        mov     qword ptr [rbp-50h],rax   ; rbp - 0x50 = ffffbc88`eeb10b30, holds 0x000000000000002c
-fffff800`a6bc2714 48894db8        mov     qword ptr [rbp-48h],rcx   ; rbp - 0x48 = ffffbc88`eeb10b38, holds ffffffffffffffff == INVALID_HANDLE 
-fffff800`a6bc2718 488955c0        mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40 = ffffbc88`eeb10b40, holds 0x00000000c0000034 (NTSATUS passed down to us)
+0xfffff800a6bc26ec  sub     rsp,158h		      ; allocating 0x158 bytes for lacal data, rsp -= 0x158
+0xfffff800a6bc26f3  lea     rbp,[rsp+80h]	      ; rbp = ffffbc88`eeb10b80
+0xfffff800a6bc26fb  mov     qword ptr [rbp+0C0h],rbx  ; rbp + 0xC0 = ffffbc88`eeb10c40, holds 0x00000000c0000034
+0xfffff800a6bc2702  mov     qword ptr [rbp+0C8h],rdi
+0xfffff800a6bc2709  mov     qword ptr [rbp+0D0h],rsi
+0xfffff800a6bc2710  mov     qword ptr [rbp-50h],rax   ; rbp - 0x50 = ffffbc88`eeb10b30, holds 0x000000000000002c
+0xfffff800a6bc2714  mov     qword ptr [rbp-48h],rcx   ; rbp - 0x48 = ffffbc88`eeb10b38, holds ffffffffffffffff == INVALID_HANDLE 
+x0fffff800a6bc2718  mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40 = ffffbc88`eeb10b40, holds 0x00000000c0000034 (NTSATUS passed down to us)
 
 {% endhighlight %}
 
@@ -986,57 +986,57 @@ Below is an experpt from _CSRSRV!CsrParseServerCommandLine_ that handles the Obj
 00007ff9`c8183e08 48c7054dd8000000000000 mov qword ptr [CSRSRV!CsrObjectDirectory (00007ff9`c8191660)],0  ;<-- Initialization: CSRSRV!CsrObjectDirectory = 0 
 [...]
 
-CSRSRV!CsrParseServerCommandLine+0x245:                                                              ; Handler for "ObjectDirectory" starts here
-00007ff9`c8184025 8b0525d60000    mov     eax,dword ptr [CSRSRV!SessionId (00007ff9`c8191650)]
-00007ff9`c818402b 4c8d0dc6570000  lea     r9,[CSRSRV!`string' (00007ff9`c81897f8)]		     ; "%ws\%ld%s" (obtained by typing "da 00007ff9c81897f8") 
-00007ff9`c8184032 ba00010000      mov     edx,100h
-00007ff9`c8184037 4c89742430      mov     qword ptr [rsp+30h],r14
-00007ff9`c818403c 89442428        mov     dword ptr [rsp+28h],eax
-00007ff9`c8184040 488d4d00        lea     rcx,[rbp]
-00007ff9`c8184044 488d05bd570000  lea     rax,[CSRSRV!`string' (00007ff9`c8189808)]		     ; "\" (obtained by typing "da 00007ff9c8189808")
-00007ff9`c818404b 4889442420      mov     qword ptr [rsp+20h],rax
-00007ff9`c8184050 448d42ff        lea     r8d,[rdx-1]
-00007ff9`c8184054 ff15b6510000    call    qword ptr [CSRSRV!_imp__snprintf_s (00007ff9`c8189210)]
-00007ff9`c818405a 8b0584d70000    mov     eax,dword ptr [CSRSRV!ServiceSessionId (00007ff9`c81917e4)]
-00007ff9`c8184060 488d4c2460      lea     rcx,[rsp+60h]
-00007ff9`c8184065 3905e5d50000    cmp     dword ptr [CSRSRV!SessionId (00007ff9`c8191650)],eax	     ; Check CSRSRV!SessionId == CSRSRV!ServiceSessionId
-00007ff9`c818406b bbc0000000      mov     ebx,0C0h
-00007ff9`c8184070 0f8446020000    je      CSRSRV!CsrParseServerCommandLine+0x4dc (00007ff9`c81842bc)
+CSRSRV!CsrParseServerCommandLine+0x245:                                              ; Handler for "ObjectDirectory" starts here
+00007ff9c8184025 mov     eax,dword ptr [CSRSRV!SessionId (00007ff9`c8191650)]
+00007ff9c818402b lea     r9,[CSRSRV!`string' (00007ff9`c81897f8)]		     ; "%ws\%ld%s" (obtained by typing "da 00007ff9c81897f8") 
+00007ff9c8184032 mov     edx,100h
+00007ff9c8184037 mov     qword ptr [rsp+30h],r14
+00007ff9c818403c mov     dword ptr [rsp+28h],eax
+00007ff9c8184040 lea     rcx,[rbp]
+00007ff9c8184044 lea     rax,[CSRSRV!`string' (00007ff9`c8189808)]		     ; "\" (obtained by typing "da 00007ff9c8189808")
+00007ff9c818404b mov     qword ptr [rsp+20h],rax
+00007ff9c8184050 lea     r8d,[rdx-1]
+00007ff9c8184054 call    qword ptr [CSRSRV!_imp__snprintf_s (00007ff9`c8189210)]
+00007ff9c818405a mov     eax,dword ptr [CSRSRV!ServiceSessionId (00007ff9`c81917e4)]
+00007ff9c8184060 lea     rcx,[rsp+60h]
+00007ff9c8184065 cmp     dword ptr [CSRSRV!SessionId (00007ff9`c8191650)],eax	     ; Check CSRSRV!SessionId == CSRSRV!ServiceSessionId
+00007ff9c818406b mov     ebx,0C0h
+00007ff9c8184070 je      CSRSRV!CsrParseServerCommandLine+0x4dc (00007ff9`c81842bc)
 
 CSRSRV!CsrParseServerCommandLine+0x296:
-00007ff9`c8184076 488d5500        lea     rdx,[rbp]
+00007ff9c8184076 lea     rdx,[rbp]
 
 CSRSRV!CsrParseServerCommandLine+0x29a:
-00007ff9`c818407a ff15d8510000    call    qword ptr [CSRSRV!_imp_RtlInitString (00007ff9`c8189258)]
-00007ff9`c8184080 4c8d3599d60000  lea     r14,[CSRSRV!CsrDirectoryName (00007ff9`c8191720)]
-00007ff9`c8184087 41b001          mov     r8b,1
-00007ff9`c818408a 498bce          mov     rcx,r14
-00007ff9`c818408d 488d542460      lea     rdx,[rsp+60h]
-00007ff9`c8184092 ff15e0500000    call    qword ptr [CSRSRV!_imp_RtlAnsiStringToUnicodeString (00007ff9`c8189178)]
-00007ff9`c8184098 448be0          mov     r12d,eax
-00007ff9`c818409b 85c0            test    eax,eax
-00007ff9`c818409d 0f8800ffffff    js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3) ;<-- Return an error
+00007ff9c818407a call    qword ptr [CSRSRV!_imp_RtlInitString (00007ff9`c8189258)]
+00007ff9c8184080 lea     r14,[CSRSRV!CsrDirectoryName (00007ff9`c8191720)]
+00007ff9c8184087 mov     r8b,1
+00007ff9c818408a mov     rcx,r14
+00007ff9c818408d lea     rdx,[rsp+60h]
+00007ff9c8184092 call    qword ptr [CSRSRV!_imp_RtlAnsiStringToUnicodeString (00007ff9`c8189178)]
+00007ff9c8184098 mov     r12d,eax
+00007ff9c818409b test    eax,eax
+00007ff9c818409d js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3) ;<-- Return an error
 
 CSRSRV!CsrParseServerCommandLine+0x2c3:
-00007ff9`c81840a3 0f57c0          xorps   xmm0,xmm0
-00007ff9`c81840a6 c744247830000000 mov     dword ptr [rsp+78h],30h
-00007ff9`c81840ae 4c8d442478      lea     r8,[rsp+78h]
-00007ff9`c81840b3 48c7458000000000 mov     qword ptr [rbp-80h],0
-00007ff9`c81840bb ba0f000f00      mov     edx,0F000Fh
-00007ff9`c81840c0 895d90          mov     dword ptr [rbp-70h],ebx
-00007ff9`c81840c3 488d0d96d50000  lea     rcx,[CSRSRV!CsrObjectDirectory (00007ff9`c8191660)]	      ;<-- Address of  SRSRV!CsrObjectDirectory to be passed to NtCreateDirectoryObject
-00007ff9`c81840ca 4c897588        mov     qword ptr [rbp-78h],r14
-00007ff9`c81840ce f30f7f4598      movdqu  xmmword ptr [rbp-68h],xmm0
-00007ff9`c81840d3 ff15b7500000    call    qword ptr [CSRSRV!_imp_NtCreateDirectoryObject (00007ff9`c8189190)]
-00007ff9`c81840d9 448be0          mov     r12d,eax
-00007ff9`c81840dc 85c0            test    eax,eax	
-00007ff9`c81840de 0f88bffeffff    js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
+00007ff9c81840a3 xorps   xmm0,xmm0
+00007ff9c81840a6 mov     dword ptr [rsp+78h],30h
+00007ff9c81840ae lea     r8,[rsp+78h]
+00007ff9c81840b3 mov     qword ptr [rbp-80h],0
+00007ff9c81840bb mov     edx,0F000Fh
+00007ff9c81840c0 mov     dword ptr [rbp-70h],ebx
+00007ff9c81840c3 lea     rcx,[CSRSRV!CsrObjectDirectory (00007ff9`c8191660)] ;<-- Address of  SRSRV!CsrObjectDirectory to be passed to NtCreateDirectoryObject
+00007ff9c81840ca mov     qword ptr [rbp-78h],r14
+00007ff9c81840ce movdqu  xmmword ptr [rbp-68h],xmm0
+00007ff9c81840d3 call    qword ptr [CSRSRV!_imp_NtCreateDirectoryObject (00007ff9`c8189190)]
+00007ff9c81840d9 mov     r12d,eax
+00007ff9c81840dc test    eax,eax	
+00007ff9c81840de js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
 
 CSRSRV!CsrParseServerCommandLine+0x304:
-00007ff9`c81840e4 e807250000      call    CSRSRV!CsrSetDirectorySecurity (00007ff9`c81865f0)
-00007ff9`c81840e9 448be0          mov     r12d,eax
-00007ff9`c81840ec 85c0            test    eax,eax
-00007ff9`c81840ee 0f88affeffff    js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
+00007ff9c81840e4 call    CSRSRV!CsrSetDirectorySecurity (00007ff9`c81865f0)
+00007ff9c81840e9 mov     r12d,eax
+00007ff9c81840ec test    eax,eax
+00007ff9c81840ee js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
 
 {% endhighlight %}
 
@@ -1498,7 +1498,7 @@ api-ms-win-core-delayload-l1-1-0.dll
 
 {% endhighlight %}
 
-Line **7** indicates that our assumption was correct. By now it is safe to declare that the experiment above has successfully confirmed our hypothesis, but to be on the safe side, let us run a quick final test to see if the command line was indeed modified the way we meant it. 
+Line **8** indicates that our assumption was correct. By now it is safe to declare that the experiment above has successfully confirmed our hypothesis, but to be on the safe side, let us run a quick final test to see if the command line was indeed modified the way we meant it. 
 
 <div class="env-header">cdb: New Nommand Line for csrss</div>
 {% highlight none linenos %}
@@ -1536,7 +1536,7 @@ In this article I walked you, my dear reader, though the steps taken to diagnose
 
 In the end, we were able to localize the issue to a particular function. It turns out, the function ServerDllInitialization() exported by basesrv.dll returns STATUS_OBJECT_NAME_NOT_FOUND error code thereby causing a critical Windows process, csrss.exe, to terminate.
 
-Further investigation is left for part 2.
+Further investigation is left for parts [2]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing) and 3.
 
 Until then, stay healthy, stay happy, and stay proficient.
 

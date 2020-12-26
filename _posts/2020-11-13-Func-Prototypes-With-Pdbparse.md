@@ -543,7 +543,7 @@ typedef struct PROCSYM32 {
 } PROCSYM32;
 {% endhighlight %}
 
-Do you see what I see? The `typind` field! It appears to be a conventional name for an index in the TPI stream. Armed with this knowledge, I implemented l little python script that, given a name, would find and print out a prototype for a function with this name employing the same technique for parsing data as pdbparse had done. Here it is.
+Do you see what I see? The `typind` field! It appears to be a conventional name for an index in the TPI stream. Armed with this knowledge, I wrote a little python script that, given a name, would find and print out a prototype for a function with this name employing the same technique for parsing data as pdbparse had done. Here it is.
 
 <div class="env-header"> print_function_declaration_from_tpi() Implementation </div>
 {% highlight python linenos %}
