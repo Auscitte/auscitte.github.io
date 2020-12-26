@@ -33,13 +33,13 @@ and, among them, system calls that potentially may return `STATUS_OBJECT_NAME_NO
 
 ## An Attempt at Automatic Decompilation
 
-Given the **_ServerDllInitialization_** function’s formidable length of nearly 4 kilobytes, working with code in some high-level language appeared substantially more convenient than fishing for heads and tails in an endless stream of assembly instructions. Unfortunately, **_cdb_** did not come equipped with a decompiler hence it was time to check if the benevolent world of open-source had something to offer; and to nobody’s surprise, they had. Right off the bat, I discovered three tools able to understand Windows PE format and translate assembler instructions into C-like pseudo-code: NSA’s [ghidra](https://www.nsa.gov/resources/everyone/ghidra/), Avast’s [retdec](https://retdec.com/), and [radare2](https://rada.re/n/radare2.html) (quite likely, there are more). Radare2 with its built-in decompiler and a sizable selection of third-party plugins, including, notably, [r2ghidra-dec](https://github.com/radareorg/r2ghidra) and [retdec-r2plugin](https://github.com/avast/retdec-r2plugin), that ported the functionality of their namesake decompilers, seemed like it would allow to kill all the birds with one stone so it was the framework I had chosen.
+Given the **_ServerDllInitialization_** function’s formidable length of nearly 4 kilobytes, working with code in some high-level language appeared substantially more convenient than fishing for heads and tails in an endless stream of assembly instructions. Unfortunately, **_cdb_** did not come equipped with a decompiler hence it was time to check if the benevolent world of open-source had something to offer; and to nobody’s surprise, they had. Right off the bat, I discovered three tools able to understand Windows PE format and translate assembler instructions into C-like pseudo-code: NSA’s [ghidra](https://www.nsa.gov/resources/everyone/ghidra/), Avast’s [retdec](https://retdec.com/), and [radare2](https://rada.re/n/radare2.html) (quite likely, there are more). **_Radare2_** with its built-in decompiler and a sizable selection of third-party plugins, including, notably, [r2ghidra-dec](https://github.com/radareorg/r2ghidra) and [retdec-r2plugin](https://github.com/avast/retdec-r2plugin), that ported the functionality of their namesake decompilers, seemed like it would allow to kill all the birds with one stone so it was the framework I had chosen.
 
 {::options parse_block_html="true" /}
 <div class="info alert">
 **NOTE:** Here I should point out that these were imaginary, inanimate, “figurative” birds; “no birds were harmed in the course of this reverse engineering endeavor”, one feels compelled to add to avoid sounding disturbingly barbaric these days.
  
-As an [actual] side note, to save the trouble we, of course, could limit our efforts to analyzing React OS code, but this decision puts us on a dangerous path. As I already warned, caution must be exercised when using React OS source code in place of the actual disassembled Windows binaries for one cannot expect  exact imitation of system’s behavior. In our case React OS has been designed to be compatible with a different version of Windows and thus in the same setting in may behave differently. It may not even crash! Still, we will use it for reference. 
+As an [actual] side note, to save the trouble we, of course, could limit our efforts to analyzing React OS code, but this decision puts us on a dangerous path. As I already warned, caution must be exercised when using React OS source code in place of the actual disassembled Windows binaries for one cannot expect  exact imitation of system’s behavior. In our case React OS has been designed to be compatible with a different version of Windows and, thus, in the same setting in may behave differently. It may not even crash! Still, we will use it for reference. 
 </div>
 {::options parse_block_html="false" /}
 
@@ -113,7 +113,7 @@ b'ZwOpenKey'  b'NtQueryMultipleValueKey'  b'memset'
 
 {% endhighlight %}
 
-There are three types of functions imported from _ntdll_ we should keep in mind:  string operators (such as _wcscat\_s_ or _wcsncpy\_s_), memory management (e.g. _memset_), and Windows Native API (Nt\*, Rtl\*, Zw\*); of the latter only some are documented while many others have documented counterparts with the same prototypes (but slightly different names) and functionality.  String handling and memory management functions match their namesakes from C runtime libraries (which might have been statically linked) and are well-known. 
+There are three types of functions imported from **_ntdll.dll_** that we should keep in mind:  string operators (such as _wcscat\_s_ or _wcsncpy\_s_), memory management (e.g. _memset_), and Windows Native API (Nt\*, Rtl\*, Zw\*); of the latter, only some are documented, while many others have documented counterparts with the same prototypes (but slightly different names) and functionality.  String handling and memory management functions match their namesakes from C runtime libraries (which might have been statically linked) and are well-known. 
 
 Many more bits of useful information are hidden in PE headers and one is actively encouraged to study the output of `print(pe.dump_info())` command in order to gain insight into one’s reversee; in the meantime we are proceeding with the topic of decompilation.
 
@@ -132,7 +132,7 @@ Listed below are the outputs produced by several decompilers (though I added sno
 </div>
 {::options parse_block_html="false" /}
 
-The code resulting from decompilation by these tools, none being perfect, varied greatly in style and quality with no good way of choosing the best candidate. It goes to show that there is no generic algorithm for (or general consensus on, for that matter) recovering high-level language constructs from assembly code. Take the execution flow, for example. A long series of Windows Native API calls with subsequent return value checks (and, upon encountering an error, a return instruction following the resource clean-up), not counting accompanying bells and whistles, constitutes the bare-bones of **_ServerDllInitialiation()_**. In order to represent this type of program organization, built-in decompiler, **_r2snow_**, and **_r2dec_** use the traditional _“if + goto”_ combo, while **_r2ghidra-dec_** translates the same structure into nested iffs. Yet another solution is chosen by **_retdec-r2plugin_**: it consists in putting all the clean-up handling code into separate functions that are used in conjunctions with the error-checking if statements, with the end result of producing an easier-to-follow but slightly incorrect (macros should have been utilized instead) code.
+The code resulting from decompilation by these tools, none being perfect, varied greatly in style and quality with no good way of choosing the best candidate. It just goes to show that there is no generic algorithm for (or general consensus on, for that matter) recovering high-level language constructs from assembly code. Take the execution flow, for example. A long series of Windows Native API calls with subsequent return value checks (and, upon encountering an error, a _ret_ instruction following the mandatory resource clean-up), not counting accompanying bells and whistles, constitutes the bare-bones of **_ServerDllInitialiation()_**. In order to represent this type of program organization, built-in decompiler, **_r2snow_**, and **_r2dec_** use the traditional _“if + goto”_ combo, while **_r2ghidra-dec_** translates the same structure into nested iffs. Yet another solution is chosen by **_retdec-r2plugin_**: it consists in putting all the clean-up handling code into separate functions that are used in conjunctions with the error-checking if statements, with the end result of producing an easier-to-follow but slightly incorrect (macros should have been utilized instead) code.
 
 Speaking of execution flow, I noticed a possible bug that could give some insight into decompilation internals (without actually having to consult the source code) as well as make one miss a good portion of the function being reversed. At some point in the course of **_ServerDllInitialization()_** disassembling/analysis a few blocks of code got missing. For instance, here is an output of radare2’s **_pdd_** command performing “recursive disassemble across the function graph”:
 
@@ -183,9 +183,9 @@ The rest of discussion concerns implemented features rather than style.  A conve
 
 Next in line are **_SSE instructions_**. It turns out, a subset of SSE instructions is extensively employed throughout the OS modules (mainly, for initialization purposes) and the segments of such code are not interpreted correctly, if interpreted at all, by decompilers. Mostly, SSE instructions are left “as is”, in `__asm{}` blocks / intrinsics, or simply ignored.
 
-Another fundamental topic in decompilation is **_data type analysis_**. Basically, there are three methods  of assigning a type to some memory location: by analyzing instructions operating on it,  by inferring from function prototype in case the data stored at this location is passed as an argument to a known (or, in its turn, inferred) function, and, finally, by reading some kind of meta-data that specifies the type explicitly (e.g. a symbol file). Obviously, one has to take into account “compound” sets of instructions where the value is first loaded into a register and only then operated on; then, some variables might not be stored in memory (stack or RAM) at all, but reside in registers only. In short, the topic is much more complex than I might have led you to believe.
+Another fundamental topic in decompilation is **_data type analysis_**. Basically, there are three methods  of assigning a type to some memory location: by analyzing instructions operating on it,  by inferring from function prototype (in case the data stored at this location is passed as an argument to a known or, in its turn, inferred function), and, finally, by reading some kind of meta-data that specifies the type explicitly (e.g. a symbol file). Obviously, one has to take into account “compound” sets of instructions where the value is first loaded into a register and only then operated on; then, some variables might not be stored in memory (stack or RAM) at all, but reside in registers only. In short, the topic is much more complex than I might have led you to believe.
 
-This being the case, the variety in the quality and detailedness of type inference among various decompilers should not surprise us. All of the decompilers under consideration performed (to some degree) type analysis for local variables presenting the results either in the from of local variable declarations or statements such as `“byte [rbx + 0x970] = r12b“` Decompilers **_r2ghidra-dec_** and **_r2snow_** stood out among the rest by walking one or two extra miles:  **_r2ghidra-dec_** was able to compute array sizes (lengths of string buffers, to be more precise) while **_r2snow_** managed to deduce (partly) anonymous structures from the memory use patterns which might come in handy given the extensive use of structures in Windows code. _ServerDllInitialization()_ initializes fields of two structures whose counterparts in ReactOS code are called `BASE_STATIC_SERVER_DATA` and `CSR_SERVER_DLL`, not to mention `SECURITY_DESCRIPTOR` that pops up every time the initialization routine needs a security descriptor. Of course, **_r2snow_** has no knowledge of what these structures are called in reality, so it unimaginatively names them `s9`, `s55`, and `s60` respectively.
+This being the case, the variety in the quality and detailedness of type inference among various decompilers should not surprise us. All of the decompilers under consideration performed (to some degree) type analysis for local variables presenting the results either in the from of local variable declarations or statements such as `“byte [rbx + 0x970] = r12b“` Decompilers **_r2ghidra-dec_** and **_r2snow_** stood out among the rest by walking one or two extra miles:  **_r2ghidra-dec_** was able to compute array sizes (lengths of string buffers, to be more precise), while **_r2snow_** managed to deduce (partly) anonymous structures from the memory use patterns (which might come in handy given the extensive use of structures in Windows code). _ServerDllInitialization()_ initializes fields of two structures whose counterparts in ReactOS code are called `BASE_STATIC_SERVER_DATA` and `CSR_SERVER_DLL`, not to mention `SECURITY_DESCRIPTOR`, that pops up every time the initialization routine needs a security descriptor. Of course, **_r2snow_** has no knowledge of what these structures are called in reality, so it unimaginatively names them `s9`, `s55`, and `s60` respectively.
 
 Having said all that, I would be a remiss not to mention the type information already available in the disassembly listings. Take a look at this Cutter screenshot.
 
@@ -193,7 +193,7 @@ Having said all that, I would be a remiss not to mention the type information al
   <img src="/resources/images/abyss_partII_type_inf_disasm.png" alt="radare2: type inference" style="width:448px;height:523px;display:inline-block">
 </figure>
 
-Here are `int64_t` primitive types (appearing, no doubt, as a result of encountering "`*qword ptr`" instructions) as well as `PWCSTR` and `PUNICODE_STRING` preceding informative (some of them) variable names such as `SourceString` (inferred from function prototypes). Thus, it is unclear how much of the type analysis is due to the decompilers themselves. 
+Here are `int64_t` primitive types (appearing, no doubt, as a result of encountering "`mov qword ptr`" instructions) as well as `PWCSTR` and `PUNICODE_STRING` preceding informative (some of them) variable names such as `SourceString` (inferred from function prototypes). Thus, it is unclear how much of the type analysis is due to the decompilers themselves. 
 
 “What about global variables?”, you may ask. Well, you will not find declarations of global variables anywhere in the generated code, but **_r2dec_**, built-in decompiler, and **_r2ghidra-dec_** managed to give meaningful names for them by extracting appropriate symbols from pdb files. 
 
@@ -214,7 +214,7 @@ Container:
     name = u'BaseSrvSharedHeap' (total 17)
 {% endhighlight %}
 
-Yet another set of tasks decompilders occupy themselves with could be branded together under a (made-up) term _“resolving a function call”_; it encompasses procuring function name, retrieving or deducing function prototype (or at least the number of formal parameters), and figuring out arguments for this particular call.  For imported functions, as was demonstrated earlier, the names could be read from the import table or, if available, a symbol file; for functions with local linkage, the symbol file is the only source the function name may come from. All the decompilers successfully acquired names for the imported functions, but **_r2snow_** and build-in decompiler left the local functions `BaseSrvInitializeIniFileMappings()`  and  `CreateBaseAcls()` unnamed.
+Yet another set of tasks decompilders occupy themselves with could be branded together under a (made-up) term _“resolving a function call”_; it encompasses procuring function name, retrieving or deducing function prototype (or, at least, the number of formal parameters), and figuring out arguments for this particular call.  For imported functions, as was demonstrated earlier, the names could be read from the import table or, if available, a symbol file; for functions with local linkage, the symbol file is the only source the function name may come from. All the decompilers successfully acquired names for the imported functions, but **_r2snow_** and build-in decompiler left the local functions `BaseSrvInitializeIniFileMappings()`  and  `CreateBaseAcls()` unnamed.
 
 Provided a calling convention is known (which is the case for 64-bit machine code stored in a Windows PE file) one could infer partial function prototype by analyzing which registers are initialized and how much data is pushed onto the stack right before the function call; this procedure will also yield the actual parameters. Another way of going about it is by consulting symbol files and standard/system headers. Decompilers **_retdec-r2plugin_** and **_r2ghidra-dec_** were particularly good at this rather difficult job, whereas results produced by others resembled random guesses, more or less.  Without studying the source code, it is hard to tell which of the two methods is employed by each of the plugins; for example, **_retdec-r2plugin_** seems to be aware of Windows native API functions as indicated by the lines `RtlInitUnicodeString((struct _UNICODE_STRING *)(v1 + 72), v2);` and `NtCreateFile((int64_t **)&g57, 0x1f01ff, (struct _OBJECT_ATTRIBUTES *)&Handle, (struct _IO_STATUS_BLOCK *)&v76, NULL, 128, 3, 2, 1, NULL, 0);`, but, then, it makes a mistake in a `RtlCreateTagHeap()` call.
 
@@ -242,7 +242,7 @@ NTSTATUS NtQuerySystemInformation(
 
 Remembering that on 64-bit platforms Windows modules comply with the following **_calling convention_**: the first four arguments are passed in _rcx_, _rdx_, _r8_ and _r9_ respectively (the space of appropriate size still being reserved on stack) and the remaining parameters are pushed onto the stack, observe that **_radare2_** correctly deduced arguments for the calls to `RtlInitUnicodeString()` at the address `0x180001932` and `memcpy()` at `0x1800019ed`. 
 
-With the `NtQueryInformation()` call (at `0x18000198f`), the situation is slightly more complicated: **_radare2_** successfully recognized the second and fourth parameters (passed via `rdx` and `r9` correspondingly), but, evidently, got baffled by an obscure instruction sequence that intended to set `ecx` to `3` and `r8` to `0x30`:
+With the `NtQueryInformation()` call (at `0x18000198f`), the situation is slightly more complicated: **_radare2_** successfully recognized the second and fourth parameters (passed via _rdx_ and _r9_ correspondingly), but, evidently, got baffled by an obscure instruction sequence that intended to set _ecx_ to `3` and _r8_ to `0x30`:
 
 {% highlight nasm linenos %}
 xor r9d, r9d
@@ -280,7 +280,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 0
 {% endhighlight %}
 
-The TPI stream contains no records! It means: no function prototypes, no types for local or global variables. The implication of this discovery is that neither function prototypes, nor types for local or global variables will be available to us. Just as well, in case of references to local variables, there is none to speak of. On the screenshot below is a hexdump of the relevant potion of the module stream corresponding to the compiland where _ServerDllInitialization()_ is defined (again, I refer the reader to [this post]({{ site.baseurl }}/systems%20blog/Func-Prototypes-With-Pdbparse) if this sentence sounds mysterious). 
+The TPI stream contains no records! It means: no function prototypes, no types for local or global variables. The implication of this discovery is that neither function prototypes, nor types for local or global variables will be available to the decompiler. Just as well, in case of references to local variables, there is none to speak of. On the screenshot below is a hexdump of the relevant potion of the module stream corresponding to the compiland where _ServerDllInitialization()_ is defined (again, I refer the reader to [this post]({{ site.baseurl }}/systems%20blog/Func-Prototypes-With-Pdbparse) if this sentence sounds mysterious). 
 
 <figure style="text-align:center">
   <img src="/resources/images/abyss_partII_pdbparsehexdump.png" alt="excerpt from basesrv.pdb hexdump">
@@ -398,7 +398,7 @@ In my case the function proved too complicated for this approach to elicit relia
 
 I will not walk you through the process of decompiling the entire function as it, although not overwhelmingly difficult once one gets a hang of it, is rather tedious and time-consuming. Instead, I have chosen a few non-trivial points of interest that, presumably, require an explanation.
 
-### Calling Convention On 64-bit Windows
+### Calling Convention In 64-bit Windows
 
 Once again I will touch upon the subject of **_calling convention_**. In my estimation, it is the third time (already!) the topic is being discussed in this series of articles; that said, it is not the worst kind of information to be etched in one’s mind for eternity. 
 
@@ -431,11 +431,11 @@ Now let us see how these rules apply to the call above.
 
 Interestingly, the traditional push/pop pair is not used anywhere in the body of _ServerDllInitialization()_ with the exception of prologue and epilogue. Instead, top of the stack (pointed to by _rsp_, as usual) remains fixed and parameter initialization is done by `move {byte, dword, qword} ptr` instructions with addresses relative to the stack pointer. The reason behind it, probably, is the [requirement](https://docs.microsoft.com/en-us/cpp/build/stack-usage) that the stack pointer be 16-bit aligned everywhere, but in prologue and epilogue. In which case, according to [Microsoft](https://docs.microsoft.com/en-us/cpp/build/prolog-and-epilog), offsetting _rps_ by a fixed amount to accommodate, both, local variables and arguments for subroutines, “allows more of the fixed allocation area to be addressed with one-byte offsets”. 
 
-Keeping in mind that the arguments are “pushed” from right to left and on x86-64 architectures stack “grows” downwards, towards smaller addresses, one could reconstruct the following initialization sequence: `g_SessionId` is placed at the address `[rsp+20h]` (instruction is at `0x1800018c6`), then 32 bytes of shadow storage is allocated for the next four arguments: a pointer to `L"\\Sessions"` is supposed to reside at `[rsp+18h]` (in reality, it is passes via _r9_ which is done by the _mov_ instruction at `0x1800018b8`), a pointer to `L"%ws\\%ld\\AppContainerNamedObjects"` – at `[rsp+10h]`, `0x100` – at `[rsp+8]`, and, finally, `szBuffer` – at the top of the stack. This way the argument layout is the same as it would be if the _cdecl_ calling convention were used; the difference being that the space allocated for the first four arguments contains garbage. 
+Keeping in mind that the arguments are “pushed” from right to left and on x86-64 architectures stack “grows” downwards, towards smaller addresses, one could reconstruct the following initialization sequence: `g_SessionId` is placed at the address `[rsp+20h]` (instruction is at `0x1800018c6`), then 32 bytes of shadow storage is allocated for the next four arguments: a pointer to `L"\\Sessions"` is supposed to reside at `[rsp+18h]` (in reality, it is passes via _r9_ which is done by the _mov_ instruction at `0x1800018b8`), a pointer to `L"%ws\\%ld\\AppContainerNamedObjects"` – at `[rsp+10h]`, `0x100` – at `[rsp+8]`, and, finally, `szBuffer` – at the top of the stack. This way the argument layout is the same as it would have been had the _cdecl_ calling convention been used; the difference being that the space allocated for the first four arguments contains garbage. 
 
 ### Beware of Structure Member Alignment
 
-One could, with a degree of certainty, make the reasonable assumption that Microsoft use a tool of their own devising, Visual C++ toolchain, to build their operating system. Furthermore, presence of a so-called **_Rich header_**, placed in .dll/.exe files by a linker from aforementioned toolchain, is a good indication of this. In the script below, the “DanS” signature, allegedly derived from the name of Daniel Spalding who ran the linker team in the past, is extracted from _basesrv.dll_ leaving little to no doubt about our assumption.
+One could, with a degree of certainty, make the reasonable assumption that Microsoft use a tool of their own devising, Visual C++ toolchain, to build their operating system. Furthermore, presence of a so-called **_Rich header_**, placed in .dll/.exe files by a linker from aforementioned toolchain, is a good indication of this. In the script below, the “DanS” signature, allegedly derived from the name of Daniel Spalding who ran the linker team in the past, is extracted from _basesrv.dll_, leaving little to no doubt about correctness of this assumption.
 
 {% highlight python linenos %}
 Python 3.8.5 (default, Jul 28 2020, 12:59:40) 
@@ -447,9 +447,9 @@ Type "help", "copyright", "credits" or "license" for more information.
 'DanS'
 {% endhighlight %}
 
-Rich headers are extensively utilized in malware identification and for this reason a lot of information about them is available online. What I know comes from a conference paper by Webster et al. (2017). For the purposes of this work, we can act on the premise that whatever the documentation says about software compiled with Microsoft development toolchain applies to _basesrv.dll_ as well. 
+Rich headers are extensively utilized in malware identification and, for this reason, a lot of information about them is available online. What I know comes from a conference paper by Webster et al. (2017). For the purposes of this work, we can act on the premise that whatever the documentation says about software compiled with Microsoft development toolchain applies to _basesrv.dll_ as well. 
 
-Unless specified otherwise, primitive types such as integer and pointers are naturally aligned, where the notion of natural alignment is defined as follows: “We call a datum naturally aligned if its address is aligned to its size.” (see [this](https://docs.microsoft.com/en-us/cpp/cpp/alignment-cpp-declarations)). As a result, on x64 systems pointers will only reside at addresses that are multiple of 8. Of course, it is possible to alter the default compiler settings, but it will, most assuredly, incur serious performance issues. Now take a look at the definition of `UNICODE_STRING` with offsets of each member relative to the beginning of the structure.
+Unless specified otherwise, primitive types such as integer and pointers are **_naturally aligned_**, where the notion of natural alignment is defined as follows: “We call a datum naturally aligned if its address is aligned to its size.” (see [this](https://docs.microsoft.com/en-us/cpp/cpp/alignment-cpp-declarations)). As a result, on x64 systems pointers will only reside at addresses that are multiple of 8. Of course, it is possible to alter the default compiler settings, but it will, most assuredly, incur serious performance issues. Now take a look at the definition of `UNICODE_STRING` (member offsets are given relative to the beginning of the structure).
 
 {% highlight c linenos %}
 typedef struct _UNICODE_STRING {
@@ -522,7 +522,7 @@ typedef struct _CSR_SERVER_DLL {
 } CSR_SERVER_DLL, *PCSR_SERVER_DLL;
 {% endhighlight %}
 
-Undocumented structures may change from build to build so one has to make sure the types of declared fields match the instructions that reference them. Luckily, this time they did which was not the case for `BASE_STATIC_SERVER_DATA`. The only place where I could find a definition for this structure was ReactOS [source code](https://doxygen.reactos.org/d3/d5a/base_8h_source.html) and, unfortunately, the version they had there differed from the one currently used in _basesrv.dll_, hence there was nothing left for me but to reconstruct `BASE_STATIC_SERVER_DATA` by analyzing the assembler instructions operating on its fields whilst borrowing corresponding names (when present) from ReactOS sources. Here is the end result:
+Undocumented structures may change from build to build so one has to make sure the types of declared fields match the instructions that reference them. Luckily, this time they did. For `BASE_STATIC_SERVER_DATA`, however, it was not the case. The only place where I could find a definition for this structure was ReactOS [source code](https://doxygen.reactos.org/d3/d5a/base_8h_source.html) and, unfortunately, the version they had there differed from the one currently used in _basesrv.dll_, hence there was nothing left for me but to reconstruct `BASE_STATIC_SERVER_DATA` by analyzing the assembler instructions operating on its fields whilst borrowing corresponding names (when present) from ReactOS sources. Here is the end result:
 
 <div class="env-header"> Reverse-engineered BASE_STATIC_SERVER_DATA </div>
 {% highlight c linenos %}
@@ -557,7 +557,7 @@ typedef struct _BASE_STATIC_SERVER_DATA {
 
 ### Error Checking
 
-Many of Windows system calls indicate whether the execution has been successful or not (and if not, the reason why it failed) by returning a value of type `NTSTATUS`. Indeed, the error code we are interested in,  `STATUS_OBJECT_NAME_NOT_FOUND`, is one of such values. `NTSTATUS` is a 32-bit integer where the leftmost two bits distinguish error codes from success “status” codes: `b00` designates success, `b01` – information, `b10` – warning, `b11` – error, with the latter two being interpreted as failures. As a result, given that `NTSTATUS` is a signed integer in 2’s complement notation, error codes are identified by a negative sign and the "check if successful" macro is defined (in ntdef.h) as follows: 
+Many of Windows system calls indicate whether the execution has been successful or not (and if not, the reason why it failed) by returning a value of type `NTSTATUS`. Indeed, the error code we are interested in,  `STATUS_OBJECT_NAME_NOT_FOUND`, is one of such values. `NTSTATUS` is a 32-bit integer where the leftmost two bits distinguish error codes from success (or “status”) codes: `b00` designates success, `b01` – information, `b10` – warning, `b11` – error, with the latter two being interpreted as failures. As a result, given that `NTSTATUS` is a signed integer in 2’s complement notation, error codes are identified by a negative sign and the "check if successful" macro is defined (in ntdef.h) as follows: 
 
 {% highlight c linenos %}
 #define NT_SUCCESS(Status) ((NTSTATUS)(Status) >= 0)
@@ -571,7 +571,7 @@ js      error_handling_code
 {% endhighlight %}
 
 ### An Array Initializer
-Here is rather unremarkable array declaration followed by an equally mundane brace-enclosed list of initializers.
+Here is a rather unremarkable array declaration followed by an equally mundane brace-enclosed list of initializers.
 
 {% highlight c linenos %}
 DWORD pdwAccessMasks[] = { 4, 0x100002, 8, 0x100004, 0 };
@@ -650,7 +650,7 @@ The shorter the function the easier it is to analyze so why not define a couple 
 	}
 {% endhighlight %}
 
-Yes, I do realize that the first two macro are essentially identical, but having them defined separately improves code readability (or so I hope). Next are the Macro responsible for copying Unicode strings; the first of which allocates the exact number of bytes necessary to hold the string (and as such bears the postfix “EXACT”) as opposed to the maximum possible length as specified by the `UNICODE_STRING::MaximumLength` field.
+Yes, I do realize that the first two macro are essentially identical, but having them defined separately improves code readability (or so I hope). Next are the Macro responsible for copying Unicode strings; the first of which allocates the exact number of bytes necessary to hold the string (and, as such, bears the postfix “EXACT”) as opposed to the maximum possible length (specified by the `UNICODE_STRING::MaximumLength` field).
 
 {% highlight c linenos %}
 #define COPY_UNICODE_STRING_EXACT(to, from) to = from;\
@@ -756,7 +756,7 @@ Consider `RootDirectory` and `SecurityDescriptor` fields, both subject to the al
 0x180001e3f call    qword ptr [basesrv!_imp_NtCreateDirectoryObject]
 {% endhighlight %}
 
-The initialization of `OBJECT_ATTRIBUTES` is all over the place: it starts by computing addresses relative to _rsp_ and then, half way though, changes to utilizing _rbp_ for this purpose instead, thereby creating the impression that two separate data structures (and not a continuous region of memory) are being initialized. An excerpt from the function prologue should explain this behaviour. 
+The initialization of `OBJECT_ATTRIBUTES` is all over the place: it starts by computing addresses relative to **_rsp_** and then, half way though, changes to utilizing **_rbp_** for this purpose instead, thereby creating the impression that two separate data structures (and not a continuous region of memory) are being initialized. An excerpt from the function prologue should explain this behaviour. 
 
 {% highlight nasm linenos %}
 ; 3552 bytes are reserved on stack before the new frame starts
@@ -811,7 +811,7 @@ Here is another example that, one hopes, deserves our attention.
 0x180001cbc call    qword ptr [basesrv!_imp_NtOpenKey]
 {% endhighlight %}
 
-`OBJECT_ATTRIBUTES` is initialized in more or less the same way as before with the exception of the last two members, where that attention-grabbing thing happens. As was mentioned previously, xmm0 is 128-bit long which is the length of `OBJECT_ATTRIBUTES::SecurityDescriptor` and `OBJECT_ATTRIBUTES::SecurityQualityOfService`, combined, so the latter two could be zeroed out in one go by the `movdqu xmmword ptr [rbp-80h], xmm0` instruction provided _xmm0_ = 0 which is accomplished by `xorps xmm0,xmm0`. As usual, the (manually) decompiled version is given below.
+`OBJECT_ATTRIBUTES` is initialized in more or less the same way as before with the exception of the last two members, where that attention-grabbing thing happens. As was mentioned previously, _xmm0_ is 128-bit long, which is the length of `OBJECT_ATTRIBUTES::SecurityDescriptor` and `OBJECT_ATTRIBUTES::SecurityQualityOfService`, combined, so both could be zeroed out in one go by the `movdqu xmmword ptr [rbp-80h], xmm0` instruction, provided _xmm0_ = 0 (the latter is accomplished by `xorps xmm0,xmm0`). As usual, the (manually) decompiled version is given below.
 
 {% highlight c linenos %}
 HANDLE hKey;  //[rbp-10h]
@@ -1216,9 +1216,9 @@ Let me remind you that by performing crash dump analysis we have learned that _S
 
 Lines **3 – 107** are not profoundly interesting: there, data structures (`CSR_SERVER_DLL` and `BASE_STATIC_SERVER_DATA`) and local variables are initialized; even though the registry is queried in the process, an error would not cause the function to stop executing. The same could be stated about lines **113-142**. A call to _NtQuerySystemInformation()_ may potentially be the culprit (depending on the implementation), but it is not likely to be the case. Now, **_BaseSrvInitializeIniFileMappings()_**, which for now is no more than a black box, we should keep in mind.
 
-Beginning from the line **145** a preparatory work necessary for creating object directories and associated symbolic links takes place: in particular, security descriptors for the said entities are created and access control lists are set. Here we come across another “black box”: **_CreateBaseAcls()_**. The directories that are about to be created will hold named events, semaphores, mutexes, and file mappings. OS needs to isolate different Terminal Services sessions (and different WinApps, too) from each other; this is why multiple directories are required (you can read more on the subject [here](http://www.nynaeve.net/?p=61) and [here](https://www.tiraniddo.dev/2019/02/a-brief-history-of-basenamedobjects-on.html)). One could not but marvel at the luck of encountering such an arrangement for these directories (and the associated symbolic links), once created, stay in memory until OS “shuts down” and, for this reason, might be used as waymarks to determine how far _ServerDllInitialization()_ has gotten before happening upon an error. It will narrow down the search significantly.
+Beginning from line **145** a preparatory work necessary for creating object directories and associated symbolic links takes place: in particular, security descriptors for the said entities are created and access control lists are set. Here we come across another “black box”: **_CreateBaseAcls()_**. The directories that are about to be created will hold named events, semaphores, mutexes, and file mappings. OS needs to isolate different Terminal Services sessions (and different WinApps, too) from each other; this is why multiple directories are required (you can read more on the subject [here](http://www.nynaeve.net/?p=61) and [here](https://www.tiraniddo.dev/2019/02/a-brief-history-of-basenamedobjects-on.html)). One could not but marvel at the luck of encountering such an arrangement for these directories (and the associated symbolic links), once created, stay in memory until OS “shuts down” and, for this reason, might be used as waymarks to determine how far _ServerDllInitialization()_ has gotten before happening upon an error. It will narrow down the search significantly.
 
-In line **337** the first directory is created: "**_\BaseNamedObjects_**" or "**_\Sessions\sid\BaseNamedObjects_**" for any session id (sid) different from that returned by `RtlGetCurrentServiceSessionId()`. In order to check if this directory exist we, once again, turn to the crash dump analysis with **_cdb_**. Let us begin by identifying session id.
+In line **337** the first directory is created: "**_\BaseNamedObjects_**" (or "**_\Sessions\sid\BaseNamedObjects_**" -- for any session id (sid) different from that returned by `RtlGetCurrentServiceSessionId()`). In order to check if this directory exist we, once again, turn to the crash dump analysis with **_cdb_**. Let us begin by identifying the session id.
 
 {% highlight none linenos %}
 kd> dd CSRSRV!SessionId
@@ -1282,7 +1282,7 @@ NTSTATUS CreateBaseAcls(struct ACL** pAcl1, struct ACL** pAcl2, struct ACL** pAc
 }
 {% endhighlight %}
 
-Although the function tries to open a registry key and retrieve one of the values belonging to it, both operations with a potential of producing the `STATUS_OBJECT_NAME_NOT_FOUND` error, we need not bother with it for even if registry query fails the execution continues as if nothing happened. 
+Nothing to write home about. Although the function tries to open a registry key and retrieve one of the values belonging to it, both operations with a potential of producing the `STATUS_OBJECT_NAME_NOT_FOUND` error, we need not bother with it for even if registry query fails the execution continues as if nothing happened. 
 
 Now consider the second candidate, **_BaseSrvInitializeIniFileMappings()_**. Per tradition, first go structure definitions.
 
@@ -1301,7 +1301,7 @@ typedef struct _S {
 } S;
 {% endhighlight %}
 
-Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem at hand and as such did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list with its head stored in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
+Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem at hand and, as such, did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list. The head of this list is recorded in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
 
 Next come the global variables and declarations for subroutines.
 
@@ -1467,11 +1467,11 @@ EXCEPTION_CODE: (NTSTATUS) 0xcc97d700 - <Unable to get error code text>
 
 ## Conclusion
 
-Certain frivolity in tone and turn of phrase aside, this peace reads more like a school paper rather than an entertaining blog post. Oh, well, my only hope is that I did not bore you to extinction, my patient reader, with this rather lengthy discourse.
+Certain frivolity in tone and turn of phrase aside, this peace reads more like a book chapter rather than an entertaining blog post. Oh, well, my only hope is that I did not bore you to extinction, my patient reader, with this rather lengthy discourse.
 
-The post started with the premise that, based on the prior analysis, it was known that **_basesrv.dll_**’s initialization routine returned an error code signifying that some named entity had not been located. At first, we attempted to utilize decompilation tools available in a reverse-engineering framework called radare2 in order to obtain the source code of **_basesrv::ServerDllInitialiation()_** in a high-level programming language, but were unable to obtain code suitable for further analysis. Automatic decompilation yielding no usable results, reverse-engineering by hand (with an aid of **_radare2_** framework) was the only remaining option. Once the function (and two subroutines it called) was reverse-engineered and subsequently written down in C, by the process of elimination, we could quickly identify the faulty call. It turned out, that one of _basesrsv_’s functions was trying to open a non-existent registry key. In the course of an experiment designed to confirm this hypothesis the underlying (and more fundamental in nature) problem was discovered: the registry was corrupted and, consequently, in need of repair which is what the third part in this treatise is devoted to.
+The post started with the premise that, based on the prior analysis, it was known that **_basesrv.dll_**’s initialization routine returned an error code signifying that some named entity had not been located. At first, we attempted to utilize decompilation tools available in a reverse-engineering framework called radare2 in order to generate the source code for **_basesrv::ServerDllInitialiation()_** in a high-level programming language, but were unable to obtain code suitable for further analysis. Automatic decompilation yielding no usable results, reverse-engineering by hand (with an aid of **_radare2_** framework) was the only remaining option. Once the function (and two subroutines it called) was reverse-engineered and subsequently written down in C, by the process of elimination, we could quickly identify the faulty call. It turned out, that one of _basesrsv_’s functions was trying to open a non-existent registry key. In the course of an experiment designed to confirm this hypothesis the underlying (and more fundamental in nature) problem was discovered: the registry was corrupted and, consequently, in need of repair which is what the third part in this treatise is devoted to.
 
-As usual, I am publishing all the reverse-engineered code presented here in the compact form of a [single file](). 
+As usual, I am publishing all the reverse-engineered code presented here in the (compact) form of a [single file](https://gist.github.com/Auscitte/ed807fd604d7b907ebd949628c6df725). 
 
 -- Ry Auscitte
 
