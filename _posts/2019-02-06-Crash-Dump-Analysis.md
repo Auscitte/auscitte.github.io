@@ -469,7 +469,7 @@ Recovered from the stack dump are: rax == 0x2c (at 0xffffbc88eeb10b30), rcx == 0
 0xfffff800a6bc2709  mov     qword ptr [rbp+0D0h],rsi
 0xfffff800a6bc2710  mov     qword ptr [rbp-50h],rax   ; rbp - 0x50 = ffffbc88`eeb10b30, holds 0x000000000000002c
 0xfffff800a6bc2714  mov     qword ptr [rbp-48h],rcx   ; rbp - 0x48 = ffffbc88`eeb10b38, holds ffffffffffffffff == INVALID_HANDLE 
-x0fffff800a6bc2718  mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40 = ffffbc88`eeb10b40, holds 0x00000000c0000034 (NTSATUS passed down to us)
+0xfffff800a6bc2718  mov     qword ptr [rbp-40h],rdx   ; rbp - 0x40 = ffffbc88`eeb10b40, holds 0x00000000c0000034 (NTSATUS passed down to us)
 
 {% endhighlight %}
 
