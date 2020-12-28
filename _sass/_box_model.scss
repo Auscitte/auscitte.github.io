@@ -132,6 +132,28 @@ main {
   padding-right: $l-h-baseline-double;
 }
 
+
+/*************************************************************************
+                  MARGIN-LEFT_RIGHT AND ROUND CORNERS
+/*************************************************************************/
+main {
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 25px;
+}
+
+nav {
+  border-radius: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#footer-main {
+  border-radius: 15px 15px 15px 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 /*************************************************************************
                              PADDING-TOP-BOTTOM
 /*************************************************************************/

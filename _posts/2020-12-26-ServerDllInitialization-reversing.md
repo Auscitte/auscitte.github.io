@@ -117,7 +117,7 @@ There are three types of functions imported from **_ntdll.dll_** that we should 
 
 Many more bits of useful information are hidden in PE headers and one is actively encouraged to study the output of `print(pe.dump_info())` command in order to gain insight into one’s reversee; in the meantime we are proceeding with the topic of decompilation.
 
-### Comparative Analysis of Decompilation Outcomes
+### Decompilers: Comparative Analysis and Outcome
 
 Listed below are the outputs produced by several decompilers (though I added snowman to the mix, this is still not by any means an exhaustive list):
 * [basesrv::ServerDllInitialiation()](https://gist.github.com/Auscitte/abb58edfec0116b473aa6810bb07e655) by [r2ghidra-dec](https://github.com/radareorg/r2ghidra) (ghidra decompiler, came with [Cutter](https://rada.re/n/cutter.html))
@@ -195,7 +195,35 @@ Having said all that, I would be a remiss not to mention the type information al
 
 Here are `int64_t` primitive types (appearing, no doubt, as a result of encountering "`mov qword ptr`" instructions) as well as `PWCSTR` and `PUNICODE_STRING` preceding informative (some of them) variable names such as `SourceString` (inferred from function prototypes). Thus, it is unclear how much of the type analysis is due to the decompilers themselves. 
 
-“What about global variables?”, you may ask. Well, you will not find declarations of global variables anywhere in the generated code, but **_r2dec_**, built-in decompiler, and **_r2ghidra-dec_** managed to give meaningful names for them by extracting appropriate symbols from pdb files. 
+“What about global variables?”, you may ask. Well, you will not find declarations of global variables anywhere in the generated code, but **_r2dec_**, built-in decompiler, and **_r2ghidra-dec_** managed to give meaningful names for them by extracting appropriate symbols from pdb files. This is how it is done. Suppose, one is decompiling the following piece of assembly code:
+
+{% highlight nasm linenos %}
+mov     edx,dword ptr [180010920h]
+mov     r8d,0B68h
+mov     rcx,qword ptr [180010918h]
+call    qword ptr [18000ca70h]
+{% endhighlight %}
+
+There are three instructions: two `mov`s and a `call` -- that reference memory addresses in this code snippet. Let us check if any of these addresses have symbols attached to them. For the purposes of demonstration we will use **_pbd\_lookup_** utility. Presuming that _basesrv.dll_ is loaded at its preferred base address, _0x180000000_, the corresponding symbols are retrieved as follows:
+
+{% highlight none linenos %}
+$ pdb_lookup.py basesrv.pdb 0x180000000
+Use lookup(addr) to resolve an address to its nearest symbol
+>>> lookup(0x180010920)
+'basesrv!BaseSrvSharedTag'
+>>> lookup(0x180010918)
+'basesrv!BaseSrvSharedHeap'
+>>> lookup(0x18000ca70)
+'basesrv!__imp_RtlAllocateHeap'
+{% endhighlight %}
+
+As a result, this instruction sequence translates into the function call: 
+
+{% highlight c linenos %}
+RtlAllocateHeap(BaseSrvSharedHeap, BaseSrvSharedTag, 0x0B68); 
+{% endhighlight %}
+
+Internally, **_pbd\_lookup_** gets its data from the global symbols stream in the symbol file.
 
 {% highlight python linenos %}
 Python 3.8.5 (default, Jul 28 2020, 12:59:40) 
@@ -625,7 +653,7 @@ For the sake completeness, I am posting an excerpt from disassembly listings fea
 0x18000218a mov     eax,dword ptr [rdx+8] ; (8 == 2 * size(DWORD))
 0x18000218d add     rdx,8                 ; pdw += 2
 0x180002191 test    eax,eax               ; while (*pdw != 0)
-0x180002193 jne     0s18000217a
+0x180002193 jne     0x18000217a
 {% endhighlight %}
 
 ### Some Useful Macro 
