@@ -223,7 +223,7 @@ As a result, this instruction sequence translates into the function call:
 RtlAllocateHeap(BaseSrvSharedHeap, BaseSrvSharedTag, 0x0B68); 
 {% endhighlight %}
 
-Internally, **_pbd\_lookup_** gets its data from the global symbols stream in the symbol file.
+Internally, **_pbd\_lookup_** gets its data from a global symbols stream in the symbol file.
 
 {% highlight python linenos %}
 Python 3.8.5 (default, Jul 28 2020, 12:59:40) 
