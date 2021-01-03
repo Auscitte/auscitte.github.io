@@ -927,7 +927,7 @@ UNICODE_STRING g_uLocal = { 0xa, 0xc, "Local" };
 
 With all these declarations and definitions in place we can finally present the function itself. A round of applause, ladies and gentlemen. 
 
-<div class="env-header"> Reverse-engineered ServerDllInitialization()</div>
+{% include code-block-header.html title="Reverse-engineered ServerDllInitialization()" %}
 {% highlight c linenos %}
 NTSTATUS ServerDllInitialization(struct CSR_SERVER_DLL* pInput) 
 {
@@ -1061,7 +1061,6 @@ NTSTATUS ServerDllInitialization(struct CSR_SERVER_DLL* pInput)
                     if (wcsicmp((WCHAR*)(pKi->Data), L"yes") == 0 || wcsicmp((WCHAR*)(pKi->Data), L"1") == 0)
                         pS->DefaultSeparateVDM = TRUE;
                 break;
-                default:
             }
         }
         
