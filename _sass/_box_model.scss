@@ -290,13 +290,23 @@ article ol ol {
 }
 
 .maximize-button {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   margin-left: 7px;
-  border:2px solid;
+  border:1px solid;
   cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
 }
 
+.copy-button {
+  width: 16px;
+  height: 16px;
+  margin-left: 7px;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
 
 .code-header-title {
   text-align: right;
