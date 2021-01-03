@@ -28,7 +28,7 @@ Figuring out python which Python implementation you have installed:
 
 Determining whether your Python binaries are 32 or 64-bit:
 
-<div class="env-header">Python Binaries Architecture</div>
+{% include code-block-header.html title="Python Binaries Architecture" %}
 {% highlight python linenos %}
 
 >>> import struct
