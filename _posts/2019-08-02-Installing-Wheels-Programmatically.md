@@ -39,7 +39,8 @@ Determining whether your Python binaries are 32 or 64-bit:
 
 And here is how you can find out the operating system under which the script is executed:
 
-<div class="env-header">Operating System</div>
+
+{% include code-block-header.html title="Operating System" %}
 {% highlight python linenos %}
 
 >>> import platform
@@ -54,7 +55,7 @@ The requirements are encoded into the file name of a wheel. For example: “torc
 
 Having identified the wheel, installing it is a simple matter. It is advisable to begin by upgrading pip to the latest version. 
 
-<div class="env-header">Upgrading Pip</div>
+{% include code-block-header.html title="Upgrading Pip" %}
 {% highlight bash linenos %}
 
 python3.5 -m pip install --upgrade pip
@@ -63,7 +64,7 @@ python3.5 -m pip install --upgrade pip
 
 Finally, run the following script passing it a path to a predownloaded wheel file as a parameter:
 
-<div class="env-header">Installing a Wheel</div>
+{% include code-block-header.html title="Installing a Wheel" %}
 {% highlight python linenos %}
 
 import pip._internal as p

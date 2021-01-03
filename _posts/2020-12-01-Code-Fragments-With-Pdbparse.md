@@ -30,7 +30,8 @@ Below is an excerpt from hexdump of a _module stream_ that corresponds to the co
 
 It should look awfully familiar to those who have gotten themselves acquainted with the post I mentioned. Observe the `S_GPROC32  =  0x1110` (defined in [cvinfo.h](https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h)) that signifies the beginning of `PROCSYM32` structure and the end-of-symbol-block marker _0x00060002_.  `PROCSYM32` could be used to locate the first code segment. Take a look.
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 typedef struct PROCSYM32 {
     unsigned short  reclen;     // Record length
@@ -51,7 +52,7 @@ typedef struct PROCSYM32 {
 
 The pair `〈seg : off〉` refers to an offset withing the PE section (in all probability, _.text_) where the function’s code resides. However, it will only give us the first fragment. In order to obtain the rest one should look for the `S_SEPCODE  =  0x1132` marker following the `PROCSYM32` structure (and, possibly, some optional debug info related to the current procedure symbol). `pEnd` indicates where the current `PROCSYM32` (and the additional data) ends.
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 // Separated code (from the compiler) support
 S_SEPCODE       =  0x1132,
@@ -59,7 +60,7 @@ S_SEPCODE       =  0x1132,
 
 Apparently, Microsoft calls such code fragments **_“separated code”_** and there could be more than one in the body of a long function. 
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 typedef struct SEPCODESYM {
     unsigned short  reclen;     // Record length
@@ -83,7 +84,7 @@ Similarly to the `〈seg : off〉`pair, `〈sect : off〉` provides us with the 
 
 Voilà!
 
-<div class="env-header"> Construct Declarations for Parsing PROCSYM32 followed by (SEPCODESYM)* </div>
+{% include code-block-header.html title="Construct Declarations for Parsing PROCSYM32 followed by (SEPCODESYM)*" %}
 {% highlight python linenos %}
 GlobalProc = cs.Struct(
     "PROCSYM32" / cs.Struct(
@@ -134,7 +135,7 @@ So far we managed to obtain offsets in PE sections and, depending on your goals,
 
 Putting it all together, we get:
 
-<div class="env-header"> list_code_blocks() Implementation </div>
+{% include code-block-header.html title="list_code_blocks() Implementation" %}
 {% highlight python linenos %}
 def list_code_blocks(pdb, base, fname):
     fncs = list(filter(lambda s: s.leaf_type == S_PROCREF and s.name == fname,\
@@ -165,7 +166,7 @@ def list_code_blocks(pdb, base, fname):
 
 To conclude our little discourse on the subject of separated code, let us, so to speak, demonstrate the method in action.
 
-<div class="env-header"> list_code_blocks() Demo </div>
+{% include code-block-header.html title="list_code_blocks() Demo" %}
 {% highlight shell linenos %}
 $ python3 pdb_list_code_blocks.py -p basesrv.pdb -m basesrv.dll -n ServerDllInitialization
 Function start: 0x180001680

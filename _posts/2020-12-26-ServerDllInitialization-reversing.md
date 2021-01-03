@@ -527,7 +527,7 @@ Speaking of `RTL_QUERY_REGISTRY_TABLE` structure, its definition is available fo
 Among the undocumented entities are two structures `CSR_SERVER_DLL` and `BASE_STATIC_SERVER_DATA`. The Win10 version of the former could be recovered from [this article](https://www.geoffchappell.com/studies/windows/win32/csrsrv/api/srvloadr/server_dll.htm); here is what Geoff Chappell has to say on the subject:
 >Microsoft’s only known public release of type information for the `CSR_SERVER_DLL` structure is not in any symbol file but is instead in a statically linked library, named _GDISRVL.LIB_, that was published with the _Device Driver Kit (DDK)_ for Windows NT 3.51. That type information survives in this library—especially since it has the detail of what would ordinarily be called private symbols—surely was an oversight, but published it is.
 
-<div class="env-header"> CSR_SERVER_DLL definition from Geoff Chappell</div>
+{% include code-block-header.html title="CSR_SERVER_DLL definition from Geoff Chappell" %}
 {% highlight c linenos %}
 typedef struct _CSR_SERVER_DLL {
 	ANSI_STRING ModuleName;            //0x0
@@ -552,7 +552,8 @@ typedef struct _CSR_SERVER_DLL {
 
 Undocumented structures may change from build to build so one has to make sure the types of declared fields match the instructions that reference them. Luckily, this time they did. For `BASE_STATIC_SERVER_DATA`, however, it was not the case. The only place where I could find a definition for this structure was ReactOS [source code](https://doxygen.reactos.org/d3/d5a/base_8h_source.html) and, unfortunately, the version they had there differed from the one currently used in _basesrv.dll_, hence there was nothing left for me but to reconstruct `BASE_STATIC_SERVER_DATA` by analyzing the assembler instructions operating on its fields whilst borrowing corresponding names (when present) from ReactOS sources. Here is the end result:
 
-<div class="env-header"> Reverse-engineered BASE_STATIC_SERVER_DATA </div>
+
+{% include code-block-header.html title="Reverse-engineered BASE_STATIC_SERVER_DATA" %}
 {% highlight c linenos %}
 typedef struct _BASE_STATIC_SERVER_DATA {
     UNICODE_STRING WindowsDirectory;                  //0x000
@@ -860,7 +861,7 @@ This collection of amusing bits demonstrating idiosyncrasies of Microsoft’s C 
 
 In the following I present the result of this undertaking. Let us begin with global variables.  Of these, there are two kinds: ones with the corresponding names present among global symbols and unnamed variables that the reverser has a privilege of naming on her own. As for the types, none were found in the _basesrv.pdb_ and, therefore, they had to be inferred from the way the variable was used. 
 
-<div class="env-header"> Global Variables of basesrv.dll </div>
+{% include code-block-header.html title="Global Variables of basesrv.dll" %}
 {% highlight c linenos %}
 HANDLE g_BaseSrvHeap;
 HANDLE g_BaseSrvSharedHeap;
@@ -907,7 +908,7 @@ RTL_QUERY_REGISTRY_TABLE g_BnoRegistryConfigurationTable =
 
 These were the variables already named (though I took a liberty of adding a “g_” prefix to distinguish them from local variables). Now to the “anonymous” ones!
 
-<div class="env-header"> More Global Variables of basesrv.dll </div>
+{% include code-block-header.html title="More Global Variables of basesrv.dll" %}
 {% highlight c linenos %}
 UNICODE_STRING g_uWOWRegistryKeyName = { 0x6c, 0x6e, 
     L"Registry\\Machine\\System\\CurrentControlSet\\Control\\WOW" };
@@ -1275,7 +1276,7 @@ Object Sessions\0\BaseNamedObjects not found
 
 Well, preoccupied with suicidal pursuits, Windows did not come around to creating the objects directory, hence the abnormal termination must have been caused by some operation performed earlier and, conveniently enough, we have already identified the two most likely spots where the error might have occurred: **_BaseSrvInitializeIniFileMappings()_** and **_CreateBaseAcls()_** subroutines.  I went ahead and reverse-engineered both of them, but only to the extent necessary for this investigation. Let us begin with the latter.
 
-<div class="env-header"> Reverse-engineered CreateBaseAcls() </div>
+{% include code-block-header.html title="Reverse-engineered CreateBaseAcls()" %}
 {% highlight c linenos %}
 NTSTATUS CreateBaseAcls(struct ACL** pAcl1, struct ACL** pAcl2, struct ACL** pAcl3, struct ACL** pAcl4, struct ACL** pAcl5)
 {
@@ -1340,7 +1341,7 @@ INIFILE_MAPPING* g_BaseSrvIniFileMapping;
 
 And, finally, the function itself.
 
-<div class="env-header"> Reverse-engineered BaseSrvInitializeIniFileMappings() </div>
+{% include code-block-header.html title="Reverse-engineered BaseSrvInitializeIniFileMappings()" %}
 {% highlight c linenos %}
 NTSTATUS BaseSrvInitializeIniFileMappings()
 {

@@ -348,15 +348,15 @@ article > h6,
 }
 
 .maximize-button {
-  border-color: #4A4A4A
+  border-color: $color-accent;
 }
 
 .code-header {
- background-color: $color-accent;
+ background-color: #4A4A4A;
 }
 
 .copy-button {
  path {
-  fill: #4A4A4A;
+  fill: $color-accent;
  }
 }

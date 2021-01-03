@@ -29,7 +29,7 @@ This write-up will be detailed enough for a person without prior reversing exper
 
 From the very beginning, we are faced with the problem of parsing the dump file. On Linux, two tools are available for that purpose: [volatility](https://www.volatilityfoundation.org/) and [rekall](http://www.rekall-forensic.com/), powerful open source memory forensic frameworks implemented in python. However, at the time of writing, both were limited in the type of dump files they could handle. [Microsoft's documentation](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/varieties-of-kernel-mode-dump-files) names four types of dump files based on what is included in them (in order of decreasing size): complete, active, kernel, small, but not mentioned there is another classification criterion – how physical pages are stored, i.e. differences in the file format. The structure `_DMP_HEADER64` ([a dump header](https://computer.forensikblog.de/en/2008/02/64bit-crash-dumps.html)), contains `_PHYSICAL_MEMORY_DESCRIPTOR` as its substructure that, in turn, represents physical memory in a form of runs list, each run being a sequence of pages in a continuous region of physical address space. Attempting to parse a dump file created by Windows 10, one is likely to find the contents of `_PHYSICAL_MEMORY_DESCRIPTOR` initialized with invalid values: the space occupied by the structure is filled with an ASCII string “PAGE”, while the presence/absence of a physical memory page in the dump is indicated by a bit in a bitmap (stored in the SDMP/FDMP subheader). 
 
-<div class="env-header"> Invalid Physical Memory Descriptor (offset 0x88) </div>
+{% include code-block-header.html title="Invalid Physical Memory Descriptor (offset 0x88)" %}
 {% highlight none linenos %}
 hexdump -C -n 1000 MEMORY.dmp
 00000000  50 41 47 45 44 55 36 34  0f 00 00 00 ee 42 00 00  |PAGEDU64.....B..|
@@ -77,8 +77,8 @@ This is when WinDbg came to the rescue! Part of the Debugging Tool for Windows s
 
 Unless you are able to set up a connection to Microsofts' symbol, a good idea is to download symbols for the essential Windows modules: _ntoskrnl.exe_, _ntdll.dll_, _hal.dll_ and then add the rest upon call stack inspection. For example, having noticed calls to _csrsrv.dll_, I used symchk.py script to retrieve a matching .pdb file. Let us begin by telling  **_cdb_** where the debugging symbol files are located.
 
-<div class="env-header">cdb: Configuring Debug Symbols</div>
-{% highlight html linenos %}
+{% include code-block-header.html title="cdb: Configuring Debug Symbols" %}
+{% highlight none linenos %}
 0: kd> .sympath d:\WinRestore\Symbols\
 Symbol search path is: d:\WinRestore\Symbols\
 Expanded Symbol search path is: d:\winRestore\symbols\
@@ -101,7 +101,8 @@ Loading unloaded module list
 
 Every crash dump analysis I have encountered so far started with `!analyze -v`. Here we go...
 
-<div class="env-header">cdb: Bugcheck Analysis</div>
+
+{% include code-block-header.html title="cdb: Bugcheck Analysis" %}
 {% highlight none linenos %}
 0: kd> !analyze -v
 *******************************************************************************
@@ -265,8 +266,9 @@ Of course, the most significant finding at this stage is an offset of instructio
 
 ### Identifying the Faulty Function and Retrieving its Error Code
 
-<div class="env-header">cdb: csrss!main Disassembly</div>
-{% highlight nasm linenos %}
+
+{% include code-block-header.html title="cdb: csrss!main Disassembly" %}
+{% highlight none linenos %}
 
 0: kd> uf csrss!main
 csrss!main:
@@ -343,8 +345,8 @@ Csrss!main's entry point is at 0x00007ff6eb571330. A simple offset calculation `
 
 Where should we move from here? Evidently, _CsrServerInitialization_ returned a non-zero error code that was later passed to _NtTerminateProcess_ as a parameter via the chain of registers: eax&#8594;ebx&#8594;edx. Let us see what _NtTerminateProcess_ does with it. 
 
-<div class="env-header">cdb: nt!TerminateProcess Disassembly</div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="cdb: nt!TerminateProcess Disassembly" %}
+{% highlight none linenos %}
 0: kd> dq csrss!_imp_NtTerminateProcess
 00007ff6`eb572138  00007ff9`cbf2a460 00007ff9`cbeff020  <-- reading import table to get to nt!TerminateProcess
 00007ff6`eb572148  00007ff9`cbe97fd0 00007ff9`cbe94770
@@ -374,8 +376,8 @@ ntdll!NtTerminateProcess+0x15:
 
 It turns out, _NtTerminateProcess_ does not save parameters (performing a syscall straight away) so off into the ring0 we go. 
 
-<div class="env-header">cdb: Disassembly of nt!KiSystemCall64 Prologue</div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="cdb: Disassembly of nt!KiSystemCall64 Prologue" %}
+{% highlight none linenos %}
 
 nt!KiSystemCall64:
 fffff800`a6bc26c0 0f01f8          swapgs
@@ -410,8 +412,8 @@ fffff800`a6bc274d 7411            je      nt!KiSystemCall64+0xa0 (fffff800`a6bc2
 
 The disassember listing looks promising: line **20** clearly indicates that the value of **_edx_** was saved on kernel stack. So was the value of **_eax_**, that could be used as a marker to make sure our stack offset calculations are correct. Windows keeps two separate stacks for user- and kermel-mode code to use, with switch between the two observable in the form of address change (see lines **68**-**69** of the Bugcheck Analysis listing) during a syscall, as the transitions into kernel mode takes place. In line **4** rsp is initialized with the top of kernel-mode stack and this is where we start.
 
-<div class="env-header">cdb: Top of Kernel-mode Stack Before the Call to TerminateProcess</div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="cdb: Top of Kernel-mode Stack Before the Call to TerminateProcess" %}
+{% highlight none linenos %}
 0: kd> dq gs:[1A8h]	
 
 002b:00000000`000001a8  ffffbc88`eeb10c90 00000000`00000000
@@ -427,8 +429,8 @@ The disassember listing looks promising: line **20** clearly indicates that the 
 
 The unused portion of stack begins at `0xffffbc88eeb10c90` and on x64 architecture "grows" downwards, towards smaller addresses. It is typically a good idea to examine the stack in order to make sure its content matches the instructions that presumably "filled it in" with data. 
 
-<div class="env-header"> cdb: Stack Dump </div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="cdb: Stack Dump" %}
+{% highlight none linenos %}
 
 0: kd> dq ffffbc88eeb10c20
 ffffbc88`eeb10c20  00000000`00000000 00000000`00000000
@@ -437,15 +439,15 @@ ffffbc88`eeb10c40  00000000`c0000034 00000000`0000000a
 ffffbc88`eeb10c50  0000014e`4a4055f5 00000000`00000000 ; rbp = 0 
 ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ; supposedly, rcx and reserved space
 ffffbc88`eeb10c70  00000000`00000033 00000000`00000246 ; r11 and 33h
-ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ;<-- here are the 2Bh marker and user stack rsp, exactly in the order they were pushed 
-ffffbc88`eeb10c90  ffffbc88`eeb11000                   ;free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses
+ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ; here are the 2Bh marker and user stack rsp, exactly in the order they were pushed 
+ffffbc88`eeb10c90  ffffbc88`eeb11000                   ; free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses
                    ------top-------- 
 {% endhighlight %}
 
 Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack, and, to top it all off, rbp == 0 seems to be suspicious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are, probably, still on the right track. The last instruction traceable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
 
-<div class="env-header"> cdb: Stack Dump #2 </div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="cdb: Stack Dump #2" %}
+{% highlight none linenos %}
 
 0: kd> dq ffffbc88`eeb10b30
 ffffbc88`eeb10b30  00000000`0000002c ffffffff`ffffffff
@@ -459,11 +461,11 @@ ffffbc88`eeb10b80  00000000`00000000 00000000`00000000
 
 Recovered from the stack dump are: rax == 0x2c (at 0xffffbc88eeb10b30), rcx == 0xffffffffffffffff (at 0xffffbc88eeb10b38), rdx == 0xc0000034 (at ffffbc88eeb10b40), and rbx == 0xc0000034 (at 0xffffbc88eeb10c40, see dump #1). Below is the relevant portion of nt!KiSystemCall64.
 
-<div class="env-header">cdb: a Fragment of nt!KiSystemCall64</div>
+{% include code-block-header.html title="cdb: a Fragment of nt!KiSystemCall64" %}
 {% highlight nasm linenos %}
 
-0xfffff800a6bc26ec  sub     rsp,158h		      ; allocating 0x158 bytes for lacal data, rsp -= 0x158
-0xfffff800a6bc26f3  lea     rbp,[rsp+80h]	      ; rbp = ffffbc88`eeb10b80
+0xfffff800a6bc26ec  sub     rsp,158h		        ; allocating 0x158 bytes for lacal data, rsp -= 0x158
+0xfffff800a6bc26f3  lea     rbp,[rsp+80h]	        ; rbp = ffffbc88`eeb10b80
 0xfffff800a6bc26fb  mov     qword ptr [rbp+0C0h],rbx  ; rbp + 0xC0 = ffffbc88`eeb10c40, holds 0x00000000c0000034
 0xfffff800a6bc2702  mov     qword ptr [rbp+0C8h],rdi
 0xfffff800a6bc2709  mov     qword ptr [rbp+0D0h],rsi
@@ -479,8 +481,9 @@ It looks like we are golden. 0x2c is the index of TerminateProcess in Microsoft'
 
 So far we figured out that _CsrServerInitialization()_ terminates with the _STATUS_OBJECT_NAME_NOT_FOUND_ (0xc0000034) error. According to the [documentation](https://msdn.microsoft.com/en-us/library/cc704588.aspx) it, as you might have guessed, means "The object name is not found". Let us dig deeper. 
 
-<div class="env-header">cdb: CSRSRV!CsrServerInitialization Disassembly Listing</div>
-{% highlight nasm linenos %}
+
+{% include code-block-header.html title="cdb: CSRSRV!CsrServerInitialization Disassembly Listing" %}
+{% highlight none linenos %}
 
 0: kd> uf CSRSRV!CsrServerInitialization
 CSRSRV!CsrServerInitialization:
@@ -735,8 +738,9 @@ CSRSRV!guard_dispatch_icall_nop+0x308:
 
 The function seems so long and tedious that one might lose heart in the entire endeavor of ever getting to the root of the crash. But wait till you get to the line number **202**! Here we must stop and thank Microsoft for kindly providing us with debug symbols for the entire set of OS modules. <!-- The benefits it brings to the craft of kernel-mode debugging can hardly be overestimated.--> The name "CSRSRV!CsrInitFailReason" is more than telling of its purpose -- it stores an error index indicating which part of the function has failed. Why, we should check its value! 
 
-<div class="env-header">cdb: CSRSRV!CsrInitFailReason</div>
-{% highlight nasm linenos %}
+
+{% include code-block-header.html title="cdb: CSRSRV!CsrInitFailReason" %}
+{% highlight none linenos %}
 
 0: kd> dd CSRSRV!CsrInitFailReason
 00007ff9`c81917e0  00000007 00000000 00000000 00000000
@@ -745,7 +749,8 @@ The function seems so long and tedious that one might lose heart in the entire e
 
 The value stored in _CSRSRV!CsrInitFailReason_ is 7. Using the trick with computing an offest for the case of `if (error) ProcessError()` pattern I showed earlier, we quickly identify the call to **_CSRSRV!CsrParseServerCommandLine_** in line **67** as the one ending in an error. Granted the role implied by this rather expressive function name, perhaps, it would be beneficial to take a look at the command line arguments passed to csrss.exe before we plunge into decyphering the disassembly listings. It is achieved using !peb command.
 
-<div class="env-header">cdb: Retrieving a Command Line</div>
+
+{% include code-block-header.html title="cdb: Retrieving a Command Line" %}
 {% highlight none linenos %}
 
 0: kd> !peb
@@ -780,7 +785,7 @@ The command line in question is `%SystemRoot%\system32\csrss.exe ObjectDirectory
 I have read through the disassembly of _CsrParseServerCommandLine_ in an attempt to figure out what it was doing, but will not bore you with my "execution flow analysis". Instead, a source code of the matching function from [ReactOS](https://www.reactos.org/) will be provided; I copied the code from [here](https://doxygen.reactos.org/dd/dab/subsystems_2win32_2csrsrv_2init_8c_source.html). ReactOS has been designed to run Windows applications and drivers and as such is very similar in its architecture and implementation; however, one should not expect to find one-to-one correspondence between ReactOS and Windows code. In this particular case, I found it to be pretty close (but not an exact match!). 
  
 
-<div class="env-header">ReactOS: CsrParseServerCommandLine()</div>
+{% include code-block-header.html title="ReactOS: CsrParseServerCommandLine()" %}
 {% highlight c linenos %}
 
 /*++
@@ -979,8 +984,8 @@ A brief inspection of CsrParseServerCommandLine() shows that the command line ar
 
 Below is an experpt from _CSRSRV!CsrParseServerCommandLine_ that handles the ObjectDirectory parameter. 
 
-<div class="env-header">CsrParseServerCommandLine : ObjectDirectory Handler</div>
-{% highlight nasm linenos %}
+{% include code-block-header.html title="CsrParseServerCommandLine : ObjectDirectory Handler" %}
+{% highlight none linenos %}
 [...]
 
 00007ff9`c8183e08 48c7054dd8000000000000 mov qword ptr [CSRSRV!CsrObjectDirectory (00007ff9`c8191660)],0  ;<-- Initialization: CSRSRV!CsrObjectDirectory = 0 
@@ -1042,7 +1047,7 @@ CSRSRV!CsrParseServerCommandLine+0x304:
 
 Notice that in the beginning variable CSRSRV!CsrObjectDirectory is initialized to NULL (line **3**) and then used to store a handle of the newly created directory object (lines **44** and **47**). Non-NULL CSRSRV!CsrObjectDirectory will imply that the call to _NtCreateDirectoryObject()_ has succeeded and, as we shall see in a moment it, indeed, has.
 
-<div class="env-header">cdb: Checking if NtCreateDirectoryObject("\Windows") succeeded </div>
+{% include code-block-header.html title="cdb: Checking if NtCreateDirectoryObject(\"\\Windows\") succeeded" %}
 {% highlight none linenos %}
 
 0: kd> dq CSRSRV!CsrDirectoryName
@@ -1064,7 +1069,7 @@ A similar technique can be used to analyze CsrSrvCreateSharedSection(). Let us l
 
 Now we move to the most interesting part -- processing of _ServerDll_ entries. Each _ServerDll_ gives a DLL name, index, and an optional name of a function to call ("ServerDllInitialization" is used by default). Again, for the sake of readability, I use [ReactOS code](https://doxygen.reactos.org/d1/db2/subsystems_2win32_2csrsrv_2server_8c_source.html) to accompany the verbal description, but, of course, one is advised to go over the disassembly listings to make sure the Windows and ReactOS implementations agree. 
 
-<div class="env-header">ReactOS: CsrLoadServerDll()</div>
+{% include code-block-header.html title="ReactOS: CsrLoadServerDll()" %}
 {% highlight c linenos %}
 
 /*++
@@ -1227,7 +1232,8 @@ Now we move to the most interesting part -- processing of _ServerDll_ entries. E
 Notice that in line **53** the DLL is loaded, in line **106** a pointer to the initialization function is retrieved, and in line **122** the latter is called with its return value recorded in the _Status_ variable. Failing to load the DLL or locate the specified initialization function as well as that function returning an error 
 will cause CsrParseServerCommandLine() to terminate immediately without proceeding to deal with the rest of the command line arguments. Following this logic, it is suggested to consult the csrss' list of loaded modules in order to determine which _ServerDll_ entries were actually processed. Among those, the last one will be a likely culprit. Hold on! But in the case of an error _CsrLoadServerDll_ unloads the DLL (see line **146**) and, thus, it will no longer be on the list. Luckily for us, Windows maintains a DLL load history. Being able to track down the unloaded modules is useful for debugging and plays a crucial role in memory forensics (and malware detection, in particular) as indicated in [this post](https://volatility-labs.blogspot.com/2013/05/movp-ii-22-unloaded-windows-kernel_22.html). 
 
-<div class="env-header">cdb: List of Unloaded Modules </div>
+
+{% include code-block-header.html title="cdb: List of Unloaded Modules" %}
 {% highlight none linenos %}
 
 0: kd> lm
@@ -1274,7 +1280,8 @@ A quick research online will locate the place from where csrss' command line is 
 
 This time I got to congratulate myself on a fruitful application of my deductive skills as a BSOD presenting a new, different, message appeared on my screen. It read: "If you contact a support person, give them this info. Stop code: c0000142." It worked! To complete the picture, here is the WinDbg crash dump analysis. 
 
-<div class="env-header">cdb: Bugcheck Analysis #2</div>
+
+{% include code-block-header.html title="cdb: Bugcheck Analysis #2" %}
 {% highlight none linenos %}
 2: kd> !analyze -v
 *******************************************************************************
@@ -1440,7 +1447,8 @@ Followup:     MachineOwner
 
 A DLL is failing to initilize, which should not surprise us for we have just stripped Windows subsystem of one of its key components, basesrv.dll. While a tempting prompt to dig deeper into the inner workings of Windows kernel, this error by itself is of no importance here for it will not contribute much to figuring out the reason behind the original crash. More interesting to us, is the loaded modules list. 
 
-<div class="env-header">cdb: List of Unloaded Modules #2</div>
+
+{% include code-block-header.html title="cdb: List of Unloaded Modules #2" %}
 {% highlight none linenos %}
 
 2: kd> lm
@@ -1474,7 +1482,7 @@ fffff80e`76e90000 fffff80e`76e9f000   hwpolicy.sys
 
 No longer stalled by the error in basesrv's initialization routine, csrss went ahead and attempted to load the next module on the list -- **_winsrv_** (notice the same letter case pattern with a combination of small and capital letters). An observant reader will have noticed that basesrv.dll was also loaded and then unloaded, the difference in letter case suggesting it was done as a part of another use case scenario. It is reasonable to suggest that winsrv.dll imports symbols from basesrv. Let us check this assumption using [pefile](https://github.com/erocarrera/pefile) python library by Ero Carrera.
 
-<div class="env-header">winsrv.dll's Import List</div>
+{% include code-block-header.html title="winsrv.dll's Import List" %}
 {% highlight python linenos %}
 
 >>> import pefile
@@ -1500,7 +1508,7 @@ api-ms-win-core-delayload-l1-1-0.dll
 
 Line **8** indicates that our assumption was correct. By now it is safe to declare that the experiment above has successfully confirmed our hypothesis, but to be on the safe side, let us run a quick final test to see if the command line was indeed modified the way we meant it. 
 
-<div class="env-header">cdb: New Nommand Line for csrss</div>
+{% include code-block-header.html title="cdb: New Nommand Line for csrss" %}
 {% highlight none linenos %}
 
 2: kd> !peb

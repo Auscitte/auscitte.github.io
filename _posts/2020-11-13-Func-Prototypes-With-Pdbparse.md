@@ -31,7 +31,7 @@ There is one more thing I ought to mention before proceeding. Working with symbo
 
 Listed below are the versions of pdbparse and its dependencies that I have installed on my computer. For obvious reasons, this post may be irrelevant for other (earlier or later) versions of pdbparse. One hopes that in the near future some benevolent soul will donate code extending the library with the missing functionality thereby rendering everything written here perfectly useless. Wink-wink.
 
-<div class="env-header"> Versions of pdbparse and its Dependencies </div>
+{% include code-block-header.html title="Versions of pdbparse and its Dependencies" %}
 {% highlight none linenos %}
 ubuntu@ubuntu:~$ pip3 list 
 Package                Version      
@@ -45,7 +45,7 @@ pefile                 2019.4.18
 
 An undocumented file format (especially as rich in features as PDB) may look like a tangled mess with neither heads nor tails discernible therein. One needs something small and easily manageable for the purposes of reverse engineering so I used Visual Studio to create a simple console application. Here is the source code: 
 
-<div class="env-header"> hiworld.cpp: The Running Example </div>
+{% include code-block-header.html title="hiworld.cpp: The Running Example" %}
 {% highlight c linenos %}
 #include "stdafx.h"
 #include <windows.h>
@@ -75,7 +75,7 @@ This program is simple enough for it to require no explanation so let us go ahea
 
 VS2015 comes with the development toolchain version 14 as evident from the PE header of the resulting executable:
 
-<div class="env-header"> Fragments of hiworld.exe's PE Header </div>
+{% include code-block-header.html title="Fragments of hiworld.exe's PE Header" %}
 {% highlight none linenos %}
 > dumpbin /HEADERS C:\Temp\hiworld\x64\Debug\hiworld.exe
 [...]
@@ -94,7 +94,7 @@ OPTIONAL HEADER VALUES
 
 Observe the value stored in `linker version` field. Also worth our attention is the data stored in debug directories where one can find a pair 〈guid, age〉 used to match the executable to the corresponding symbol file and a path to .pdb file. For the sake of completeness, let us take a look at the PDB headers obtained with pdbparse:
 
-<div class="env-header"> Signature and Verion Info Stored In hiworld.pdb </div>
+{% include code-block-header.html title="Signature and Verion Info Stored In hiworld.pdb" %}
 {% highlight python linenos %}
 Python 3.8.2 (default, Mar 13 2020, 10:14:16) 
 [GCC 9.3.0] on linux
@@ -129,7 +129,7 @@ Right off the bat, pdbparse threw an exception when trying to load _hiworld.pdb_
 
 Not a workaround, but a minor fix for an operator precedence issue:
 
-<div class="env-header"> Fix for an Operator Precedence Issue </div>
+{% include code-block-header.html title="Fix for an Operator Precedence Issue" %}
 {% highlight none linenos %}
 ubuntu@ubuntu:~$ diff /usr/local/lib/python3.8/dist-packages/pdbparse/dbi.py dbi.py
 160c160
@@ -146,7 +146,7 @@ A sensible practice that ensures one avoids inflicting an injury (to one’s ego
 
 Types are defined in a TPI stream (located inside the .pdb file) and indexed by 16-bit integer keys. Memory layout of corresponding TPI record varies depending on what the type is: an array, structure, union, pointer to another type, and so on. I made extensive use of python’s `dir()` function to examine internal organization of various types, one by one. Like so: 
 
-<div class="env-header"> Internal Structure of Arrays in TPI Stream </div>
+{% include code-block-header.html title="Internal Structure of Arrays in TPI Stream" %}
 {% highlight python linenos %}
 >>> f = filter(lambda t: pdb.STREAM_TPI.types[t].leaf_type == "LF_ARRAY", 
 ...  pdb.STREAM_TPI.types)
@@ -158,7 +158,7 @@ Here a record for an array declaration is searched for (I know for a fact there 
 
 In this manner, types reference other types as theirs constituents, thereby forming a directed acyclic graph (DAG) with its edges embodying the references and vertices – the types themselves (notably, there are exceptions to this rule as pointed out in the LLVM documentation, but I will not elaborate on it). Thereby, a human-readable name for some type might be formed by a function that traverses the DAG recursively, akin to the one below. 
 
-<div class="env-header"> get_type_name() Impelementation </div>
+{% include code-block-header.html title="get_type_name() Impelementation" %}
 {% highlight python linenos %}
 def get_type_name(tp):
     #a primitive type does not have a record
@@ -184,7 +184,7 @@ def get_type_name(tp):
 
 Of course, this is only a toy example; in real life one has to take care of many more technical details. Now that we know how to obtain type names, printing out a structure definition becomes easy: 
 
-<div class="env-header"> print_struct_definition() Impelementation </div>
+{% include code-block-header.html title="print_struct_definition() Impelementation" %}
 {% highlight python linenos %}
 def print_struct_definition(pdb, sname):
     tps = list(filter(lambda t: \
@@ -202,7 +202,7 @@ def print_struct_definition(pdb, sname):
 
 Given that obtaining a definition merely understandable by human beings rather than one that would comply with C++ syntax (the latter requiring a little more effort) was my goal, the implementation is simple enough. Let us try it out!
 
-<div class="env-header"> print_struct_definition() Demo </div>
+{% include code-block-header.html title="print_struct_definition() Demo" %}
 {% highlight python linenos %}
 >>> print_struct_definition(pdb, "TextHolder")
 struct TextHolder {
@@ -213,7 +213,7 @@ struct TextHolder {
 
 The task of printing out a global variable declaration is equally undemanding. For a global variable, it being visible across module boundaries, one would expect to find a matching symbol in the Global Symbols stream. Let us see.
 
-<div class="env-header"> Searching Global Symbols for g_Message</div>
+{% include code-block-header.html title="Searching Global Symbols for g_Message" %}
 {% highlight python linenos %}
 >>> print(*[ ( hex(s.leaf_type), s.name) for s in pdb.STREAM_GSYM.globals\
 ...  if "name" in dir(s) and "g_Message" in s.name ], sep="\n")
@@ -222,7 +222,7 @@ The task of printing out a global variable declaration is equally undemanding. F
 
 Residing among symbols is a variable name conveniently decorated with the type of this variable. **_Symbol decoration_** (aka **_symbol mangling_**) is a technique of passing type information to linker for semantic error checking and, of course, it is possible to extract this type information from the mangled name. 
 
-<div class="env-header"> Undecorating Variable Name with pdbparse</div>
+{% include code-block-header.html title="Undecorating Variable Name with pdbparse" %}
 {% highlight python linenos %}
 >>> from pdbparse import undname
 >>> undname.undname("?g_Message@@3UTextHolder@@A",\
@@ -234,7 +234,7 @@ Here you go. This is the variable declaration you were looking for. I told you i
 
 By the bye, I remember stating, rather boldly, that printing out variable declarations did not require introducing any modifications to the pdbparse’s source code.  I, in all my viciousness, deceived you, my trusting reader, as you shall soon see. But all in good time.
 
-<div class="env-header"> Examining an Internal Structure of a Public Symbol</div>
+{% include code-block-header.html title="Examining an Internal Structure of a Public Symbol" %}
 {% highlight python linenos %}
 >>> f = list(filter(lambda s: "name" in dir(s) and "g_Message" in s.name,\
 ... pdb.STREAM_GSYM.globals))
@@ -248,7 +248,8 @@ By the bye, I remember stating, rather boldly, that printing out variable declar
 
 The first thing that caught my attention was the lack of reference to the TPI stream. Take a look at the list of symbol’s attributes: segment and offset, most likely, point to the variable’s location in memory and the rest is irrelevant (“symtype” looked promising, but it turned out to be something else). Actually, this is a so-called **_public symbol_**, as specified by its record type (`0x110e`), and its structure is, in fact, documented in [Microsoft’s open-source project](https://github.com/Microsoft/microsoft-pdb). The file `/include/cvinfo.h` is where one should look for relevant definitions.
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 //Symbol definitions
 typedef enum SYM_ENUM_e {
@@ -269,7 +270,7 @@ typedef struct PUBSYM32 {
 
 Indeed, public symbols did not reference TPI stream, but some other symbols must have done, and I decided to look for them. To start with, I needed to know the index of the global symbols stream. 
 
-<div class="env-header"> An Index of the Global Symbols Stream</div>
+{% include code-block-header.html title="An Index of the Global Symbols Stream" %}
 {% highlight python linenos %}
 >>> pdb.STREAM_DBI.DBIHeader.symrecStream
 8
@@ -277,7 +278,7 @@ Indeed, public symbols did not reference TPI stream, but some other symbols must
 
 Then I employed pdbparse’s **_pdb_dump_** utility to dissect the symbol file into constituent streams and ran a search for the string of interest. 
 
-<div class="env-header"> Searching Global Symbols Stream For g_Message</div>
+{% include code-block-header.html title="Searching Global Symbols Stream For g_Message" %}
 {% highlight shell linenos %}
 ubuntu@ubuntu:~$ pdb_dump.py hiworld.pdb
 ubuntu@ubuntu:~$ strings hiworld.pdb.008 | grep g_Message
@@ -287,7 +288,7 @@ g_Message
 
 Aha! There is an undecorated version of the variable `g_Message` hidden somewhere in the symbol stream; however, pdbparse somehow skips the data pertaining to it when parsing the stream. A quick glance inside the source code gives us an insight into why it happens:
 
-<div class="env-header"> An Excerpt from pdbparse/gdata.py</div>
+{% include code-block-header.html title="An Excerpt from pdbparse/gdata.py" %}
 {% highlight python linenos %}
 gsym = Struct(
     "leaf_type" / Int16ul, "data" / Switch(
@@ -318,7 +319,7 @@ GlobalsData = "globals" / GreedyRange(
 
 Pdbparse parses streams with the help of construct library which enables doing so in a declarative fashion. The stream is processed in chunks of `ctx.length` sizes (see `RestreamData()`); records for two types of symbols (`S_PUB32_ST = 0x1009` and `S_PUB32 = 0x110e`) only are being recognized and parsed fully, the rest are stored as pairs 〈length, leaf_type〉. Let us see which types of symbols,  among present in our file, the parser has missed.
 
-<div class="env-header"> Listing Types of Symbols Found in Global Symbols Stream</div>
+{% include code-block-header.html title="Listing Types of Symbols Found in Global Symbols Stream" %}
 {% highlight python linenos %}
 >>> set([  hex(s.leaf_type) for s in pdb.STREAM_GSYM.globals ])
 {'0x1108', '0x1107', '0x110c', '0x110e', '0x1125', '0x110d', '0x1127'}
@@ -326,7 +327,7 @@ Pdbparse parses streams with the help of construct library which enables doing s
 
 Or in terms of Microsoft’s implementation:
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 //Symbol definitions
 typedef enum SYM_ENUM_e {
@@ -344,7 +345,7 @@ typedef enum SYM_ENUM_e {
 
 Of these, the symbol denoted by the `S_GDATA32` (global data symbol) type appeared to be precisely what I was looking for so I found a matching structure (`DATASYM32`) in `cvinfo.h` and augmented pdbparse with an appropriate declaration:
 
-<div class="env-header"> Adding construct Declarations for DATASYM32 (in pdbparse/gdata.py) </div>
+{% include code-block-header.html title="Adding construct Declarations for DATASYM32 (in pdbparse/gdata.py)" %}
 {% highlight python linenos %}
 gsym = Struct(
     "leaf_type" / Int16ul, "data" / Switch(
@@ -369,7 +370,7 @@ Notice the `typeind` field! It is the very reference to a record in the TPI stre
 
 Having completed all the preparatory work, I can finally bestow upon you a function that prints out a declaration statement for any global variable. Lo and behold!
 
-<div class="env-header"> print_variable_declaration() Implementation </div>
+{% include code-block-header.html title="print_variable_declaration() Implementation" %}
 {% highlight python linenos %}
 def print_variable_declaration(pdb, vname):
     for s in pdb.STREAM_GSYM.globals:
@@ -387,7 +388,7 @@ def print_variable_declaration(pdb, vname):
 
 This time it will actually work reliably. Check it out!
 
-<div class="env-header"> print_variable_declaration() Demo </div>
+{% include code-block-header.html title="print_variable_declaration() Demo" %}
 {% highlight python linenos %}
 >>> print_variable_declaration(pdb, "g_Message")
 TextHolder g_Message;
@@ -399,7 +400,7 @@ Phew! That was a rather lengthy discourse. My only hope that it left us better p
 
 To begin with, I will demonstrate the simplest (but not always reliable) technique based on undecorating. It works just as it did in the case of global variables. There is nothing new here.
 
-<div class="env-header"> Undecorating a Function Name with pdbparse </div>
+{% include code-block-header.html title="Undecorating a Function Name with pdbparse" %}
 {% highlight python linenos %}
 >>> from pdbparse import undname
 >>> print(*[ ( hex(s.leaf_type), s.name) for s in pdb.STREAM_GSYM.globals\
@@ -412,7 +413,7 @@ To begin with, I will demonstrate the simplest (but not always reliable) techniq
 
 Having taken on the task of retrieving function prototypes, I faced a fundamental philosophical problem :-). We expect a one-to-many “is-a” relationship between some type and instances of this type; moreover, the type is usually identified by its name, whereas the instance may or may not be given a name (an identifier) and this name is independent of that of its type. Where functions are concerned (function pointers and interfaces aside) this rule does not hold, however. Long story short, TPI records for functions do not contain names thereby making it impossible to locate a prototype by simply enumerating TPI records.
 
-<div class="env-header"> Enumerating Prototypes In TPI Stream </div>
+{% include code-block-header.html title="Enumerating Prototypes In TPI Stream" %}
 {% highlight python linenos %}
 for t in pdb.STREAM_TPI.types:
     if pdb.STREAM_TPI.types[t].leaf_type != "LF_PROCEDURE":
@@ -426,7 +427,8 @@ for t in pdb.STREAM_TPI.types:
 
 The script given above can be used to list function prototypes defined in the TPI stream (we limit our discussion to global functions while member and static functions are left for another time) with the following result:
 
-<div class="env-header"> Enumerating Prototypes In TPI Stream: Output </div>
+
+{% include code-block-header.html title="Enumerating Prototypes In TPI Stream: Output" %}
 {% highlight none linenos %}
 0x1343 NEAR_C T_VOID ( T_64PVOID )
 0x135d NEAR_C T_64PVOID (  )
@@ -441,7 +443,7 @@ The script given above can be used to list function prototypes defined in the TP
 
 These prototypes include everything one could ever wish for: calling conventions, types of return values, types of formal parameters. Everything but names! If only a function name were known one could obtain a half-descent output with the help of a little routine like the one below. 
 
-<div class="env-header"> print_function_declaration_from_tpi_by_idx() Implementation </div>
+{% include code-block-header.html title="print_function_declaration_from_tpi_by_idx() Implementation" %}
 {% highlight python linenos %}
 def print_function_declaration_from_tpi_by_idx(pdb, fname, typind):
     if not typind in pdb.STREAM_TPI.types:
@@ -462,7 +464,7 @@ def print_function_declaration_from_tpi_by_idx(pdb, fname, typind):
 
 Having been confronted with a problem of connecting a symbol to its record in a TPI stream for the second time, I knew exactly what to do. Never again will I be unhinged by an apparent lack of connections in a pdb file! Recall the symbols that, despite being present in the global symbol stream, had been ignored by the parser; among them were symbols with the attribute `leaf_type` equal to `0x1125` (`S_PROCREF`, “reference to procedure”). Why do we not parse them?
 
-<div class="env-header"> Adding a Parsing Construct for REFSYM2 (in pdbparse/gdata.py) </div>
+{% include code-block-header.html title="Adding a Parsing Construct for REFSYM2 (in pdbparse/gdata.py)" %}
 {% highlight python linenos %}
 gsym = Struct(
     "leaf_type" / Int16ul, "data" / Switch(
@@ -481,7 +483,7 @@ gsym = Struct(
 
 Applying the newly added construct, we get:
 
-<div class="env-header"> Printing Out a List of References to Procedures in Global Symbols </div>
+{% include code-block-header.html title="Printing Out a List of References to Procedures in Global Symbols" %}
 {% highlight python linenos %}
 >>> print(*[ (s.name, s.iMod, hex(s.offset)) for s in pdb.STREAM_GSYM.globals\
 ...     if s.leaf_type == 0x1125 ], sep="\n")
@@ -492,7 +494,8 @@ Applying the newly added construct, we get:
 
 At that point the situation did not look staggeringly promising. Yes, I found symbols for `store_message()` and the only other function in my source code – `main()`, but none of them referenced TPI steam. All that I could safely deduce was that something pertaining to the function in question resided in a module with index `3`, at an offset of `0x440`. Perplexed, I decided to abandon the current lead and run a file-wide search for strings.
 
-<div class="env-header"> Printing Out a List of References to Procedures in Global Symbols </div>
+
+{% include code-block-header.html title="Printing Out a List of References to Procedures in Global Symbols" %}
 {% highlight shell linenos %}
 ubuntu@ubuntu:~$ find -name "hiworld.pdb.*" -type f -print0 | xargs -0 strings -f | grep store_message
 ./hiworld.pdb.014: store_message
@@ -504,7 +507,7 @@ We already know that identified by the _index = 8_ is a global symbols stream; w
 
 Well, under normal circumstances, 14 is not equal to 3, but it is not the reason to get disheartened. The notion of module and what LLVM documentation calls a "compiland" are, in all probability, one and the same. In this case DBI stream is where one should look for clues. After some pocking around I found this:
 
-<div class="env-header"> An Interesing Header in the DBI Stream </div>
+{% include code-block-header.html title="An Interesing Header in the DBI Stream" %}
 {% highlight python linenos %}
 >>> pdb.STREAM_DBI.DBIExHeaders[2]
 Container(opened=0, range=Container(section=2, offset=1680, size=130, flags=1615859744, module=2, dataCRC=3438623728, relocCRC=1000694769), flags=2, stream=14, symSize=1336, oldLineSize=0, lineSize=504, nSrcFiles=16, offsets=25059472, niSource=56, niCompiler=12, modName=u'C:\\Temp\\hiworld\\hiworld\\x64\\Debug\\hiworld.obj', objName=u'C:\\Temp\\hiworld\\hiworld\\x64\\Debug\\hiworld.obj')
@@ -524,7 +527,7 @@ It seems to have the same structure as the rest of them, with records preceded b
 
 To all appearances, we are about to deal with a 0x0036 bytes-long record of type `S_GPROC32`  (0x1110), otherwise known as “global procedure start.” The matching C++ structure is given below.
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 typedef struct PROCSYM32 {
     unsigned short  reclen;     // Record length
@@ -545,7 +548,7 @@ typedef struct PROCSYM32 {
 
 Do you see what I see? The `typind` field! It appears to be a conventional name for an index in the TPI stream. Armed with this knowledge, I wrote a little python script that, given a name, would find and print out a prototype for a function with this name employing the same technique for parsing data as pdbparse had done. Here it is.
 
-<div class="env-header"> print_function_declaration_from_tpi() Implementation </div>
+{% include code-block-header.html title="print_function_declaration_from_tpi() Implementation" %}
 {% highlight python linenos %}
 import construct as cs
 GlobalProcSym = "PROCSYM32" / cs.Struct(
@@ -582,7 +585,7 @@ def print_function_declaration_from_tpi(pdb, fname):
 
 First it looks for a “reference to procedure” record in the global symbols streams then uses its fields `iMod` and offset to locate a module stream and region of memory within it which is later parsed with construct. Take a look at `print_function_declaration_from_tpi` in action.
 
-<div class="env-header"> print_function_declaration_from_tpi() Demo </div>
+{% include code-block-header.html title="print_function_declaration_from_tpi() Demo" %}
 {% highlight python linenos %}
 >>> print_function_declaration_from_tpi(pdb, "store_message")
 NEAR_C T_ULONG store_message(TextHolder*, const T_WCHAR*)
@@ -590,7 +593,7 @@ NEAR_C T_ULONG store_message(TextHolder*, const T_WCHAR*)
 
 What is wrong with this declaration (apart from the obscure calling convention name)? Nothing is wrong: this is a perfectly acceptable prototype, however one cannot help but feel it could be fairly improved by adding names for formal parameters. The reason why this feeling arises is because names of formal parameters are up for grabs, clearly visible, in the stream dump; one only needs to infer the internal organization. It is easy to spot magic numbers of the form `0x11??` and `0x10??` scattered all over the region between “store_message” and “main” strings (with the latter obviously designating a boundary of the relevant chunk of memory). I have copypasted corresponding definitions for your following-the-line-of-discussion pleasure.
 
-<div class="env-header"> An Excerpt from microsoft-pdb/include/cvinfo.h</div>
+{% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}
 {% highlight c linenos %}
 typedef enum SYM_ENUM_e {
 [...]
@@ -604,7 +607,8 @@ typedef enum SYM_ENUM_e {
 
 So `PROCSYM32` is immediately followed by some extra stack frame information and zero or more register-relative addresses, one for each function parameter and local variable, then goes a list of call sights. I declared “constructs” for each of these entities in case they would be needed in the future (following the definitions found in `cvinfo.h`). Here we go.
 
-<div class="env-header"> Construct Declarations for Parsing FRAMEPROCSYM, REGREL32, CALLSITEINFO </div>
+
+{% include code-block-header.html title="Construct Declarations for Parsing FRAMEPROCSYM, REGREL32, CALLSITEINFO" %}
 {% highlight python linenos %}
 ProcFrameData = cs.Struct(
     "rectyp" / cs.Enum(cs.Int16ul, S_FRAMEPROC = 0x1012, S_CALLSITEINFO = 0x1139, S_REGREL32 = 0x1111), 
@@ -637,7 +641,8 @@ ProcFrameData = cs.Struct(
 
 One cannot determine with certainty whether this list is exhaustive or not, but luckily, there is no need to do so as the “length” field allows for record skipping, which, in turn, is implemented with the help of `RestreamData` class. Thanks to `GreedyRange` a sequence of an arbitrary number of `REGREL32` and `CALLSITEINFO` instances, as many as can fit into the given region of memory, is parsed.
 
-<div class="env-header"> Construct Declaration to Parse a Sequence of FRAMEPROCSYM, REGREL32, CALLSITEINFO </div>
+
+{% include code-block-header.html title="Construct Declaration to Parse a Sequence of FRAMEPROCSYM, REGREL32, CALLSITEINFO" %}
 {% highlight python linenos %}
 ProcFrameEntries = cs.GreedyRange(
     cs.Struct(
@@ -650,7 +655,8 @@ ProcFrameEntries = cs.GreedyRange(
 
 Now we have to “confine” the chunk of stream parsed by `ProcFrameEntries`, i.e determine where the data relating to `store_message()` end and `main()`’s `PROCSYM32` structure begins. It turns out, `pEnd` field (in `PROCSYM32` structure) points to the data immediately following the last instance of `CALLSITEINFO`.  In our case, it is a 32-bit value `0x00060002` whose meaning I have not been able to figure out. Obviously, it is an end-of-something marker(s), what is more, the constant `S_END = 0x0006` is documented in the Microsoft's header; as for `0x0002`, however, I have not found anything meaningful in the current context. But does it even matter?
 
-<div class="env-header"> Construct Declaration to Parse Function-Related Data in Module Stream</div>
+
+{% include code-block-header.html title="Construct Declaration to Parse Function-Related Data in Module Stream" %}
 {% highlight python linenos %}
 GlobalProc = cs.Struct(
     "PROCSYM32" / cs.Struct(
@@ -700,7 +706,7 @@ One more problem must be taken care of before we can write down the final varian
 
 which needs to be flattened for convenience.
 
-<div class="env-header"> A Postprocessing Step</div>
+{% include code-block-header.html title="A Postprocessing Step" %}
 {% highlight python linenos %}
 def flatten_frame_data(cont):
     fd = cs.lib.ListContainer()
@@ -722,7 +728,7 @@ What a list of REGREL32s is it good for? As it was already mentioned, `REGREL32`
 
 Putting it all together, we get:
 
-<div class="env-header"> The Ultimate print_function_declaration() </div>
+{% include code-block-header.html title="The Ultimate print_function_declaration()" %}
 {% highlight python linenos %}
 from pdbparse import tpi
 def print_function_declaration_from_mods_stream_named_params(pdb, fname):
@@ -756,7 +762,8 @@ def print_function_declaration_from_mods_stream_named_params(pdb, fname):
 
 Finally, I may rejoice in admiring the fruits of my labour. Join and behold! He-he.
 
-<div class="env-header"> print_function_declaration() Demo </div>
+
+{% include code-block-header.html title="print_function_declaration() Demo" %}
 {% highlight python linenos %}
 >>> print_function_declaration_from_mods_stream_named_params(pdb,\
 ... "store_message")
