@@ -5,7 +5,7 @@ description: More information about me and this website.
 ---
 
 <figure style="text-align:center">
-  <img src="/resources/images/desparecido_512.png" alt="diff for tpi.resolve_typerefs()">
+  <img src="/resources/images/desparecido_512.jpeg" alt="diff for tpi.resolve_typerefs()">
 </figure> 
 
 ## Credits

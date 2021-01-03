@@ -1,8 +1,9 @@
 // colors
+//TODO: give the colors meaningful names such as "color-accent"
 $color-black: #2B2B2B;
 $color-white: #fcfcfc;
 $color-blue: lighten(#1D408C, 10);
-$color-orange: #FF7F50; //#d16b19;
+$color-accent: #FF7F50; //#d16b19;
 $color-green: #1BA914;
 $color-red: #CF191D;
 
@@ -12,13 +13,13 @@ $color-paginator: darken($color-white, 30);
 $color-paginator-darker: darken($color-paginator, 10);
 $color-paginator-darkest: darken($color-paginator, 40);
 
-$color-orange-dark: darken($color-orange, 15);
+$color-accent-dark: darken($color-accent, 20);
 $color-blue-dark: darken($color-blue, 15);
 $color-green-dark: darken($color-green, 15);
 $color-red-dark: darken($color-red, 15);
 
 $color-info: lighten($color-blue, 45);
-$color-warning: lighten($color-orange, 45);
+$color-warning: lighten($color-accent, 45);
 $color-success: lighten($color-green, 45);
 $color-note: lighten($color-red, 45);
 
@@ -84,6 +85,7 @@ main a:hover,
 //---------------------------FONT
 #footer-quote,
 .env-header,
+.code-header,
 .table th,
 #wrapper > header a,
 #wrapper > header a:visited,
@@ -171,7 +173,7 @@ main {
 //---------------------------FONT
 article > ul li:before,
 article > ol li::before {
-  color: $color-orange;
+  color: $color-accent;
 }
 
 //---------------------------BACKGROUND
@@ -180,19 +182,23 @@ article > ol li::before {
 #main-nav .fancy-nav:after,
 .table th,
 .env-header {
-  background-color: $color-orange;
+  background-color: $color-accent;
+}
+
+.code-header {
+  background-color: $color-blue;
 }
 
 //---------------------------BORDER
 .definition,
 .contact-form input:focus,
 .contact-form textarea:focus {
-  border-color: $color-orange;
+  border-color: $color-accent;
 }
 
 //---------------------------BORDER-LEFT
 article > blockquote {
-  border-left-color: $color-orange;
+  border-left-color: $color-accent;
 }
 
 
@@ -211,7 +217,7 @@ article > h6,
 .warning,
 .link-to-post,
 .link-to-post:visited {
-  color: $color-orange-dark;
+  color: $color-accent-dark;
 }
 
 /*************************************************************************
@@ -243,7 +249,7 @@ article > h6,
 //---------------------------BACKGROUND
 .warning code {
   background-color: $color-warning-dark;
-  border-color: $color-orange-dark;
+  border-color: $color-accent-dark;
 }
 
 /*************************************************************************
@@ -324,11 +330,11 @@ article > h6,
                            MISC-COLOR
 /*************************************************************************/
 .link-to-post:hover {
-  color: darken($color-orange-dark, 5);
+  color: darken($color-accent-dark, 5);
 }
 
 .contact-form input[type="submit"]:hover {
-  background-color: darken($color-orange, 10);
+  background-color: darken($color-accent, 10);
 
 }
 
@@ -338,5 +344,13 @@ article > h6,
 .contact-form input:focus,
 .contact-form textarea:focus {
   outline: none;
-  box-shadow: 0 0 4px $color-orange;
+  box-shadow: 0 0 4px $color-accent;
+}
+
+.maximize-button {
+  border-color: #4A4A4A
+}
+
+.code-header {
+ background-color: $color-accent;
 }

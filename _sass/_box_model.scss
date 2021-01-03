@@ -277,3 +277,30 @@ article ol ol {
   padding-left: $l-h-baseline-half * 3;
 }
 
+.code-header {
+  display: flex;
+  align-items: center;
+  display: table; 
+  width: 100%;
+}
+
+.maximize-button-placeholder {
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.maximize-button {
+  width: 15px;
+  height: 15px;
+  margin-left: 7px;
+  border:2px solid;
+  cursor: pointer;
+}
+
+
+.code-header-title {
+  text-align: right;
+  display:table-cell;
+  padding-right: $l-h-baseline
+}
+

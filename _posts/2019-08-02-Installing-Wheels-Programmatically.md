@@ -16,7 +16,7 @@ First of all, one needs to determine which wheel to choose in accordance with th
 
 Figuring out python which Python implementation you have installed: 
 
-<div class="env-header">Python Implementation</div>
+{% include code-block-header.html title="Python Implementation" %}
 {% highlight python linenos %}
 
 >>> import platform

@@ -16,7 +16,7 @@ So I broke my 64-bit Windows 10 system by accidentally tapping on a wrong menu i
 
 <!-- Custom-size center-aligned image -->
 <figure style="text-align:center">
-  <img src="/resources/images/Boot_menu.png" alt="A boot menu" style="width:682px;height:138px;display:inline-block">
+  <img src="/resources/images/Boot_menu.png" alt="A boot menu" style="max-width:682px;max-height:138px;display:inline-block">
 </figure> 
 
 Result of this unfortunate choice was that Windows failed to boot, displaying a BSOD with `CRITICAL_PROCESS_DIED` bug check code instead. With no recent restore points the task of getting my system back became rather complicated; further complexity arose from the fact that I did not have another computer at my disposal to use as host for kernel-mode debugging. Software-wise my meager setup included a copy of Ubuntu and WinRE (Windows Recovery Environment), that is, most of Windows applications were out of reach. Luckily, the crash dump driver stack remained intact, hence there was a dump file, ready for analysis, on the system hard drive. 

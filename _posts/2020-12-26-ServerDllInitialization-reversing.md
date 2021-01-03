@@ -190,7 +190,7 @@ This being the case, the variety in the quality and detailedness of type inferen
 Having said all that, I would be a remiss not to mention the type information already available in the disassembly listings. Take a look at this Cutter screenshot.
 
 <figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_type_inf_disasm.png" alt="radare2: type inference" style="width:448px;height:523px;display:inline-block">
+  <img src="/resources/images/abyss_partII_type_inf_disasm.png" alt="radare2: type inference" style="max-width:448px;max-height:523px;display:inline-block">
 </figure>
 
 Here are `int64_t` primitive types (appearing, no doubt, as a result of encountering "`mov qword ptr`" instructions) as well as `PWCSTR` and `PUNICODE_STRING` preceding informative (some of them) variable names such as `SourceString` (inferred from function prototypes). Thus, it is unclear how much of the type analysis is due to the decompilers themselves. 
@@ -503,7 +503,7 @@ typedef struct _UNICODE_STRING {
 The same in Cutter:
 
 <figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_UNICODE_STRING_Typedef.png" alt="defining UNICODE_STRING in Cutter" style="width:423px;height:290px;display:inline-block"/>
+  <img src="/resources/images/abyss_partII_UNICODE_STRING_Typedef.png" alt="defining UNICODE_STRING in Cutter" style="max-width:423px;max-height:290px;display:inline-block"/>
 </figure>
 
 Naturally, this strategy will work only if the structure itself is 8-byte aligned. And according to the [documentation](https://docs.microsoft.com/en-us/cpp/build/x64-software-conventions), it will be:
@@ -812,7 +812,7 @@ NtCreateDirectoryObject(&g_BaseSrvNamedObjectDirectory,
 Is my explanation crystal clear? That is alright. No worries. I created a rather confusing illustration to remedy this mishap.
 
 <figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_OBJECT_ATTRIBUTES_stack.png" alt="Stack layout" style="width:563px;height:573px;display:inline-block">
+  <img src="/resources/images/abyss_partII_OBJECT_ATTRIBUTES_stack.png" alt="Stack layout" style="max-width:563px;max-height:573px;display:inline-block">
 </figure> 
 
 {::options parse_block_html="true" /}
