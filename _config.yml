@@ -58,6 +58,11 @@ collections:
 - definitions
 
 
+highlighter_class_name: "highlight"
+#syntax_highlighter_opts seems to have no effect on {% highlight %}
+#syntax_highlighter_opts:
+#  css_class: "{{ highlighter_class_name }}"
+
 ##########################################
 #          Do not change these variables
 ##########################################
