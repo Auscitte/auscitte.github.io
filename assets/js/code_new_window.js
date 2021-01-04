@@ -19,17 +19,17 @@ function maximaize_code_window(el){
        }        
     }	
     
-    var newWindow = window.open("", "_blank");
-    
     //For whatever reason the code below has no effect. Even the title is not being set.
     //So I have no choice but to resort to nasty hacks.
+    //var newWindow = window.open("/pages/code-window.html", "_blank");
     //newWindow.document.title = title;
     //var wrapper = newWindow.document.getElementById("wrapper");
     //wrapper.innerHTML = codefig.innerHTML;
     
+    var newWindow = window.open("", "_blank");
     newWindow.document.write("<html><head><title>");
     newWindow.document.write(title);
-    newWindow.document.write("</title><link rel=\"stylesheet\" href=\"/resources/css/main.css\"/></head><body>");
+    newWindow.document.write("</title><link rel=\"stylesheet\" href=\"/resources/css/main.css\"/></head><body style=\"color:#A9B7C6\">");
     newWindow.document.write("<figure class=\"highlight\" style=\"max-height:100%\">" + codefig.innerHTML + "</figure>");
     newWindow.document.write("</body></html>");
 }
