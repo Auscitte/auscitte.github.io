@@ -464,8 +464,8 @@ Recovered from the stack dump are: rax == 0x2c (at 0xffffbc88eeb10b30), rcx == 0
 {% include code-block-header.html title="cdb: a Fragment of nt!KiSystemCall64" %}
 {% highlight nasm linenos %}
 
-0xfffff800a6bc26ec  sub     rsp,158h		        ; allocating 0x158 bytes for lacal data, rsp -= 0x158
-0xfffff800a6bc26f3  lea     rbp,[rsp+80h]	        ; rbp = ffffbc88`eeb10b80
+0xfffff800a6bc26ec  sub     rsp,158h                  ; allocating 0x158 bytes for lacal data, rsp -= 0x158
+0xfffff800a6bc26f3  lea     rbp,[rsp+80h]             ; rbp = ffffbc88`eeb10b80
 0xfffff800a6bc26fb  mov     qword ptr [rbp+0C0h],rbx  ; rbp + 0xC0 = ffffbc88`eeb10c40, holds 0x00000000c0000034
 0xfffff800a6bc2702  mov     qword ptr [rbp+0C8h],rdi
 0xfffff800a6bc2709  mov     qword ptr [rbp+0D0h],rsi
