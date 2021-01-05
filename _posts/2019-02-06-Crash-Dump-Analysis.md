@@ -39,10 +39,10 @@ hexdump -C -n 1000 MEMORY.dmp
 00000040  80 a5 8b 61 08 b9 ff ff  00 00 00 00 00 00 00 00  |...a............|
 00000050  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
 *
-00000080  20 45 02 2f 02 f8 ff ff  50 41 47 45 50 41 47 45  | E./....PAGEPAGE| <--
-00000090  50 41 47 45 50 41 47 45  50 41 47 45 50 41 47 45  |PAGEPAGEPAGEPAGE| <--
+00000080  20 45 02 2f 02 f8 ff ff  ·50 41 47 45 50 41 47 45·  | E./....·PAGEPAGE·| ¡<--¡
+00000090  ·50 41 47 45 50 41 47 45  50 41 47 45 50 41 47 45·  |·PAGEPAGEPAGEPAGE·| ¡<--¡
 *
-00000340  50 41 47 45 50 41 47 45  00 00 00 00 00 00 00 00  |PAGEPAGE........|
+00000340  ·50 41 47 45 50 41 47 45·  00 00 00 00 00 00 00 00  |·PAGEPAGE·........|
 00000350  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
 *
 00000370  00 00 00 00 00 00 00 00  0f 00 10 00 80 1f 00 00  |................|
@@ -111,7 +111,7 @@ Every crash dump analysis I have encountered so far started with `!analyze -v`. 
 *                                                                             *
 *******************************************************************************
 
-CRITICAL_PROCESS_DIED (ef)
+·CRITICAL_PROCESS_DIED· (ef)
         A critical system process died
 Arguments:
 Arg1: ffffd18c66891580, Process object or thread object
@@ -141,9 +141,9 @@ BUGCHECK_P3: 0
 
 BUGCHECK_P4: 0
 
-PROCESS_NAME:  csrss.exe
+PROCESS_NAME:  ·csrss.exe·
 
-CRITICAL_PROCESS:  csrss.exe
+CRITICAL_PROCESS:  ·csrss.exe·
 
 EXCEPTION_CODE: (Win32) 0x66897700 (1720284928) - <Unable to get error code text>
 
@@ -173,7 +173,7 @@ ffffbc88`eeb10a50 fffff800`a6fb7fd1 : ffffffff`ffffffff ffffbc88`eeb10b80 ffffd1
 ffffbc88`eeb10a90 fffff800`a6bc2b43 : ffffd18c`00000248 ffffd18c`66897700 ffffd18c`66891580 0000014e`4a4055f5 : nt!NtTerminateProcess+0xa9
 ffffbc88`eeb10b00 00007ff9`cbf2a474 : 00007ff6`eb571704 0000014e`4a4053f0 0000014e`4a4055f5 00000000`00000078 : nt!KiSystemServiceCopyEnd+0x13
 00000023`5136f6c8 00007ff6`eb571704 : 0000014e`4a4053f0 0000014e`4a4055f5 00000000`00000078 00000000`00000205 : ntdll!NtTerminateProcess+0x14
-00000023`5136f6d0 00007ff6`eb571301 : 0000014e`4a4055f5 00000000`0000000b 00000000`00000001 00000000`0000000d : csrss!main+0x3d4
+00000023`5136f6d0 00007ff6`eb571301 : 0000014e`4a4055f5 00000000`0000000b 00000000`00000001 00000000`0000000d : ·csrss!main+0x3d4·
 00000023`5136f710 00007ff6`eb571016 : 00000000`00000000 00000000`0000000a 00000000`00000000 00000000`00000000 : csrss!NtProcessStartup_AfterSecurityCookieInitialized+0x2e1
 00000023`5136f7a0 00007ff9`cbf0146f : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : csrss!NtProcessStartup+0x16
 00000023`5136f7d0 00000000`00000000 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x2f
@@ -305,10 +305,10 @@ csrss!main:
 00007ff6`eb5713c3 ff155f0d0000    call    qword ptr [csrss!_imp_NtSetInformationProcess (00007ff6`eb572128)]
 00007ff6`eb5713c9 488bd3          mov     rdx,rbx
 00007ff6`eb5713cc 8bcf            mov     ecx,edi
-00007ff6`eb5713ce ff15440d0000    call    qword ptr [csrss!_imp_CsrServerInitialization (00007ff6`eb572118)]  ;  <-- This func returned an error in eax
+00007ff6`eb5713ce ff15440d0000    call    qword ptr [csrss!_imp_CsrServerInitialization (00007ff6`eb572118)]  ¡; <-- This func returned an error in eax¡
 00007ff6`eb5713d4 8bd8            mov     ebx,eax
 00007ff6`eb5713d6 85c0            test    eax,eax
-00007ff6`eb5713d8 0f881a030000    js      csrss!main+0x3c8 (00007ff6`eb5716f8)
+00007ff6`eb5713d8 0f881a030000    js      ·csrss!main+0x3c8· (00007ff6`eb5716f8)
 
 csrss!main+0xae:
 00007ff6`eb5713de 41b904000000    mov     r9d,4
@@ -326,11 +326,11 @@ csrss!main+0xae:
 00007ff6`eb571419 5f              pop     rdi
 00007ff6`eb57141a c3              ret
 
-csrss!main+0x3c8:
+·csrss!main+0x3c8:·
 00007ff6`eb5716f8 8bd3            mov     edx,ebx
 00007ff6`eb5716fa 4883c9ff        or      rcx,0FFFFFFFFFFFFFFFFh
-00007ff6`eb5716fe ff15340a0000    call    qword ptr [csrss!_imp_NtTerminateProcess (00007ff6`eb572138)]   ; <-- So we ended up here
-00007ff6`eb571704 90              nop
+00007ff6`eb5716fe ff15340a0000    call    qword ptr [csrss!_imp_NtTerminateProcess (00007ff6`eb572138)]   ¡; <-- So we ended up here¡
+·00007ff6`eb571704· 90              nop
 00007ff6`eb571705 e9d4fcffff      jmp     csrss!main+0xae (00007ff6`eb5713de)
 
 {% endhighlight %}
@@ -348,7 +348,7 @@ Where should we move from here? Evidently, _CsrServerInitialization_ returned a 
 {% include code-block-header.html title="cdb: nt!TerminateProcess Disassembly" %}
 {% highlight none linenos %}
 0: kd> dq csrss!_imp_NtTerminateProcess
-00007ff6`eb572138  00007ff9`cbf2a460 00007ff9`cbeff020  <-- reading import table to get to nt!TerminateProcess
+00007ff6`eb572138  ·00007ff9`cbf2a460· 00007ff9`cbeff020  ¡<-- reading import table to get to nt!TerminateProcess¡
 00007ff6`eb572148  00007ff9`cbe97fd0 00007ff9`cbe94770
 00007ff6`eb572158  00007ff9`cbf863e0 00007ff9`cbec17f0
 00007ff6`eb572168  00007ff9`cbf2a940 00007ff9`cbf2ded0
@@ -357,7 +357,7 @@ Where should we move from here? Evidently, _CsrServerInitialization_ returned a 
 00007ff6`eb572198  00000000`00000000 00007ff9`cbf1a950
 00007ff6`eb5721a8  00007ff9`cbf1a9f0 00001450`00001000
 
-0: kd> uf 0x00007ff9cbf2a460
+0: kd> uf ·0x00007ff9cbf2a460·
 ntdll!NtTerminateProcess:
 00007ff9`cbf2a460 4c8bd1          mov     r10,rcx
 00007ff9`cbf2a463 b82c000000      mov     eax,2Ch
@@ -365,7 +365,7 @@ ntdll!NtTerminateProcess:
 00007ff9`cbf2a470 7503            jne     ntdll!NtTerminateProcess+0x15 (00007ff9`cbf2a475)
 
 ntdll!NtTerminateProcess+0x12:
-00007ff9`cbf2a472 0f05            syscall ;it does not save any params performing a syscall straight away
+00007ff9`cbf2a472 0f05            syscall ¡;it does not save any params performing a syscall straight away¡
 00007ff9`cbf2a474 c3              ret
 
 ntdll!NtTerminateProcess+0x15:
@@ -381,24 +381,24 @@ It turns out, _NtTerminateProcess_ does not save parameters (performing a syscal
 
 nt!KiSystemCall64:
 fffff800`a6bc26c0 0f01f8          swapgs
-fffff800`a6bc26c3 654889242510000000 mov   qword ptr gs:[10h],rsp   ; saving user stack rsp
-fffff800`a6bc26cc 65488b2425a8010000 mov   rsp,qword ptr gs:[1A8h]  ; loading kernel stack rsp
-fffff800`a6bc26d5 6a2b            push    2Bh                       ; rsp -= 8, 0x2B can be used as a marker
-fffff800`a6bc26d7 65ff342510000000 push    qword ptr gs:[10h]       ; push user stack rsp, rsp -= 8
-fffff800`a6bc26df 4153            push    r11                       ; rsp -= 8
-fffff800`a6bc26e1 6a33            push    33h                       ; rsp -= 8
-fffff800`a6bc26e3 51              push    rcx                       ; rsp -= 8
+fffff800`a6bc26c3 654889242510000000 mov   qword ptr gs:[10h],rsp   ¡; saving user stack rsp¡
+fffff800`a6bc26cc 65488b2425a8010000 mov   rsp,qword ptr gs:[1A8h]  ¡; loading kernel stack rsp¡
+fffff800`a6bc26d5 6a2b            push    2Bh                       ¡; rsp -= 8, 0x2B can be used as a marker¡
+fffff800`a6bc26d7 65ff342510000000 push    qword ptr gs:[10h]       ¡; push user stack rsp, rsp -= 8¡
+fffff800`a6bc26df 4153            push    r11                       ¡; rsp -= 8¡
+fffff800`a6bc26e1 6a33            push    33h                       ¡; rsp -= 8¡
+fffff800`a6bc26e3 51              push    rcx                       ¡; rsp -= 8¡
 fffff800`a6bc26e4 498bca          mov     rcx,r10
-fffff800`a6bc26e7 4883ec08        sub     rsp,8                     ; rsp -= 8
-fffff800`a6bc26eb 55              push    rbp                       ; rsp -= 8
-fffff800`a6bc26ec 4881ec58010000  sub     rsp,158h                  ; allocating 0x158 bytes for lacal data, rsp -= 0x158
+fffff800`a6bc26e7 4883ec08        sub     rsp,8                     ¡; rsp -= 8¡
+fffff800`a6bc26eb 55              push    rbp                       ¡; rsp -= 8¡
+fffff800`a6bc26ec 4881ec58010000  sub     rsp,158h                  ¡; allocating 0x158 bytes for lacal data, rsp -= 0x158¡
 fffff800`a6bc26f3 488dac2480000000 lea     rbp,[rsp+80h]
-fffff800`a6bc26fb 48899dc0000000  mov     qword ptr [rbp+0C0h],rbx  ; rbx is recorded 
+fffff800`a6bc26fb 48899dc0000000  mov     qword ptr [rbp+0C0h],rbx  ¡; rbx is recorded¡ 
 fffff800`a6bc2702 4889bdc8000000  mov     qword ptr [rbp+0C8h],rdi
 fffff800`a6bc2709 4889b5d0000000  mov     qword ptr [rbp+0D0h],rsi
-fffff800`a6bc2710 488945b0        mov     qword ptr [rbp-50h],rax   ; rax will contain 0x2C and can be used as a marker
+fffff800`a6bc2710 488945b0        mov     qword ptr [rbp-50h],rax   ¡; rax will contain 0x2C and can be used as a marker¡
 fffff800`a6bc2714 48894db8        mov     qword ptr [rbp-48h],rcx
-fffff800`a6bc2718 488955c0        mov     qword ptr [rbp-40h],rdx   ;<-- here rdx is pushed onto stack
+fffff800`a6bc2718 488955c0        mov     qword ptr [rbp-40h],rdx   ¡;<-- here rdx is pushed onto stack¡
 fffff800`a6bc271c 65488b0c2588010000 mov   rcx,qword ptr gs:[188h]
 fffff800`a6bc2725 488b8920020000  mov     rcx,qword ptr [rcx+220h]
 fffff800`a6bc272c 488b8938080000  mov     rcx,qword ptr [rcx+838h]
@@ -416,7 +416,7 @@ The disassember listing looks promising: line **20** clearly indicates that the 
 {% highlight none linenos %}
 0: kd> dq gs:[1A8h]	
 
-002b:00000000`000001a8  ffffbc88`eeb10c90 00000000`00000000
+002b:00000000`000001a8  ·ffffbc88`eeb10c90· 00000000`00000000
 002b:00000000`000001b8  fffff800`a590b910 00000893`3d040106
 002b:00000000`000001c8  00000000`00000000 00000000`00000000
 002b:00000000`000001d8  00000000`00000000 00000000`00000000
@@ -436,12 +436,12 @@ The unused portion of stack begins at `0xffffbc88eeb10c90` and on x64 architectu
 ffffbc88`eeb10c20  00000000`00000000 00000000`00000000
 ffffbc88`eeb10c30  00000000`00000000 00000000`00000000
 ffffbc88`eeb10c40  00000000`c0000034 00000000`0000000a 
-ffffbc88`eeb10c50  0000014e`4a4055f5 00000000`00000000 ; rbp = 0 
-ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ; supposedly, rcx and reserved space
-ffffbc88`eeb10c70  00000000`00000033 00000000`00000246 ; r11 and 33h
-ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ; here are the 2Bh marker and user stack rsp, exactly in the order they were pushed 
-ffffbc88`eeb10c90  ffffbc88`eeb11000                   ; free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses
-                   ------top-------- 
+ffffbc88`eeb10c50  0000014e`4a4055f5 00000000`00000000 ¡; rbp = 0¡ 
+ffffbc88`eeb10c60  00000000`00000000 00007ff9`cbf2a474 ¡; supposedly, rcx and reserved space¡
+ffffbc88`eeb10c70  00000000`00000033 00000000`00000246 ¡; r11 and 33h¡
+ffffbc88`eeb10c80  00000023`5136f6c8 00000000`0000002b ¡; here are the 2Bh marker and user stack rsp, exactly in the order they were pushed¡ 
+·ffffbc88`eeb10c90·  ffffbc88`eeb11000                   ¡; free stack space begins at 0xffffbc88eeb10c90 and "grows" towards smaller addresses¡
+                   ¡------top--------¡ 
 {% endhighlight %}
 
 Paradoxically, the results are as promising as they are inconclusive: on the one hand, we found the "2Bh" marker and user stack rsp, on other hand, the value of rcx did not match the one recorded on stack, and, to top it all off, rbp == 0 seems to be suspicious. Let us not get discouraged. The latter might have been overwritten somewhere down the road and we are, probably, still on the right track. The last instruction traceable in this stack dump is `push rbp` (in line **12**). Then, as a result of memory allocation for local variables, rsp is offset by 0x158: `rsp = 0xffffbc88eeb10c58 - 0x158 = 0xffffbc88eeb10b00` and rbp, ostensibly, is reassigned to point to the new stack frame: `rbp = rsp + 0x80 = ffffbc88eeb10b80`. The further computations are relative to **rbp**.
@@ -455,8 +455,8 @@ ffffbc88`eeb10b40  00000000`c0000034 00000023`5136f218
 ffffbc88`eeb10b50  00007ff9`cbfff4d0 00000000`00000000
 ffffbc88`eeb10b60  00000000`00000246 00000023`514dc000
 ffffbc88`eeb10b70  00000000`00000000 00000000`00000000
-ffffbc88`eeb10b80  00000000`00000000 00000000`00000000
-		   ------rbp-------- 
+·ffffbc88`eeb10b80·  00000000`00000000 00000000`00000000
+		   ¡------rbp--------¡ 
 {% endhighlight %}
 
 Recovered from the stack dump are: rax == 0x2c (at 0xffffbc88eeb10b30), rcx == 0xffffffffffffffff (at 0xffffbc88eeb10b38), rdx == 0xc0000034 (at ffffbc88eeb10b40), and rbx == 0xc0000034 (at 0xffffbc88eeb10c40, see dump #1). Below is the relevant portion of _nt!KiSystemCall64_.
@@ -553,7 +553,7 @@ CSRSRV!CsrServerInitialization+0xe9:
 00007ff9`c81835a6 8bce            mov     ecx,esi
 00007ff9`c81835a8 e833080000      call    CSRSRV!CsrParseServerCommandLine (00007ff9`c8183de0)
 00007ff9`c81835ad 85c0            test    eax,eax
-00007ff9`c81835af 0f8884390000    js      CSRSRV!guard_dispatch_icall_nop+0x2a9 (00007ff9`c8186f39)  ; <--- This is the call that reports an error!
+00007ff9`c81835af 0f8884390000    js      ·CSRSRV!guard_dispatch_icall_nop+0x2a9· (00007ff9`c8186f39)  ¡; <--- This is the call that reports an error!¡
 
 CSRSRV!CsrServerInitialization+0x105:
 00007ff9`c81835b5 8b151de20000    mov     edx,dword ptr [CSRSRV!CsrBaseTag (00007ff9`c81917d8)]
@@ -686,7 +686,7 @@ CSRSRV!guard_dispatch_icall_nop+0x252:
 00007ff9`c8186ee9 e90cc6ffff      jmp     CSRSRV!CsrServerInitialization+0x4a (00007ff9`c81834fa)
 
 CSRSRV!guard_dispatch_icall_nop+0x25e:
-00007ff9`c8186eee c705e8a8000002000000 mov dword ptr [CSRSRV!CsrInitFailReason (00007ff9`c81917e0)],2     ; <-- Look here! Fail reason is saved in a global var!!!
+00007ff9`c8186eee c705e8a8000002000000 mov dword ptr [CSRSRV!CsrInitFailReason (00007ff9`c81917e0)],2     ¡; <-- Look here! Fail reason is saved in a global var!!!¡
 00007ff9`c8186ef8 e9ffc7ffff      jmp     CSRSRV!CsrServerInitialization+0x24c (00007ff9`c81836fc)
 
 CSRSRV!guard_dispatch_icall_nop+0x26d:
@@ -705,8 +705,8 @@ CSRSRV!guard_dispatch_icall_nop+0x29a:
 00007ff9`c8186f2a c705aca8000006000000 mov dword ptr [CSRSRV!CsrInitFailReason (00007ff9`c81917e0)],6
 00007ff9`c8186f34 e9c3c7ffff      jmp     CSRSRV!CsrServerInitialization+0x24c (00007ff9`c81836fc)
 
-CSRSRV!guard_dispatch_icall_nop+0x2a9:
-00007ff9`c8186f39 c7059da8000007000000 mov dword ptr [CSRSRV!CsrInitFailReason (00007ff9`c81917e0)],7     ; <-- We will see that the value is 7; we could only get here by jumping to CSRSRV!guard_dispatch_icall_nop+0x2a9 
+·CSRSRV!guard_dispatch_icall_nop+0x2a9:·
+00007ff9`c8186f39 c7059da8000007000000 mov dword ptr [·CSRSRV!CsrInitFailReason· (00007ff9`c81917e0)],·7·     ¡; <-- We will see that the value is 7; we could only get here by jumping to CSRSRV!guard_dispatch_icall_nop+0x2a9 ¡
 00007ff9`c8186f43 e9b4c7ffff      jmp     CSRSRV!CsrServerInitialization+0x24c (00007ff9`c81836fc)
 
 CSRSRV!guard_dispatch_icall_nop+0x2b8:
@@ -988,23 +988,23 @@ Below is an experpt from _CSRSRV!CsrParseServerCommandLine_ that handles the _Ob
 {% highlight none linenos %}
 [...]
 
-00007ff9`c8183e08 48c7054dd8000000000000 mov qword ptr [CSRSRV!CsrObjectDirectory (00007ff9`c8191660)],0  ;<-- Initialization: CSRSRV!CsrObjectDirectory = 0 
+00007ff9`c8183e08 48c7054dd8000000000000 mov qword ptr [CSRSRV!CsrObjectDirectory (00007ff9`c8191660)],0  ¡;<-- Initialization: CSRSRV!CsrObjectDirectory = 0¡ 
 [...]
 
-CSRSRV!CsrParseServerCommandLine+0x245:                                              ; Handler for "ObjectDirectory" starts here
+CSRSRV!CsrParseServerCommandLine+0x245:                                           ¡; Handler for "ObjectDirectory" starts here¡
 00007ff9c8184025 mov     eax,dword ptr [CSRSRV!SessionId (00007ff9`c8191650)]
-00007ff9c818402b lea     r9,[CSRSRV!`string' (00007ff9`c81897f8)]		     ; "%ws\%ld%s" (obtained by typing "da 00007ff9c81897f8") 
+00007ff9c818402b lea     r9,[CSRSRV!`string' (00007ff9`c81897f8)]                 ¡; "%ws\%ld%s" (obtained by typing "da 00007ff9c81897f8")¡ 
 00007ff9c8184032 mov     edx,100h
 00007ff9c8184037 mov     qword ptr [rsp+30h],r14
 00007ff9c818403c mov     dword ptr [rsp+28h],eax
 00007ff9c8184040 lea     rcx,[rbp]
-00007ff9c8184044 lea     rax,[CSRSRV!`string' (00007ff9`c8189808)]		     ; "\" (obtained by typing "da 00007ff9c8189808")
+00007ff9c8184044 lea     rax,[CSRSRV!`string' (00007ff9`c8189808)]                ¡; "\" (obtained by typing "da 00007ff9c8189808")¡
 00007ff9c818404b mov     qword ptr [rsp+20h],rax
 00007ff9c8184050 lea     r8d,[rdx-1]
 00007ff9c8184054 call    qword ptr [CSRSRV!_imp__snprintf_s (00007ff9`c8189210)]
 00007ff9c818405a mov     eax,dword ptr [CSRSRV!ServiceSessionId (00007ff9`c81917e4)]
 00007ff9c8184060 lea     rcx,[rsp+60h]
-00007ff9c8184065 cmp     dword ptr [CSRSRV!SessionId (00007ff9`c8191650)],eax	     ; Check CSRSRV!SessionId == CSRSRV!ServiceSessionId
+00007ff9c8184065 cmp     dword ptr [CSRSRV!SessionId (00007ff9`c8191650)],eax     ¡; Check CSRSRV!SessionId == CSRSRV!ServiceSessionId¡
 00007ff9c818406b mov     ebx,0C0h
 00007ff9c8184070 je      CSRSRV!CsrParseServerCommandLine+0x4dc (00007ff9`c81842bc)
 
@@ -1020,7 +1020,7 @@ CSRSRV!CsrParseServerCommandLine+0x29a:
 00007ff9c8184092 call    qword ptr [CSRSRV!_imp_RtlAnsiStringToUnicodeString (00007ff9`c8189178)]
 00007ff9c8184098 mov     r12d,eax
 00007ff9c818409b test    eax,eax
-00007ff9c818409d js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3) ;<-- Return an error
+00007ff9c818409d js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3) ¡;<-- Return an error¡
 
 CSRSRV!CsrParseServerCommandLine+0x2c3:
 00007ff9c81840a3 xorps   xmm0,xmm0
@@ -1029,19 +1029,19 @@ CSRSRV!CsrParseServerCommandLine+0x2c3:
 00007ff9c81840b3 mov     qword ptr [rbp-80h],0
 00007ff9c81840bb mov     edx,0F000Fh
 00007ff9c81840c0 mov     dword ptr [rbp-70h],ebx
-00007ff9c81840c3 lea     rcx,[CSRSRV!CsrObjectDirectory (00007ff9`c8191660)] ;<-- Address of  SRSRV!CsrObjectDirectory to be passed to NtCreateDirectoryObject
+00007ff9c81840c3 lea     rcx,[CSRSRV!CsrObjectDirectory (00007ff9`c8191660)] ¡;<-- Address of  SRSRV!CsrObjectDirectory to be passed to NtCreateDirectoryObject¡
 00007ff9c81840ca mov     qword ptr [rbp-78h],r14
 00007ff9c81840ce movdqu  xmmword ptr [rbp-68h],xmm0
 00007ff9c81840d3 call    qword ptr [CSRSRV!_imp_NtCreateDirectoryObject (00007ff9`c8189190)]
 00007ff9c81840d9 mov     r12d,eax
 00007ff9c81840dc test    eax,eax	
-00007ff9c81840de js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
+00007ff9c81840de js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ¡;<-- Return an error¡
 
 CSRSRV!CsrParseServerCommandLine+0x304:
 00007ff9c81840e4 call    CSRSRV!CsrSetDirectorySecurity (00007ff9`c81865f0)
 00007ff9c81840e9 mov     r12d,eax
 00007ff9c81840ec test    eax,eax
-00007ff9c81840ee js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ;<-- Return an error
+00007ff9c81840ee js      CSRSRV!CsrParseServerCommandLine+0x1c3 (00007ff9`c8183fa3)  ¡;<-- Return an error¡
 
 {% endhighlight %}
 
@@ -1051,14 +1051,14 @@ Notice that in the beginning variable `CSRSRV!CsrObjectDirectory` is initialized
 {% highlight none linenos %}
 
 0: kd> dq CSRSRV!CsrDirectoryName
-00007ff9`c8191720  00000000`00120010 0000014e`4a4048e0 <-- UNICODE_STRING returned by AnsiToUnicodeString
+00007ff9`c8191720  00000000`00120010 0000014e`4a4048e0 ¡<-- UNICODE_STRING returned by AnsiToUnicodeString¡
 00007ff9`c8191730  00007df4`f0630730 00000000`00000000
 [...]
 0: kd> du 0000014e`4a4048e0
 0000014e`4a4048e0  "\Windows"
 
 0: kd> dq CSRSRV!CsrObjectDirectory
-00007ff9`c8191660  00000000`0000006c 00000000`00000000 <-- NOT NULL!!!
+00007ff9`c8191660  00000000`0000006c 00000000`00000000 ¡<-- NOT NULL!!!¡
 [...]
 
 {% endhighlight %}
@@ -1258,7 +1258,7 @@ fffff808`a1cb0000 fffff808`a1cd5000   WudfPf.sys
 fffff808`a0a20000 fffff808`a0a3b000   dam.sys
 fffff808`9e230000 fffff808`9e240000   WdBoot.sys
 fffff808`9f550000 fffff808`9f55f000   hwpolicy.sys
-00007ff9`c8160000 00007ff9`c8174000   basesrv.DLL        ;<--- Here it is !!!
+00007ff9`c8160000 00007ff9`c8174000   ·basesrv.DLL·        ¡;<--- Here it is !!!¡
 
 {% endhighlight %}
 
@@ -1474,8 +1474,8 @@ fffff80e`78ab0000 fffff80e`78ad5000   WudfPf.sys
 fffff80e`765e0000 fffff80e`765fb000   dam.sys
 fffff80e`765e0000 fffff80e`765f0000   WdBoot.sys
 fffff80e`76e90000 fffff80e`76e9f000   hwpolicy.sys
-00007ffa`34ff0000 00007ffa`35006000   winsrv.DLL       <--- Look! Windows went ahead and loaded winsrv.DLL
-00007ffa`34fd0000 00007ffa`34fe4000   BASESRV.dll      <--- Something must have loaded BASESRV.dll, but notice the difference in letter case. 
+00007ffa`34ff0000 00007ffa`35006000   ·winsrv.DLL·       ¡<--- Look! Windows went ahead and loaded winsrv.DLL¡
+00007ffa`34fd0000 00007ffa`34fe4000   ·BASESRV.dll·      ¡<--- Something must have loaded BASESRV.dll, but notice the difference in letter case.¡ 
 00007ffa`351f0000 00007ffa`35463000   kernelbase.dll
 
 {% endhighlight %}
@@ -1532,7 +1532,7 @@ PEB at 00000093c6d50000
     CurrentDirectory:  'C:\WINDOWS\system32\'
     WindowTitle:  '< Name not readable >'
     ImageFile:    'C:\WINDOWS\system32\csrss.exe' ;Take a look at the command line below. No basesrv!
-    CommandLine:  '%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=sxssrv,4 ProfileControl=Off MaxRequestThreads=16'
+    CommandLine:  '%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ·ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=sxssrv,4· ProfileControl=Off MaxRequestThreads=16'
 
 {% endhighlight %}
 
