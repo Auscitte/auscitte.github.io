@@ -15,6 +15,10 @@ function custom_escape_colorify_code(){
     
     var cbs = document.getElementsByClassName("{{ site.highlighter_class_name }}");
     for (i = 0; i < cbs.length; i++) {
+
+        //avoid modifying innerHTML unnecesarily for it may cause unexplicable side effects in chrome and edge
+        if (cbs[i].innerHTML.indexOf('·') < 0 && cbs[i].innerHTML.indexOf('¡') < 0)
+            continue;
  
         cbs[i].innerHTML = cbs[i].innerHTML.replace(/·(.*?)·/g, function(m, g){
             return "<span class=\"nt\">" + g + "</span>";
