@@ -41,9 +41,9 @@ Type "help", "copyright", "credits" or "license" for more information.
 {'Svchost', 'Compatibility32', 'MiniDumpAuxiliaryDlls', 'AppCompatFlags', 'UnattendSettings', 'Winlogon', 'WinPE', 'ProfileNotification', 'Tracing', 'SeCEdit', 'Font Drivers', 'ProfileLoader', 'ASR', 'EFS', 'IniFileMapping', 'Windows', 'AeDebug', 'Schedule', 'Font Management', 'WbemPerf'}
 {% endhighlight %}
 
-Among them, notably, is `Winlogon` which includes as its values a set of parameters used to guide _wininit.exe_'s execution so, perhaps, the fact that _wininit.exe_ promptly failed the moment we managed to fix _csrss.exe) (see [part II]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing)) should be not in the least surprising. One can learn about other missing keys [here](https://renenyffenegger.ch/notes/Windows/registry/tree/HKEY_LOCAL_MACHINE/Software/Microsoft/Windows-NT/CurrentVersion/index) and decide on their importance. 
+Among them, notably, is `Winlogon` which includes as its values a set of parameters used to guide _wininit.exe_'s execution so, perhaps, the fact that _wininit.exe_ promptly failed the moment we managed to fix _csrss.exe_) (see [part II]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing)) should be not in the least surprising. One can learn about other missing keys [here](https://renenyffenegger.ch/notes/Windows/registry/tree/HKEY_LOCAL_MACHINE/Software/Microsoft/Windows-NT/CurrentVersion/index) and decide on their importance. 
 
-Other subkeys, such as `ProfileList` (stores SIDs for user accounts) and `Fonts` (lists installed fonts) are present, but contain neither subkeys nor values. 
+Other subkeys, such as `ProfileList` (stores SIDs for user accounts) and `Fonts` (lists installed fonts) are present but contain neither subkeys nor values. 
 
 {% highlight python linenos %}
 >>> set([sk.name() for sk in  cv_brk.subkey("ProfileList").subkeys()])
@@ -69,13 +69,13 @@ In order to ensure a non-volatile hive is always in a recoverable state Windows 
 
 Described above is only a half of the steps involved in saving the registry modifications to disk. In order to explain the rest two integers must be introduced: **_hive sequence number 1_** and **_hive sequence number 2_**, both stored in the hive primary file and maintained equal. Once the “dirty” data is successfully written to one of _.logN_ files, _hive sequence number 1_ is increased by one while _hive sequence 2_ retains its previous value; after that the same data is copied to the _hive primary file_. If Windows crashes mid-operation, mismatch between the two sequence numbers will instruct the OS to transfer the modifications from the _transaction log_ to the _primary file_ upon the next successful boot and update the second _sequence number_. As a result, the hive will end up being in a consistent state.
 
-Next let us take a quick look inside the **_primary file_**. The first concept one should learn about is **_block_**, which can be thought of as an allocation unit and is always 4Kb in size. Should the _primary file_ be extended to accommodate more data the space will always be allocated in multiples of the _block_ size. At the very beginning of the file is a so-called **_base block_**. _Base block_ contains what essentially is a hive header and provides all sort of useful information including, notably, hive _sequence numbers_. 
+Next let us take a quick look inside the **_primary file_**. The first concept one should learn about is **_block_**, which can be thought of as an allocation unit and is always 4Kb in size. Should the _primary file_ be extended to accommodate more data the space will always be allocated in multiples of the _block_ size. At the very beginning of the file is a so-called **_base block_**. _Base block_ contains what essentially is a hive header and provides all sort of useful information including, notably, hive sequence numbers. 
 
-The registry data itself – a hierarchy of keys and associated values – are stored in **_cells_**. Each _cell_ holds one of the following: a key, list of subkeys,  list of values, value, or security descriptor. Recent versions of Windows introduced a new feature called “layered keys”, but since the _HKLM\SOFTWARE_ hive does not seem to support them yet we will not discuss the subject here.
+The registry data itself – a hierarchy of keys and associated values – are stored in **_cells_**. Each _cell_ holds one of the following: a key, list of subkeys,  list of values, value, or security descriptor. Recent versions of Windows introduced a new feature called “layered keys”, but since the _HKLM\SOFTWARE_ hive does not seem to support them yet, we will not discuss the subject here.
 
 The keys hierarchy is constructed by means of _cell indexes_ whereby a **_cell index_** is defined as an offset of the cell into the _primary file_ starting from the first byte that follows the _base block_. Thus, a _cell_ of a parent key contains an index of a “list of subkeys” cell (which, internally, is nothing more than a sequence of subkeys’ cell indexes) and, what will turn out to be of particular interest to us, a _cell_ of each subkey holds a _cell index_ of its parent. 
 
-When a new _cell_ is appended to the hive a container that would hold it, a so-called **_bin_**, is created. The unoccupied space between the end of the _cell_ and the end of the _bin_ (possibly of nonzero size because of the block-granular allocations) is considered free and in the future may be allotted to another cell (provided the cell is small enough to fit therein). The figure below (borrowed from Maxim Suhanov’s [_Windows registry file format specification_](https://github.com/msuhanov/regf/blob/master/Windows%20registry%20file%20format%20specification.md) illustrates the structure that has just been described.
+When a new cell is appended to the hive, a container that would hold it, a so-called **_bin_**, is created. The unoccupied space between the end of the _cell_ and the end of the _bin_ (possibly of nonzero size because of the block-granular allocations) is considered free and in the future may be allotted to another cell (provided the cell is small enough to fit therein). The figure below (borrowed from Maxim Suhanov’s [_Windows registry file format specification_](https://github.com/msuhanov/regf/blob/master/Windows%20registry%20file%20format%20specification.md) illustrates the structure that has just been described.
 
 <figure style="text-align:center">
   <img src="/resources/images/abyss_partIII_registry.png" alt="Strucure of Windows Registry" style="max-width:801px;max-height:293px;display:inline-block"/>
@@ -87,7 +87,7 @@ We’ve got all the information we need for now, but before moving on I would li
 
 ## First Steps
 
-For starters, let us look for one of the missing keys (say, `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\IniFileMapping`) in the hive primary file for it stands to reason that even if the registry tree structure got damaged the block containing `IniFileMapping`’s data might still have survived.
+For starters, let us look for one of the missing keys (say, `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\IniFileMapping`) in the hive primary file for it stands to reason that even if the registry tree structure got damaged, the block containing `IniFileMapping`’s data might still have survived.
 
 {% highlight bash linenos %}
 ~$ strings /media/ubuntu/Data/WinRestore/RegBakup/SOFTWARE | grep IniFileMapping
@@ -126,17 +126,17 @@ To my dismay, it turned out to be  `WOW6432Node\Microsoft\Windows NT\CurrentVers
 set()
 {% endhighlight %}
 
-Quite inexplicable, I found it. At any rate, this simple experiment obviated the necessity of looking for that inconspicuous little nook on the breadths of my hard drive where the registry data might have been retained or backed up. The first place to look was the set of transaction log files; however, feeding the said logs to the _registry-transaction-logs_ utility from Martin Korman’s [**_Regipy_**](https://github.com/mkorman90/regipy) package produced no improvement. For a brief moment I considered examining the NTFS’s _$BitMap_ in order to find clusters that were freed but not yet overwritten or leveraging journaling capabilities of the file system to try and undo the modifications that led to the data loss, but then a better idea came to mind. I recalled that I had _Volume Shadow Copy Service_ enabled!
+Quite inexplicable, I found it. At any rate, this simple experiment obviated the necessity of looking for that inconspicuous little nook on the breadths of my hard drive where the registry data might have been retained or backed up. The first place to look was the set of transaction log files; however, feeding the said logs to the _registry-transaction-logs_ utility from Martin Korman’s [**_Regipy_**](https://github.com/mkorman90/regipy) package produced no improvement. For a brief moment, I considered examining the NTFS’s _$BitMap_ in order to find clusters that were freed but not yet overwritten or leveraging journaling capabilities of the file system to try and undo the modifications that led to the data loss, but then a better idea came to mind. I recalled that I had _Volume Shadow Copy Service_ enabled!
 
 ## VSS to the Rescue!
 
-**_Volume Shadow Snapshots (VSS)_** is a built-in OS technology that enables Windows to create copies (snapshots) of entire hard drive volumes; unless disabled, it is done automatically at regular intervals and every time the system is about to undergo significant changes (e.g. installing an update). By default shadow copies are handled by the **_volsnap.sys_** driver and a **_copy-on-write_** (also known as **_differential copy_**) technique is used. It works as follows. 
+**_Volume Shadow Snapshots (VSS)_** is a built-in OS technology that enables Windows to create copies (snapshots) of entire hard drive volumes; unless disabled, it is done automatically at regular intervals and every time the system is about to undergo significant changes (e.g. installing an update). By default, shadow copies are handled by the **_volsnap.sys_** driver and a **_copy-on-write_** (also known as **_differential copy_**) technique is used. It works as follows. 
 
-Shadow copies are stored each in the form of a single binary file (called “**_store_**”) that resides in the System Volume Information directory and adheres to the _\<store GUID\>\{3808876b-c176-4e48-b7ae-04046e6cc752\}_ naming pattern. Every time a volume snapshot is requested a store to hold it is created, but no data is copied at this point. _Volsnap_, being a “storage filter”-type driver, sits on top of the file system driver and monitors all the write operations. The volume is divided into units of identical length. As to the exact nature of these units, there seem to be a discrepancy in the literature: Joachim Metz [writes](https://github.com/libyal/documentation/blob/master/Paper%20-%20Windowless%20Shadow%20Snapshots.pdf) about 16Kb blocks whereas in _Windows Internals_ the copy-on-write mechanism is described in terms of hard drive sectors. Perhaps, using the generic term “block” would be appropriate in this case and, without loss of generality, this is what we will call a stretch of continuous disk space of minimum size that is handled by VSS, whatever it may be.
+Shadow copies are stored each in the form of a single binary file (called “**_store_**”) that resides in the `System Volume Information` directory and adheres to the _\<store GUID\>\{3808876b-c176-4e48-b7ae-04046e6cc752\}_ naming pattern. Every time a volume snapshot is requested, a store to hold it is created, but no data is copied at this point. _Volsnap_, being a “storage filter”-type driver, sits on top of the file system driver and monitors all the write operations. The volume is divided into units of identical length. As to the exact nature of these units, there seem to be a discrepancy in the literature: Joachim Metz [writes](https://github.com/libyal/documentation/blob/master/Paper%20-%20Windowless%20Shadow%20Snapshots.pdf) about 16Kb blocks whereas in _Windows Internals_ the copy-on-write mechanism is described in terms of hard drive sectors. Perhaps, using the generic term “block” would be appropriate in this case and, without loss of generality, this is what we will call a stretch of continuous disk space of minimum size that is handled by VSS, whatever it may be.
 
-Whenever a block is about to be modified (by a “write” call to NTFS driver) _volsnap_ makes a copy of it and stores the copied “old” block in a “differential area”, i.e in a store for the active snapshot. This way stored are only those blocks that have changed since the time the snapshot was taken. 
+Whenever a block is about to be modified (by a “write” call to NTFS driver), _volsnap_ makes a copy of it and stores the copied “old” block in a “differential area”, i.e in a store for the active snapshot. This way, stored are only those blocks that have changed since the time the snapshot was taken. 
 
-Such an organization while efficient in terms of storage amount used is not resistant to errors. For one, in order to reconstruct the state of the volume at the time a snapshot was taken _volsnap_ needs all the snapshots taken afterwards in addition to the current data on that volume. For example, let there be two snapshots, one taken on the 1<sup>st</sup> of May and another – on the 9<sup>th</sup> of June, in the system; the figure below shows the blocks involved in the reconstruction of the volume as it was on the 1<sup>st</sup> of May.
+Such an organization, while efficient in terms of storage amount used, is not resistant to errors. For one, in order to reconstruct the state of the volume at the time a snapshot was taken _volsnap_ needs all the snapshots taken afterwards in addition to the current data on that volume. For example, let there be two snapshots, one taken on the 1<sup>st</sup> of May and another – on the 9<sup>th</sup> of June, in the system; the figure below shows the blocks involved in the reconstruction of the volume as it was on the 1<sup>st</sup> of May.
 
 <figure style="text-align:center">
   <img src="/resources/images/abyss_partIII_vss.png" alt="VSS Snapshot Reconstruction" style="max-width:812px;max-height:403px;display:inline-block"/>
@@ -182,7 +182,7 @@ total 0
 ~$ cp ~/mnt/file_system/Windows/System32/config/SOFTWARE.LOG2  ~/RecReg_vss15/SOFTWARE.LOG2
 {% endhighlight %}
 
-There are 15 shadow copies in total found on my Windows system hard drive with _vss15_ being the latest one and the one, it stands to reason, we should use. However, attempting to query _HKLM\SOFTWARE_ exposes a little problem. The registry is corrupt! 
+There are 15 shadow copies in total found on my Windows system hard drive with **_vss15_** being the latest one and the one, it stands to reason, we should use. However, attempting to query _HKLM\SOFTWARE_ exposes a little problem. The registry is corrupt! 
 
 {% highlight python linenos %}
 >>> reg = Registry("RecReg_vss15/SOFTWARE")
@@ -209,7 +209,7 @@ So the registry hive is corrupted, which should not have come as a surprise. As 
 
 ## The Scavenger Hunt 
 
-We begin with some basic diagnostics. Let us first make sure there are no errors in the hive’s header and then compare the sequence numbers on the off chance that the the snapshot has been taken mid-way through the hive update and thus the registry can possibly be recovered from the transaction logs.
+We begin with some basic diagnostics. Let us first make sure there are no errors in the hive’s header and then compare the sequence numbers on the off chance that the the snapshot has been taken mid-way through the hive update, and thus the registry can possibly be recovered from the transaction logs.
 
 {% highlight python linenos %}
 >>> reg = Registry("RecReg_vss15/SOFTWARE")
@@ -227,8 +227,8 @@ No such luck! Some other recovery strategy is in order, so here is the plan. Rec
 
 {% include code-block-header.html title="Modifications to Registry/RegistryParse.py" %}
 {% highlight python linenos %}
-#in class HBINBlock(RegistryBlock)
-
+class HBINBlock(RegistryBlock):
+#[...]
 def has_next(self):
     """
     Does another HBINBlock exist after this one?
@@ -247,10 +247,11 @@ def has_next(self):
         return False
 {% endhighlight %}
 
-With this little adjustment in place, we can now write a python script that would parse the hive block by block while assembling the key/values hierarchy. The functionality is divided among three classes:  `BrokenRegistry`, `BrokenKey`, and `BrokenValue`. The main purpose of the latter two is to keep track of the parent/container for the corresponding key/value. `BrokenRegistry` is the class that attempts to load a corrupt registry; among its methods is `_load_broken()` that does the job.
+With this little adjustment in place, we can now write a python script that would read the hive block by block while assembling the key/values hierarchy. The functionality is divided among three classes:  `BrokenRegistry`, `BrokenKey`, and `BrokenValue`. The main purpose of the latter two is to keep track of the parent/container for the corresponding key/value. `BrokenRegistry` is the class that attempts to load a corrupt registry; among its methods is `_load_broken()` that does the job.
 
 {% highlight python linenos %}
-# in class BrokenRegistry:
+class BrokenRegistry:
+#[...]
 def _load_broken(self, reg):
     for hb in reg._regf.hbins():
         for cl in hb.cells():
@@ -267,7 +268,7 @@ def _load_broken(self, reg):
 
 I am not going over the entire script here because, for the most part, it is tedious and mind-numbingly dull, but anyone interested in the details is more than welcome to peruse [the complete version](https://gist.github.com/Auscitte/444a3c27fad5aaaf9b372eac2e37ea0c). 
 
-Now let us try and load the recovered `HKLM\SOFTWARE` registry hive. 
+Now let us try and load the recovered _HKLM\SOFTWARE_ registry hive. 
 
 {% highlight none linenos %}
 >>> reg = load_registry("RecReg_vss15/SOFTWARE", verbose = True, normal_load = False)
@@ -300,7 +301,7 @@ Complete
 [...] 
 {% endhighlight %}
 
-I had to cut down the output considerably in order to preserve readability, but here is some statistics collected while loading the hive: 18322 blocks were skipped in the process, the resulting key/value hierarchy contained, apart from the invariably parentless _ROOT_ key, 480 orphaned keys (i.e. keys with parent indexes pointing to non-existent or damaged entries) and 1199 orphaned values. The file turned out to be severely damaged, with large chunks of data replaced by garbage. For comparison: in a healthy hive (spoiler alert! In the end I did manage to recover one), there were 32972 bins whereas in the damaged one roughly half of that – 16837. 
+I had to cut down the output considerably in order to preserve readability, but here is some statistics collected while loading the hive: 18322 blocks were skipped in the process, the resulting key/value hierarchy contained, apart from the invariably parentless _ROOT_ key, 480 orphaned keys (i.e. keys with parent indexes pointing to non-existent or damaged entries) and 1199 orphaned values. The file turned out to be severely damaged, with large chunks of data replaced by garbage. For comparison: in a healthy hive (spoiler alert! In the end I did manage to recover one), there were 32972 bins, whereas in the damaged one roughly half of that – 16837. 
 
 {% highlight python linenos %}
 >>> s = open("RecReg_vss15/SOFTWARE", "rb").read()
@@ -323,11 +324,11 @@ Obviously, it is a no-go.
 
 Well, only some shadow copies do; quite possibly, this is the only case in history where an older shadow copy proved to be (almost) error-free while the most recent one did not. 
 
-Given that we are dealing with the differential “copy-on-write” technique (where preceding copies are constructed from their successors) and the most recent file is in shreds and tatters is it worth checking the older shadow copies? It depends. In this case it did and here is why. As we already know, at regular intervals, primary registry files undergo a process of reorganization during which layout of the file may change to such a degree that it will no longer occupy the same set of hard drive sectors, hence there is a chance that the older copy of the registry does not overlap the damaged region of storage space. The exact time when the last reorganization was performed can be established by consulting the “last reorganized timestamp” field stored in hive’s base block so the plan goes as follows: proceeding backwards in time, check each shadow copy of the HKLM\SOFTWARE hive such that its reorganization timestamp differs from that of the last copy checked and see how many orphaned keys and values it contains.  The goal is to find a relatively recent copy with minimum orphans.
+Given that we are dealing with the differential “copy-on-write” technique (where preceding copies are constructed from their successors) and the most recent file is in shreds and tatters, is it worth checking the older shadow copies? It depends. In this case it did and here is why. As we already know, at regular intervals, primary registry files undergo a process of reorganization during which layout of the file may change to such a degree that it will no longer occupy the same set of hard drive sectors, hence there is a chance that the older copy of the registry does not overlap the damaged region of storage space. The exact time when the last reorganization was performed can be established by consulting the “last reorganized timestamp” field stored in hive’s base block so the plan goes as follows: proceeding backwards in time, check each shadow copy of the _HKLM\SOFTWARE_ hive such that its reorganization timestamp differs from that of the last copy checked and see how many orphaned keys and values it contains.  The goal is to find a relatively recent copy with minimum orphans.
 
-I will not bore you, my ever-patient reader, with a step-by-step account of the procedure, but I think I found the perfect candidate: the hive copy is located in _vss8_, it is not too old and contains no orphans. No orphans. 
+I will not bore you, my ever-patient reader, with a step-by-step account of the procedure, but I think I found the perfect candidate: the hive copy is located in **_vss8_**, it is not too old and contains no orphans. No orphans. 
 
-Of course, it would have been immensely interesting to check my hypothesis as to how this hive copy managed to emerge unscathed from the perils of dealing with boot-time utilities. It could have been accomplished by examining how many and which hard drive sectors _vss8_ and _vss15_ had in common had I done so right away. Unfortunately, I did not create a byte-by-byte backup copy of the volume and since it had been months before I brought myself to finish this write-up the shadow copies were long gone by then. At least, let us assess the quality of our find. 
+Of course, it would have been immensely interesting to check my hypothesis as to how this hive copy managed to emerge unscathed from the perils of dealing with boot-time utilities. It could have been accomplished by examining how many and which hard drive sectors _vss8_ and _vss15_ had in common had I done so right away. Unfortunately, I did not create a "byte-by-byte" backup copy of the volume and, since it had been months before I brought myself to finish this write-up, the shadow copies were long gone by then. At least, let us assess the quality of our find. 
 
 ||**vss8**|**vss15**|
 |print(reg._regf.modification_timestamp()) |1601-01-01 00:00:00|1601-01-01 00:00:00|
@@ -337,7 +338,7 @@ Of course, it would have been immensely interesting to check my hypothesis as to
 
 As far as the dual-logging scheme goes, the _vss8_ hive is in a consistent state and, overall, it appears to be error-free, with the exception of warnings about data of unknown types, the types identified by the magic numbers 0xd, 0x11, 0x12. The latter is of no great concern for all the values with unknown types reside in `\Microsoft\Device Association Framework\Store\` subkey and seem to be associated with Bluetooth devices paired with my laptop. I can reestablish the pairings anytime. 
   
-Nowadays Windows keeps track of modifications on per-key basis while the field “global last modified timestamp” remains uninitialized. Still, the reorganization timestamp gives us a rough idea of how old the hive in question is (to be more precise, the higher boundary for its age). The incident leading to creation of the _Abyss series_ took place on the 7<sup>th</sup> of November, 2018 and _vss8_ copy of the hive was reorganized on the 23<sup>rd</sup> of October, same year. Not too bad. However, substituting _vss8_ copy for the problematic hive is not feasible due to the fact that during the two weeks preceding the incident a number of important updates (of which there would remain no trace in the registry) were installed. One might suggest copying missing keys and values from the current hive to the _vss8_ copy as a viable solution and this is precisely what I was going to do. Alas! The treacherous system had one more surprise in store for me. 
+Nowadays Windows keeps track of modifications on per-key basis while the field _Global Last Modified Timestamp_ remains uninitialized. Still, the reorganization timestamp gives us a rough idea of how old the hive in question is (to be more precise, the higher boundary for its age). The incident leading to creation of the _Abyss_ series took place on the 7<sup>th</sup> of November, 2018 and _vss8_ copy of the hive was reorganized on the 23<sup>rd</sup> of October, same year. Not too bad. However, substituting _vss8_ copy for the problematic hive is not feasible due to the fact that during the two weeks preceding the incident a number of important updates (of which there would remain no trace in the registry) were installed. One might suggest copying missing keys and values from the current hive to the _vss8_ copy as a viable solution and this is precisely what I was going to do. Alas! The treacherous system had one more surprise in store for me. 
 
 ## The Mysterious Hive
 
@@ -412,18 +413,18 @@ On the other hand, the corrections done by the boot loader and configuration man
 
 > The Boot type and Boot recover fields are used for in-memory hive recovery management by a boot loader and a kernel, they are not written to a disk in most cases (when Clustering factor is 8, these fields may be written to a disk, but they have no meaning there).
 
-In short, the literature review is inconclusive :-). _Sfc.exe_ is another possible candidate. I guess, at this point we will never know, but one thing is clear: since the _HKLM\SOFTWARE_ hive on the unbootable system contains phony data we cannot simply copy the missing keys and values from there to the “clean” (but outdated) registry stored as a part of the _vss8_ shadow copy.
+In short, the literature review is inconclusive :-). _Sfc.exe_ is another possible candidate. I guess, at this point we will never know, but one thing is clear: since the _HKLM\SOFTWARE_ hive on the unbootable system contains phony data, we cannot simply copy the missing keys and values from there to the “clean” (but outdated) registry stored as a part of the _vss8_ shadow copy.
 
 ## The Chosen Registry Recovery Technique
 
 To recap, listed below are versions of HKLM\SOFWARE hive we managed (with considerable effort) to procure:
 * _vss8_ shadow copy which is error-free, but outdated.
-* _vss15_ shadow copy, a copy with half of the keys and values missing (the retained keys and values, however, we can trust); it is newer, but still somewhat outdated.
+* _vss15_ shadow copy, a severely damaged copy with half of the keys and values missing (the retained keys and values, however, we can trust); it is newer, but still somewhat outdated.
 * current and the most recent version of the hive; it contains bogus keys that should not be there.
 
 We will call them **_input hive_**, and **_primary_** and **_supplementary sources of patches_** respectively;  then the proposed algorithm for hive recovery goes as follows:
 1. Remove all the values of unknown type from the _input hive_ (an optional step that will simplify troubleshooting in case Windows rejects the generated hive).
-2. From the _primary source of patches_, extract keys and values such that their “pathsake” counterparts are not present in the _input hive_.
+2. From the _primary source of patches_, extract keys and values such that their “pathsake” counterparts are <ins>not</ins> present in the _input hive_.
 3. Enumerating all the entries in the list obtained in step **2**, check if there is a newer version of the key or value in the _supplementary source of patches_ and, if found, substitute it for the older entry. Modification timestamps for the values are taken to be that of the encompassing keys.
 4. Remove all the keys named “SessionsPending” from the list. These are the artifacts of past installation sequences.
 5. The list entries are exported in _Windows Registry Editor_ format and then combined into a single .reg file which, in turn, is imported into the _input hive_ using _regedit32_.
@@ -431,17 +432,17 @@ We will call them **_input hive_**, and **_primary_** and **_supplementary sourc
 
 Notice that only the keys already present in the _vss8_ copy are considered in step **3**, hence no invalid data from the current registry can make its way into the new “clean” hive. 
 
-This algorithm is implemented in a form of a python script that can be found here. In this script, there are classes `AddKeyMod`,  `AddValueMod`, `ChangeValueMod`, `DeleteValueMod` that represent various modifications to the registry and a function called `bring_up_to_standard()` that generates the said modifications while attempting the “equalize” data in two hives (see step **2**).
+This algorithm is implemented in a form of a python script that can be found [here](https://gist.github.com/Auscitte/444a3c27fad5aaaf9b372eac2e37ea0c). In this script, there are classes `AddKeyMod`,  `AddValueMod`, `ChangeValueMod`, `DeleteValueMod` that represent various modifications to the registry and a function called `bring_up_to_standard()` that generates the said modifications while attempting the “equalize” data in two hives (see step **2**).
 
-This technique is far from ideal for reasons so numerous that one does not know whence to begin. For one, all the keys and values removed since the time vss8 copy was modified last will be retained. Then, a number of registry entries added between that time and the _vss15_’s modification timestamp may be lost due to _vss15_ copy being severely damaged, not to mention the data added after vss15 snapshot was taken. 
+This technique is far from ideal for reasons so numerous that one does not know whence to begin. For one, all the keys and values Windows removed since the time _vss8_ copy was modified last will be retained. Then, a number of registry entries added between that time and the _vss15_’s modification timestamp may be lost due to _vss15_ copy being severely damaged, not to mention the data added after vss15 snapshot was taken. 
 
 The imperfections were too many to count, but, nevertheless, it was worth trying before coming up with a more complicated algorithm. And it worked! Never in my life was I this happy to see Windows’ logon screen! 
 
-All that remained to be done is “poking around” various system services and installed applications for the purpose of making sure everything ran correctly, but the OS had something else in mind. In horror, I watched Windows eagerly plunge into its favorite occupation – updating itself – as installing updates unto unstable system could have rendered it unbootable once again.  It did not happen and I am glad to report that no registry-related errors have been encountered since that fix.
+All that remained to be done was “poking around” various system services and installed applications for the purpose of making sure everything ran correctly, but the OS had something else in mind. In horror, I watched Windows eagerly plunge into its favorite occupation – updating itself – as installing updates unto unstable system could have rendered it unbootable once again.  It did not happen and I am glad to report that no registry-related errors have been encountered after that fix.
 
 ## Conclusion 
 
-We have come a long way in our understanding of the problem on our hands from the vague “Your PC ran into a problem and needs to restart. Stop code: CRITICAL_PROCESS_DIED.” BSOD message. The first step presented no challenge at all: simple bugcheck analysis gave us the name of the deceased: csrss.exe, but thence the road lying before us proved more demanding. Struggling through the tangles and knots of traces left on the stack by system calls, we reached the exact location where the error code was stored and, after that, keeping our eyes pealed for the execution artifacts in memory, we analyzed csrss’ initialization procedure instruction by instruction so as to identify the offending function. _ServerDllInitialization()_ from _basesrv.dll_ turned out to be our culprit. Then came the long nights of ceaseless and tireless reverse-engineering with many lonely hours spent by blue-saturated LED candlelight. Eventually, pristine wholesome-looking C-code emerged illuminating the dark forces behind blue screens of death and we could clearly see the only system call that could have possibly returned the error code, _NtOpenKey()_. Thus, the name of _basesrv.dll_ was cleared and the real villain stood before us – a corrupt _HKLM\SOFTWARE_ hive, a monster of the Registry world. And so we embarked on a quest to the land of Shadow Copies in search of a righteous _SOFTWARE_ hive, but none could we find. Remains of great hives, dust and bone, were collected to conjure up the One and Only Illustrious Spirit of True Registry, that is to say, we had to combine data from multiple incomplete shadow copies of the hive in order to obtain a version that would work. Finally, the evil spell was broken and Window came back to life. If this heck of a journey does not feel like an odyssey to you I do not know what else could impress you, my battle-scarred reader.
+We have come a long way in our understanding of the problem on our hands from the vague “Your PC ran into a problem and needs to restart. Stop code: CRITICAL_PROCESS_DIED.” BSOD message. The first step presented no challenge at all: simple bugcheck analysis gave us the name of the deceased: _csrss.exe_, but thence the road lying before us proved more demanding. Struggling through the tangles and knots of traces left on the stack by system calls, we reached the exact location where the error code was stored and, after that, keeping our eyes pealed for the execution artifacts in memory, we analyzed csrss’ initialization procedure instruction by instruction so as to identify the offending function. _ServerDllInitialization()_ from _basesrv.dll_ turned out to be our culprit. Then came the long nights of ceaseless and tireless reverse-engineering with many lonely hours spent by blue-saturated LED candlelight. Eventually, pristine wholesome-looking C-code emerged illuminating the dark forces behind blue screens of death and we could clearly see the only system call that could have possibly returned the error code, _NtOpenKey()_. Thus, the glorious name of _basesrv.dll_ was cleared and the real villain stood before us – a corrupt _HKLM\SOFTWARE_ hive, a monster of the Registry world. And so we embarked on a quest to the land of Shadow Copies in search of a righteous _SOFTWARE_ hive, but none could we find. Remains of great hives, dust and bone, were collected to conjure up the One and Only Illustrious Spirit of True Registry, that is to say, we had to combine data from multiple incomplete shadow copies of the hive in order to obtain a version that would work. Finally, the evil spell was broken and Window came back to life. If this heck of a journey does not feel like an odyssey to you I do not know what else could impress you, my battle-scarred reader.
 
 In short, the entire exercise at diagnostics took an awful lot of time; I went to great lengths to figure  out what the problem actually was and am bored stiff reiterating (over and over again) the steps it took to get there every time a need to put something together for an introduction or conclusion in this never-ending multipart series arises. 
 
