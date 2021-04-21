@@ -77,7 +77,7 @@ else:
 
 {% endhighlight %}
 
-Using these simple code snippets, one can easily put together an installation script tailored to the task at hand. 
+Using these simple code snippets, one can easily put together an installation script tailored to the task one is faced with. 
 
 ## References
 

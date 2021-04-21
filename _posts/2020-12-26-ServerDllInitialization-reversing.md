@@ -69,7 +69,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 '0x40'
 {% endhighlight %}
 
-Another relevant to the problem at hand piece of information is the **_import table_**.
+Another relevant to the problem on our hands piece of information is the **_import table_**.
 
 {% highlight python linenos %}
 
@@ -1329,7 +1329,7 @@ typedef struct _S {
 } S;
 {% endhighlight %}
 
-Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem at hand and, as such, did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list. The head of this list is recorded in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
+Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem on our hands and, as such, did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list. The head of this list is recorded in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
 
 Next come the global variables and declarations for subroutines.
 
@@ -1497,7 +1497,7 @@ EXCEPTION_CODE: (NTSTATUS) 0xcc97d700 - <Unable to get error code text>
 
 Certain frivolity in tone and turn of phrase aside, this peace reads more like a book chapter rather than an entertaining blog post. Oh, well, my only hope is that I did not bore you to extinction, my patient reader, with this rather lengthy discourse.
 
-The post started with the premise that, based on the prior analysis, it was known that **_basesrv.dll_**’s initialization routine returned an error code signifying that some named entity had not been located. At first, we attempted to utilize decompilation tools available in a reverse-engineering framework called radare2 in order to generate the source code for **_basesrv::ServerDllInitialiation()_** in a high-level programming language, but were unable to obtain code suitable for further analysis. Automatic decompilation yielding no usable results, reverse-engineering by hand (with an aid of **_radare2_** framework) was the only remaining option. Once the function (and two subroutines it called) was reverse-engineered and subsequently written down in C, by the process of elimination, we could quickly identify the faulty call. It turned out, that one of _basesrsv_’s functions was trying to open a non-existent registry key. In the course of an experiment designed to confirm this hypothesis the underlying (and more fundamental in nature) problem was discovered: the registry was corrupted and, consequently, in need of repair which is what the third part in this treatise is devoted to.
+The post started with the premise that, based on the prior analysis, it was known that **_basesrv.dll_**’s initialization routine returned an error code signifying that some named entity had not been located. At first, we attempted to utilize decompilation tools available in a reverse-engineering framework called radare2 in order to generate the source code for **_basesrv::ServerDllInitialiation()_** in a high-level programming language, but were unable to obtain code suitable for further analysis. Automatic decompilation yielding no usable results, reverse-engineering by hand (with an aid of **_radare2_** framework) was the only remaining option. Once the function (and two subroutines it called) was reverse-engineered and subsequently written down in C, by the process of elimination, we could quickly identify the faulty call. It turned out, that one of _basesrsv_’s functions was trying to open a non-existent registry key. In the course of an experiment designed to confirm this hypothesis the underlying (and more fundamental in nature) problem was discovered: the registry was corrupted and, consequently, in need of repair which is what [the third part]({{ site.baseurl }}/systems%20blog/Registry-Recovery) in this treatise is devoted to.
 
 As usual, I am publishing all the reverse-engineered code presented here in the (compact) form of a [single file](https://gist.github.com/Auscitte/ed807fd604d7b907ebd949628c6df725). 
 

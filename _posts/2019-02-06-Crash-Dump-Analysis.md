@@ -1531,7 +1531,7 @@ PEB at 00000093c6d50000
     ProcessParameters: 0000024837403300
     CurrentDirectory:  'C:\WINDOWS\system32\'
     WindowTitle:  '< Name not readable >'
-    ImageFile:    'C:\WINDOWS\system32\csrss.exe' ;Take a look at the command line below. No basesrv!
+    ImageFile:    'C:\WINDOWS\system32\csrss.exe' ¡;Take a look at the command line below. No basesrv!¡
     CommandLine:  '%SystemRoot%\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,20480,768 Windows=On SubSystemType=Windows ·ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=sxssrv,4· ProfileControl=Off MaxRequestThreads=16'
 
 {% endhighlight %}
@@ -1544,7 +1544,7 @@ In this article I walked you, my dear reader, though the steps taken to diagnose
 
 In the end, we were able to localize the issue to a particular function. It turns out, the function _ServerDllInitialization()_ exported by _basesrv.dll_ returns `STATUS_OBJECT_NAME_NOT_FOUND` error code thereby causing a critical Windows process, _csrss.exe_, to terminate.
 
-Further investigation is left for parts [2]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing) and 3.
+Further investigation is left for parts [2]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing) and [3]({{ site.baseurl }}/systems%20blog/Registry-Recovery).
 
 Until then, stay healthy, stay happy, and stay proficient.
 

@@ -314,3 +314,10 @@ article ol ol {
   padding-right: $l-h-baseline
 }
 
+td:not([class]) {
+  padding: 10px;
+}
+
+table:not([class]) {
+  margin-bottom: $l-h-baseline;
+}
