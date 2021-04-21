@@ -424,7 +424,7 @@ To recap, listed below are versions of HKLM\SOFWARE hive we managed (with consid
 
 We will call them **_input hive_**, and **_primary_** and **_supplementary sources of patches_** respectively;  then the proposed algorithm for hive recovery goes as follows:
 1. Remove all the values of unknown type from the _input hive_ (an optional step that will simplify troubleshooting in case Windows rejects the generated hive).
-2. From the _primary source of patches_, extract keys and values such that their “pathsake” counterparts are <ins>not</ins> present in the _input hive_.
+2. From the _primary source of patches_, extract keys and values such that their counterparts-“pathsakes” are <ins>not</ins> present in the _input hive_.
 3. Enumerating all the entries in the list obtained in step **2**, check if there is a newer version of the key or value in the _supplementary source of patches_ and, if found, substitute it for the older entry. Modification timestamps for the values are taken to be that of the encompassing keys.
 4. Remove all the keys named “SessionsPending” from the list. These are the artifacts of past installation sequences.
 5. The list entries are exported in _Windows Registry Editor_ format and then combined into a single .reg file which, in turn, is imported into the _input hive_ using _regedit32_.
