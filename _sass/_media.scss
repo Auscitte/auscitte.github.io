@@ -33,20 +33,25 @@
   main {
     padding: $l-h-baseline-double * 3 0;
   }
-
-
 }
 
-@media only screen and (max-width: $media-query-max * 1.4 ) {
+@media only screen and (max-width: $media-query-med-2) {
+  //on such a small screen tables are just too cumbersome to read, treat them more or less like figures
+  td:not([class]) {
+    font-size: $f-s-extra-small;
+  }
+}
+
+@media only screen and (max-width: $media-query-max * 1.4 /*dirty hack; boundary computed exactly does not work as well as this one*/) {
  main {
     padding-left: $l-h-baseline-double;
     padding-right: $l-h-baseline-double;
     padding-top: $l-h-baseline-double;
     padding-bottom: $l-h-baseline-double;
   }
-  
-  table:not([class]) {
-    max-width: $media-query-max;
+ 
+  td:not([class]) {
+   word-break: break-all;
   }
 }  
 
