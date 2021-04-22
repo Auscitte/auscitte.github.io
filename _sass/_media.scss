@@ -37,11 +37,24 @@
 
 }
 
+@media only screen and (max-width: $media-query-max * 1.4 ) {
+ main {
+    padding-left: $l-h-baseline-double;
+    padding-right: $l-h-baseline-double;
+    padding-top: $l-h-baseline-double;
+    padding-bottom: $l-h-baseline-double;
+  }
+  
+  table:not([class]) {
+    max-width: $media-query-max;
+  }
+}  
+
 @media only screen and (min-width: $media-query-max) {
   html {
     font-size: $f-s-desktop;
   }
-
+  
 }
 
 @media only screen and (min-width: $media-query-max-extra) {

@@ -137,22 +137,22 @@ main {
                   MARGIN-LEFT_RIGHT AND ROUND CORNERS
 /*************************************************************************/
 main {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: $l-h-content-container-margin;
+  margin-right: $l-h-content-container-margin;
   border-radius: 25px;
 }
 
 nav {
   border-radius: 15px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: $l-h-content-container-margin;
+  margin-right: $l-h-content-container-margin;
   margin-top: 10px;
 }
 
 #footer-main {
   border-radius: 15px 15px 15px 15px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: $l-h-content-container-margin;
+  margin-right: $l-h-content-container-margin;
 }
 
 /*************************************************************************
@@ -314,6 +314,8 @@ article ol ol {
   padding-right: $l-h-baseline
 }
 
+//settings for markdown tables
+//code blocks are also made of tables :), but with class names assigned to them 
 td:not([class]) {
   padding: 10px;
 }
