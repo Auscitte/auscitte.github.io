@@ -24,9 +24,7 @@ For starters, we must acquire a “reference to a procedure” symbol correspond
 
 Below is an excerpt from hexdump of a _module stream_ that corresponds to the compiland defining `ServerDllImplementation()` in Windows’s _basesrv.dll_. 
 
-<figure style="text-align:center">
-  <img src="/resources/images/fragmods-dump.png" alt="hexdump of a module stream">
-</figure>
+{% include fill-centered-fig.html filename="fragmods-dump.png" alt="hexdump of a module stream" %}
 
 It should look awfully familiar to those who have gotten themselves acquainted with the post I mentioned. Observe the `S_GPROC32  =  0x1110` (defined in [cvinfo.h](https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h)) that signifies the beginning of `PROCSYM32` structure and the end-of-symbol-block marker _0x00060002_.  `PROCSYM32` could be used to locate the first code segment. Take a look.
 

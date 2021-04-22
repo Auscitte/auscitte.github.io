@@ -115,17 +115,11 @@ Now that the exact tools used have been established to ensure reproducibility of
 
 Right off the bat, pdbparse threw an exception when trying to load _hiworld.pdb_. Evidently, enum `leaf_type` has some of the constants missing and when these unaccounted for values are parsed, in place of the expected `contruct.Enum`, a regular integer is created. It certainly looks this way, however, I chose not to look into the problem this time opting out for a temporary fix (a hack if you will) instead. Below are screenshots of terminal screen after running `diff --color -y -W 100 /usr/local/lib/python3.8/dist-packages/pdbparse/tpi.py tpi.py`
 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_upd_diff3.png" alt="diff for tpi.resolve_typerefs()">
-</figure> 
+{% include fill-centered-fig.html filename="pdbparse_upd_diff3.png" alt="diff for tpi.resolve_typerefs()" %}
 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_upd_diff2.png" alt="diff for tpi.merge_fwdrefs()">
-</figure>
- 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_upd_diff1.png" alt="diff for tpi.rename_2_7()">
-</figure> 
+{% include fill-centered-fig.html filename="pdbparse_upd_diff2.png" alt="diff for tpi.merge_fwdrefs()" %}
+
+{% include fill-centered-fig.html filename="pdbparse_upd_diff1.png" alt="diff for tpi.rename_2_7()" %}
 
 Not a workaround, but a minor fix for an operator precedence issue:
 
@@ -364,9 +358,7 @@ gsym = Struct(
 
 Notice the `typeind` field! It is the very reference to a record in the TPI stream this entire endeavor was aiming to obtain. A small modification (shown below) to the function responsible for post-processing of symbols list, necessary now that symbols of different types had different sets of attributes, and I was good to go. 
 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_upd_diff4.png" alt="diff for gdata.merge_structures()">
-</figure>
+{% include fill-centered-fig.html filename="pdbparse_upd_diff4.png" alt="diff for gdata.merge_structures()" %}
 
 Having completed all the preparatory work, I can finally bestow upon you a function that prints out a declaration statement for any global variable. Lo and behold!
 
@@ -515,16 +507,12 @@ Container(opened=0, range=Container(section=2, offset=1680, size=130, flags=1615
 
 I guess the module number (3 vs. 2) discrepancy is due to the fact that iMod counts modules starting from one whereas `DBIExHeaders` indices are zero-based... What should really capture our attention here is the attribute `stream` with a value of `14`. Why do we not peer inside the mysterious 14th stream?
 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_hexdump14_1.png" alt="hexdump of hiworld.pdb.014">
-</figure> 
+{% include fill-centered-fig.html filename="pdbparse_hexdump14_1.png" alt="hexdump of hiworld.pdb.014" %}
 
 It seems to have the same structure as the rest of them, with records preceded by their lengths and types. Look! There is `S_OBJNAME = 0x1101` (“path to object file name”) magic number from Microsoft’s `cvinfo.h` and what follows, indeed, looks very much like a path to an object file. Let us scroll down to the offset specified by `message_store`’s “global” symbol (`0x440`).
 
-<figure style="text-align:center">
-  <img src="/resources/images/pdbparse_hexdump14_2.png" alt="hexdump of hiworld.pdb.014">
-</figure> 
-
+{% include fill-centered-fig.html filename="pdbparse_hexdump14_2.png" alt="hexdump of hiworld.pdb.014" %}
+ 
 To all appearances, we are about to deal with a 0x0036 bytes-long record of type `S_GPROC32`  (0x1110), otherwise known as “global procedure start.” The matching C++ structure is given below.
 
 {% include code-block-header.html title="An Excerpt from microsoft-pdb/include/cvinfo.h" %}

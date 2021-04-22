@@ -77,9 +77,7 @@ The keys hierarchy is constructed by means of _cell indexes_ whereby a **_cell i
 
 When a new cell is appended to the hive, a container that would hold it, a so-called **_bin_**, is created. The unoccupied space between the end of the _cell_ and the end of the _bin_ (possibly of nonzero size because of the block-granular allocations) is considered free and in the future may be allotted to another cell (provided the cell is small enough to fit therein). The figure below (borrowed from Maxim Suhanov’s [_Windows registry file format specification_](https://github.com/msuhanov/regf/blob/master/Windows%20registry%20file%20format%20specification.md) illustrates the structure that has just been described.
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partIII_registry.png" alt="Strucure of Windows Registry" style="max-width:801px;max-height:293px;display:inline-block"/>
-</figure> 
+{% include orig-size-centered-fig.html filename="abyss_partIII_registry.png" alt="Structure of Windows Registry" %}
 
 When a key or a value is deleted, the underlying cell is freed and combined with adjacent free cells, if any. Adjacent free bins may also be joined together to increase the size of available free space and this is not the only space optimization employed by Windows: additionally, hives are  “reorganized” at regular intervals. The precise nature and periodicity of **_reorganization_** depends on the system settings, but by default, the primary file gets defragmented once every two weeks. The process of defragmentation is what you would expect it to be: it compacts the data thereby removing all the unused space. One can figure out when a hive was last reorganized by consulting the _Last Reorganized Timestamp_ field stored in the base block.
 
@@ -138,9 +136,7 @@ Whenever a block is about to be modified (by a “write” call to NTFS driver),
 
 Such an organization, while efficient in terms of storage amount used, is not resistant to errors. For one, in order to reconstruct the state of the volume at the time a snapshot was taken _volsnap_ needs all the snapshots taken afterwards in addition to the current data on that volume. For example, let there be two snapshots, one taken on the 1<sup>st</sup> of May and another – on the 9<sup>th</sup> of June, in the system; the figure below shows the blocks involved in the reconstruction of the volume as it was on the 1<sup>st</sup> of May.
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partIII_vss.png" alt="VSS Snapshot Reconstruction" style="max-width:812px;max-height:403px;display:inline-block"/>
-</figure> 
+{% include orig-size-centered-fig.html filename="abyss_partIII_vss.png" alt="VSS Snapshot Reconstruction" %}
 
 Should data in any of the two stores or current state of the volume be lost, the snapshot will not be recoverable. Additionally, normal operation of the copy-on-write mechanism is sustained assuming that all the modifications to the file system are made by the _Windows storage stack_, a stack of drivers that every read/write request passes through. What if a volume gets written to by something other than the instance of Windows OS hosting _Volume Shadow Copy Service_, say, by another operating system booted from a flash drive? All the shadow copies on the said volume may end up broken.
 

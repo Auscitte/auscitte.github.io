@@ -4,9 +4,7 @@ title: About
 description: More information about me and this website.
 ---
 
-<figure style="text-align:center">
-  <img src="/resources/images/desparecido_512.jpeg" alt="diff for tpi.resolve_typerefs()">
-</figure> 
+{% include fill-centered-fig.html filename="desparecido_512.jpeg" alt="This is a rendition of me." %}
 
 ## Credits
 * Theme is based on [Aliquam](https://github.com/grrinchas/aliquam)

@@ -189,9 +189,7 @@ This being the case, the variety in the quality and detailedness of type inferen
 
 Having said all that, I would be a remiss not to mention the type information already available in the disassembly listings. Take a look at this Cutter screenshot.
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_type_inf_disasm.png" alt="radare2: type inference" style="max-width:448px;max-height:523px;display:inline-block">
-</figure>
+{% include orig-size-centered-fig.html filename="abyss_partII_type_inf_disasm.png" alt="radare2: type inference" %}
 
 Here are `int64_t` primitive types (appearing, no doubt, as a result of encountering "`mov qword ptr`" instructions) as well as `PWCSTR` and `PUNICODE_STRING` preceding informative (some of them) variable names such as `SourceString` (inferred from function prototypes). Thus, it is unclear how much of the type analysis is due to the decompilers themselves. 
 
@@ -248,9 +246,7 @@ Provided a calling convention is known (which is the case for 64-bit machine cod
 
 Again, to give credit where credit is due, I am including a screenshot of the Cutter’s disassembly window showing off the excellent “function call resolution”-related work done by **_radare2_** itself. 
  
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_func_prot_disasm.png" alt="radare2: type inference">
-</figure>
+{% include fill-centered-fig.html filename="abyss_partII_func_prot_disasm.png" alt="radare2: type inference" %}
 
 Copy-pasted below, for your convenience, are the declarations for Windows Native API’s [RtlInitUnicodeString()](http://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/rtl/string/initunicodestring.htm) and [NtQuerySystemInformation()](http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FSystem%20Information%2FNtQuerySystemInformation.html).
 
@@ -310,9 +306,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 The TPI stream contains no records! It means: no function prototypes, no types for local or global variables. The implication of this discovery is that neither function prototypes, nor types for local or global variables will be available to the decompiler. Just as well, in case of references to local variables, there is none to speak of. On the screenshot below is a hexdump of the relevant potion of the module stream corresponding to the compiland where _ServerDllInitialization()_ is defined (again, I refer the reader to [this post]({{ site.baseurl }}/systems%20blog/Func-Prototypes-With-Pdbparse) if this sentence sounds mysterious). 
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_pdbparsehexdump.png" alt="excerpt from basesrv.pdb hexdump">
-</figure>
+{% include fill-centered-fig.html filename="abyss_partII_pdbparsehexdump.png" alt="excerpt from basesrv.pdb hexdump" %}
 
 Debug info about the types of function arguments and local variables as well as their location on the stack is packed in a series of `REGREL32` structures, each identifiable by the `S_REGREL32 = 0x1111` magic number. However, `S_GPROC32 = 0x1110` (global procedure start) and `S_SEPCODE = 0x1132` (fragments of separated code) are the only markers (among those pertaining to _ServerDllInitialization()_) that show up in the hexdump.
 
@@ -344,9 +338,7 @@ $ find -name "ntdll.pdb.*" -type f -print0 | xargs -0 strings -f | grep RtlInitU
 
 Obtaining a hexdump of _ntdll.pdb.226_ with the help of command `hexdump -C ntdll.pdb.226` and stripping out irrelevant portions of the output, one gets
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_nddlldump.png" alt="excerpt from basesrv.pdb hexdump">
-</figure>
+{% include fill-centered-fig.html filename="abyss_partII_nddlldump.png" alt="excerpt from basesrv.pdb hexdump" %}
 
 We seem to have stumbled upon the global symbol stream for the only `leaf_type` markers present in the vicinity of the “RtlInitUnicodeString” string are that of public symbols (`S_PUB32 = 0x110e`). 
 
@@ -502,18 +494,14 @@ typedef struct _UNICODE_STRING {
 
 The same in Cutter:
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_UNICODE_STRING_Typedef.png" alt="defining UNICODE_STRING in Cutter" style="max-width:423px;max-height:290px;display:inline-block"/>
-</figure>
+{% include orig-size-centered-fig.html filename="abyss_partII_UNICODE_STRING_Typedef.png" alt="defining UNICODE_STRING in Cutter" %}
 
 Naturally, this strategy will work only if the structure itself is 8-byte aligned. And according to the [documentation](https://docs.microsoft.com/en-us/cpp/build/x64-software-conventions), it will be:
 >The alignment of the beginning of a structure or a union is the maximum alignment of any individual member. Each member within the structure or union must be placed at its proper alignment [...] which may require implicit internal padding, depending on the previous member.
 
 One should keep the alignment in mind when mapping structures to regions of memory and, in particular, when using Cutter’s “Link Type to Address” feature. For example, on the screenshot below two padding arrays were added to ensure `RTL_QUERY_REGISTRY_TABLE::Name` and  `RTL_QUERY_REGISTRY_TABLE::DefaultData` are properly aligned and the structure overall is mapped correctly.
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_type_to_address.png" alt="Using Cutter's Link Type to Address feature" />
-</figure>
+{% include fill-centered-fig.html filename="abyss_partII_type_to_address.png" alt="Using Cutter's Link Type to Address feature" %}
 
 ### Undocumented Functions and Structures
 
@@ -812,9 +800,7 @@ NtCreateDirectoryObject(&g_BaseSrvNamedObjectDirectory,
 
 Is my explanation crystal clear? That is alright. No worries. I created a rather confusing illustration to remedy this mishap.
 
-<figure style="text-align:center">
-  <img src="/resources/images/abyss_partII_OBJECT_ATTRIBUTES_stack.png" alt="Stack layout" style="max-width:563px;max-height:573px;display:inline-block">
-</figure> 
+{% include orig-size-centered-fig.html filename="abyss_partII_OBJECT_ATTRIBUTES_stack.png" alt="Stack layout" %}
 
 {::options parse_block_html="true" /}
 <div class="info alert">
