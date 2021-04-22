@@ -125,11 +125,10 @@ GlobalProc = cs.Struct(
 
 So far we managed to obtain offsets in PE sections and, depending on your goals, it might be sufficient. However, if one needs to know functions’ boundaries at all, it is likely as a part of some debugging/binary analysis effort and in this case addresses in the debugee’s address space are of much greater use. To achieve this, I retrieve dll’s preferred base address with the help of [pefile](https://github.com/erocarrera/pefile) library and use section’s virtual address to compute its address in the address space of the process being debugged. 
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**INFO:** Of course, the DLL might be loaded at an address different from its preferred base address; to account for this case one can easily modify the script so that it accepts an additional parameter. 
- </div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+Of course, the DLL might be loaded at an address different from its preferred base address; to account for this case one can easily modify the script so that it accepts an additional parameter. 
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 Putting it all together, we get:
 

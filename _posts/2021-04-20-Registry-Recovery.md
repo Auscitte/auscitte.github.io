@@ -142,11 +142,11 @@ Should data in any of the two stores or current state of the volume be lost, the
 
 Keeping everything just said in mind and our expectations low, let us check out the shadow copies supposedly present on the system volume. There are a few options available, when it comes to extracting data from VSS stores under Linux: [dfir_ntfs](https://github.com/msuhanov/dfir_ntfs) (NTFS parser with shadow copies support by Maxim Suhanov), [libvshadow](https://github.com/libyal/libvshadow) (VSS format parser by Joachim Metz), and digital forensics and incidence response kits with VSS support. Of these, I tried **_libvshadow_** only so this is what we are going to use.
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**NOTE:** Since _libvshadow_ enables its users to retrieve the files residing on a shadow copy with the help of FUSE, software (and, in particular, a library) that provides an interface for creating file systems in user space, we begin by installing _libfuse_: `sudo apt install libfuse-dev`.
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+Since _libvshadow_ enables its users to retrieve the files residing on a shadow copy with the help of FUSE, software (and, in particular, a library) that provides an interface for creating file systems in user space, we begin by installing _libfuse_: `sudo apt install libfuse-dev`.
+{% endcapture %}
+{% include note-box.html text=alert-text %}
+
 
 Here is how one extracts _HKLM\SOFTWARE_ hive from the latest shadow copy:
 
@@ -338,11 +338,10 @@ Nowadays Windows keeps track of modifications on per-key basis while the field _
 
 ## The Mysterious Hive
 
-{::options parse_block_html="true" /}
-<div class="info alert">
+{% capture alert-text %}
 Although the last statement might have come across as theatrical and, certainly, more dramatic than it was called for, there is something unusual about the unbootable system’s registry.
-</div>
-{::options parse_block_html="false" /}
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 Trying to bring the said plan to fruition, I set to analyze the keys from the current registry on the unbootable laptop that were absent in the _vss8_ shadow copy and, for that reason, presumed to be added after the 23<sup>rd</sup> of December (after all, it was advisable to determine how profound the changes introduced by the latest updates were). Among them, there were keys with modification timestamps earlier (sometimes as early as six months before) than the _vss8_ copy’s reorganization timestamp. Here is one I chanced upon.
 

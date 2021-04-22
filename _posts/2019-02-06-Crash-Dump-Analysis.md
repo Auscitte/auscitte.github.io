@@ -54,19 +54,17 @@ hexdump -C -n 1000 MEMORY.dmp
 
 Two values for the `DumpType` field were introduced to represent files of this new format – 5 (full dump) and 6 (kernel dump). As of today, anyone faced with the same problem would be out of luck since the new file format is not fully supported in the aforementioned forensic software. 
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**INFO:** On a side note, a little [tweaking to the registry](https://support.microsoft.com/en-us/help/254649/overview-of-memory-dump-file-options-for-windows) will produce a so-called “full bitmap dump” (DumpType = 5) rekall recognizes. All it takes is setting the value of `CrashDumpEnabled` to 1 in `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\CrashControl` and rebooting the system twice. During the first boot relevant (or all, in the case of a full dump) memory pages are written to the Windows pagefile in response to the critical error; it is the second boot that will create the crash dump file itself. Recall (and volatility) is rather a versatile framework, thus significant insights into the core of many issues can be gained by employing it and the reader is encouraged to do the experiment in his/hers spare time. However, in this case I will be using another tool, WinDbg, chosen for the added convenience of a disassembler. 
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+On a side note, a little [tweaking to the registry](https://support.microsoft.com/en-us/help/254649/overview-of-memory-dump-file-options-for-windows) will produce a so-called “full bitmap dump” (DumpType = 5) rekall recognizes. All it takes is setting the value of `CrashDumpEnabled` to 1 in `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\CrashControl` and rebooting the system twice. During the first boot relevant (or all, in the case of a full dump) memory pages are written to the Windows pagefile in response to the critical error; it is the second boot that will create the crash dump file itself. Recall (and volatility) is rather a versatile framework, thus significant insights into the core of many issues can be gained by employing it and the reader is encouraged to do the experiment in his/hers spare time. However, in this case I will be using another tool, WinDbg, chosen for the added convenience of a disassembler. 
+{% endcapture %}
+{% include info-box.html text=alert-text %}
 
 This is when _WinDbg_ came to the rescue! Part of the Debugging Tool for Windows suit, is **cdb**, a stand-alone command line debugger that runs perfectly well under WinRE.  I happened to have WDK installed on my computer, so procuring a copy of _cdb.exe_ was not a problem. Now to the debugging symbols. Having run into technical issues trying to set up an internet connection under WinRE, I opted out to use yet another utility written in python – **pdbparse**. _Pdbparse_ installs _symchk.py_ script which could be used for the purpose. 
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**INFO:** **_pdbparse_** relies on another library called **_construct_**, but not the newest version of it: **_construct_** has undergone major modifications interface-wise thus rendering itself incompatible with some of the software that was using it. There is a corresponding restriction specified in the **_pdbparse's_** setup script, given that the latest version is pulled from the repository. If not, just preinstall **_construct_** manually by typing `sudo pip install 'construct<2.7.0'`
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+**_pdbparse_** relies on another library called **_construct_**, but not the newest version of it: **_construct_** has undergone major modifications interface-wise thus rendering itself incompatible with some of the software that was using it. There is a corresponding restriction specified in the **_pdbparse's_** setup script, given that the latest version is pulled from the repository. If not, just preinstall **_construct_** manually by typing `sudo pip install 'construct<2.7.0'`
+{% endcapture %}
+{% include info-box.html text=alert-text %}
 
 ## Analysis
 
@@ -334,11 +332,10 @@ csrss!main+0xae:
 
 _Csrss!main_'s entry point is at `0x00007ff6eb571330`. A simple offset calculation `0x00007ff6eb571330 + 0x3d4 = 0x7ff6eb571704` leads us to an address of the instruction following the call to _NtTerminateProcess_ in line **60**. How did we get here? Obviuosly, by executing a statement like this one: `if (error_occured) TeminateProcess(...)`  _Cbd_ disassember automatically creates labels for targets of jump instructions, so all that needs to be done is to go up until such a label is encountered (_csrss!main+0x3c8_ in line **57**) and find all the jump instructions referencing it. In this case, there is only one -- in line **39**. Quick examination of the the nearby code allows us to determine the only possible scenario: _CsrServerInitialization_ returns with an error code and causes _csrss_ to terminate itself.  Voilà! Easy!
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**INFO:** A little side note on Windows call convention is called for here. On x64 platform the first four parameters are passed in _rcx_, _rdx_, _r8_ and _r9_ respectively (the rest are pushed onto stack), and return value - in _rax_. 
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+A little side note on Windows call convention is called for here. On x64 platform the first four parameters are passed in _rcx_, _rdx_, _r8_ and _r9_ respectively (the rest are pushed onto stack), and return value - in _rax_. 
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 Where should we move from here? Evidently, _CsrServerInitialization_ returned a non-zero error code that was later passed to _NtTerminateProcess_ as a parameter via the chain of registers: eax&#8594;ebx&#8594;edx. Let us see what _NtTerminateProcess_ does with it. 
 
@@ -1261,19 +1258,17 @@ fffff808`9f550000 fffff808`9f55f000   hwpolicy.sys
 
 **Lm** will give us a rather lenthy list of both loaded and unloaded modules; scroll down to the very end in order to find the latter. What do we see here? The only module found in the command line is **_basesrv_**. Take a note of the letter case: "basesrv" part is in lower case, exactly as it was specified in the command line; letters forming the ".DLL" postfix, on the other hand, are all capital, the reason being that the extension was added later, most likely, by _LdrLoadDll()_. There is a fairly good chance that _basesrv's DllInitializtion()_ routine returns an error thereby causing _csrss'_ untimely death. How do we check this hypothesis? Easy! Simply remove the `ServerDll=basesrv,1` substring from _csrss'_ command line and check if anything changes. 
 
-{::options parse_block_html="true" /}
-<div class="warning alert">
-**WARNING:** The reason the boot process terminates in a crash is to prevent potential data loss associated with running a faulty system. Tampering with Windows configuration in such an intrusive manner is asking for trouble, therefore, one is most insistently advised to backup his data before engaging in this dubious activity. In fact, the best thing to do is clone the entire sytem volume using Linux "dd" command, provided you have extra space to store the image.
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+The reason the boot process terminates in a crash is to prevent potential data loss associated with running a faulty system. Tampering with Windows configuration in such an intrusive manner is asking for trouble, therefore, one is most insistently advised to backup his data before engaging in this dubious activity. In fact, the best thing to do is clone the entire sytem volume using Linux "dd" command, provided you have extra space to store the image.
+{% endcapture %}
+{% include warning-box.html text=alert-text %}
 
 A quick research online will locate the place from where _csrss'_ command line is loaded: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems\Windows`. All that remains to be done now is editing the registry value and rebooting the system (twice).
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**INFO** In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM\System, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in WinRE's HKLM hive. 
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+In order to edit the registry use **_regedit_**'s "Load Hive" feature. Launch regedit, select HKEY_LOCAL_MACHINE, click on File&#8594;Load hive, navigate to `%SystemRoot%\System32\config\` and choose the file containing the hive you need to edit (HKLM\System, for example, can be found in `%SystemRoot%\System32\config\SYSTEM`). The content of this file will be loaded as a key in WinRE's HKLM hive. 
+{% endcapture %}
+{% include info-box.html text=alert-text %}
 
 This time I got to congratulate myself on a fruitful application of my deductive skills as a BSOD presenting a new, different, message appeared on my screen. It read: "If you contact a support person, give them this info. Stop code: c0000142." It worked! To complete the picture, here is the _WinDbg_ crash dump analysis. 
 

@@ -11,11 +11,10 @@ tags:
     - decompilation
 ---
 
-{::options parse_block_html="true" /}
-<div class="warning alert">
-**WARNING:** The work presented in this post was done before the Rizin fork of radare2.
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+The work presented in this post was done before the Rizin fork of radare2.
+{% endcapture %}
+{% include warning-box.html text=alert-text %}
 
 Assuming that you, my faithful reader, have clicked on the _“part 2”_ link without even a moment of hesitation or delay, immediately upon completing the [first installment]({{ site.baseurl }}/systems%20blog/Crash-Dump-Analysis), and all the information provided therein is still fresh in your memory, I will omit lengthy introductions and cut straight to the chase.
 
@@ -35,13 +34,12 @@ and, among them, system calls that potentially may return `STATUS_OBJECT_NAME_NO
 
 Given the **_ServerDllInitialization_** function’s formidable length of nearly 4 kilobytes, working with code in some high-level language appeared substantially more convenient than fishing for heads and tails in an endless stream of assembly instructions. Unfortunately, **_cdb_** did not come equipped with a decompiler hence it was time to check if the benevolent world of open-source had something to offer; and to nobody’s surprise, they had. Right off the bat, I discovered three tools able to understand Windows PE format and translate assembler instructions into C-like pseudo-code: NSA’s [ghidra](https://www.nsa.gov/resources/everyone/ghidra/), Avast’s [retdec](https://retdec.com/), and [radare2](https://rada.re/n/radare2.html) (quite likely, there are more). **_Radare2_** with its built-in decompiler and a sizable selection of third-party plugins, including, notably, [r2ghidra-dec](https://github.com/radareorg/r2ghidra) and [retdec-r2plugin](https://github.com/avast/retdec-r2plugin), that ported the functionality of their namesake decompilers, seemed like it would allow to kill all the birds with one stone so it was the framework I had chosen.
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**NOTE:** Here I should point out that these were imaginary, inanimate, “figurative” birds; “no birds were harmed in the course of this reverse engineering endeavor”, one feels compelled to add to avoid sounding disturbingly barbaric these days.
+{% capture alert-text %}
+Here I should point out that these were imaginary, inanimate, “figurative” birds; “no birds were harmed in the course of this reverse engineering endeavor”, one feels compelled to add to avoid sounding disturbingly barbaric these days.
  
 As an [actual] side note, to save the trouble we, of course, could limit our efforts to analyzing React OS code, but this decision puts us on a dangerous path. As I already warned, caution must be exercised when using React OS source code in place of the actual disassembled Windows binaries for one cannot expect  exact imitation of system’s behavior. In our case React OS has been designed to be compatible with a different version of Windows and, thus, in the same setting in may behave differently. It may not even crash! Still, we will use it for reference. 
-</div>
-{::options parse_block_html="false" /}
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 ### Meet The Subject
 
@@ -126,11 +124,10 @@ Listed below are the outputs produced by several decompilers (though I added sno
 * [basesrv::ServerDllInitialiation()](https://gist.github.com/Auscitte/b943fc12f577e2ff396575344c140c69) by a built-in decompiler (invoked using **_pdc_** command)
 * [basesrv::ServerDllInitialiation()](https://gist.github.com/Auscitte/e8fa2fa5f5ed61f4ef272aadb05f98db) by [r2snow](https://github.com/radareorg/radare2-extras/tree/master/r2snowman) ([snowman](https://derevenets.com/))
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**NOTE:** Well, I am not completely correct in classifying the aforementioned tools as decompilers: for starters, none of the generated code will actually compile; then, the outcome ranges from nothing more than syntactic sugar for assembler to almost fully-fledged C programs (save some definitions, headers and other minor details). In fact, what I call a built-in decompiler officially goes by the name of “pseudo disassembler in C-like syntax”. 
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+Well, I am not completely correct in classifying the aforementioned tools as decompilers: for starters, none of the generated code will actually compile; then, the outcome ranges from nothing more than syntactic sugar for assembler to almost fully-fledged C programs (save some definitions, headers and other minor details). In fact, what I call a built-in decompiler officially goes by the name of “pseudo disassembler in C-like syntax”.
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 The code resulting from decompilation by these tools, none being perfect, varied greatly in style and quality with no good way of choosing the best candidate. It just goes to show that there is no generic algorithm for (or general consensus on, for that matter) recovering high-level language constructs from assembly code. Take the execution flow, for example. A long series of Windows Native API calls with subsequent return value checks (and, upon encountering an error, a _ret_ instruction following the mandatory resource clean-up), not counting accompanying bells and whistles, constitutes the bare-bones of **_ServerDllInitialiation()_**. In order to represent this type of program organization, built-in decompiler, **_r2snow_**, and **_r2dec_** use the traditional _“if + goto”_ combo, while **_r2ghidra-dec_** translates the same structure into nested iffs. Yet another solution is chosen by **_retdec-r2plugin_**: it consists in putting all the clean-up handling code into separate functions that are used in conjunctions with the error-checking if statements, with the end result of producing an easier-to-follow but slightly incorrect (macros should have been utilized instead) code.
 
@@ -605,11 +602,10 @@ What is interesting about this statement is the way it translates into assembler
 0x1800016de mov     qword ptr [rbp+74h],100004h
 {% endhighlight %}
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**NOTE:** Observe that the array initialization is intertwined with other, unrelated, instructions that are omitted from the listing.  I remember notions of variable “span” and “live time” from the book called “Code Complete” by Steve McConnell where one is advised to keep all the statements referencing a local variable as close together as possible thereby minimizing the said quantities. Assembler instructions operating on the registers do not adhere to this principle; on the contrary, one often finds instructions generated for multiple high-level statements mixed together.  It is usually the result of one optimization or another. For example, load instructions could potentially take many CPU cycles to execute (unless the value is already in cache) and, therefore, are placed some distance away from the instructions that need the loaded value. Unfortunately, it makes the assembly listings difficult to read. 
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+Observe that the array initialization is intertwined with other, unrelated, instructions that are omitted from the listing.  I remember notions of variable “span” and “live time” from the book called “Code Complete” by Steve McConnell where one is advised to keep all the statements referencing a local variable as close together as possible thereby minimizing the said quantities. Assembler instructions operating on the registers do not adhere to this principle; on the contrary, one often finds instructions generated for multiple high-level statements mixed together.  It is usually the result of one optimization or another. For example, load instructions could potentially take many CPU cycles to execute (unless the value is already in cache) and, therefore, are placed some distance away from the instructions that need the loaded value. Unfortunately, it makes the assembly listings difficult to read.
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 The instruction sequence should be pretty much self-explanatory apart from, possibly, the last `mov` where an 8-byte qword is recorded on stack instead of the 4-byte initializers hitherto used. Encompassed in this 64-bit value (`0x0000000000100004`) are the last two initializers: `0x100004` and `0x0` – that are “laid out” in memory correctly thanks to the Little Indian architecture. Of course, it is impossible to distinguish between an array of values and four separate variables (the latter 64-bit in length) until one decompiles the loop that uses the data. 
 
@@ -802,11 +798,10 @@ Is my explanation crystal clear? That is alright. No worries. I created a rather
 
 {% include orig-size-centered-fig.html filename="abyss_partII_OBJECT_ATTRIBUTES_stack.png" alt="Stack layout" %}
 
-{::options parse_block_html="true" /}
-<div class="info alert">
-**NOTE:** People in the habit of reading books might be haunted by a vague, yet disturbing, feeling that something is inherently wrong with this picture. Because it is. Contrary to the established practice, the zero address is placed at the bottom (rather than the “conventional” top) of canvas.
-</div>
-{::options parse_block_html="false" /}
+{% capture alert-text %}
+People in the habit of reading books might be haunted by a vague, yet disturbing, feeling that something is inherently wrong with this picture. Because it is. Contrary to the established practice, the zero address is placed at the bottom (rather than the “conventional” top) of canvas.
+{% endcapture %}
+{% include note-box.html text=alert-text %}
 
 Here is another example that, one hopes, deserves our attention.
 
