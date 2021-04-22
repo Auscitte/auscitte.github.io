@@ -46,7 +46,7 @@ contact_PK:
 ##########################################
 
 # Set maximum posts per page
-paginate: 5
+paginate: 10
 
 # Set permalink
 permalink: /:categories/:title
