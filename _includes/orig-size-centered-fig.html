@@ -1,0 +1,5 @@
+{% assign wd = site.data.resolutions[include.filename].width %}
+{% assign ht = site.data.resolutions[include.filename].height %}
+<figure style="text-align:center">
+  <img src="/resources/images/{{ include.filename }}" alt="{{ include.alt }}" style="max-width:{{ wd }}px;max-height:{{ ht }}px;display:inline-block">
+</figure>
