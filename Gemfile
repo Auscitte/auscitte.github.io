@@ -1,6 +1,8 @@
 source "https://rubygems.org"
 
-gem 'github-pages', group: :jekyll_plugins
+gem 'jekyll', group: :jekyll_plugins
 gem 'jekyll-sitemap'
 gem 'jekyll-paginate'
-
+gem "kramdown-parser-gfm"
+gem  'dimensions'
+gem 'yaml'

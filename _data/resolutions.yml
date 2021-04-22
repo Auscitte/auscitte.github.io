@@ -1,6 +1,85 @@
+---
 Boot_menu.png:
-    width: 682
-    height: 138
+  width: 682
+  height: 138
 abyss_partII_OBJECT_ATTRIBUTES_stack.png:
-    width: 563
-    height: 573
+  width: 563
+  height: 573
+abyss_partIII_registry.png:
+  width: 801
+  height: 393
+abyss_partIII_vss.png:
+  width: 812
+  height: 403
+quotes.svg:
+  width: 
+  height: 
+pdbparse_upd_diff4.png:
+  width: 1089
+  height: 257
+pdbparse_upd_diff3.png:
+  width: 846
+  height: 293
+pdbparse_upd_diff2.png:
+  width: 850
+  height: 95
+pdbparse_upd_diff1.png:
+  width: 844
+  height: 99
+pdbparse_hexdump14_2.png:
+  width: 758
+  height: 283
+pdbparse_hexdump14_1.png:
+  width: 755
+  height: 164
+main_front.jpg:
+  width: 1599
+  height: 862
+mac-icon-180x180.png:
+  width: 180
+  height: 180
+fragmods-dump.png:
+  width: 756
+  height: 150
+desparecido_512_alt.jpeg:
+  width: 950
+  height: 512
+desparecido_512.png:
+  width: 950
+  height: 512
+desparecido_512.jpeg:
+  width: 950
+  height: 512
+blue_owl_96.png:
+  width: 96
+  height: 96
+blue_owl_76.png:
+  width: 76
+  height: 76
+blue_owl_120.png:
+  width: 120
+  height: 120
+abyss_partII_type_to_address.png:
+  width: 970
+  height: 413
+abyss_partII_type_inf_disasm.png:
+  width: 448
+  height: 523
+abyss_partII_pdbparsehexdump.png:
+  width: 756
+  height: 150
+abyss_partII_nddlldump.png:
+  width: 762
+  height: 72
+abyss_partII_graphview.png:
+  width: 323
+  height: 5417
+abyss_partII_func_prot_disasm.png:
+  width: 824
+  height: 714
+abyss_partII_assign_type_to_address.png:
+  width: 970
+  height: 413
+abyss_partII_UNICODE_STRING_Typedef.png:
+  width: 423
+  height: 290
