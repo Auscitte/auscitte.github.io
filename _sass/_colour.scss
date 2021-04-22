@@ -201,6 +201,14 @@ article > blockquote {
   border-left-color: $color-accent;
 }
 
+td:not([class]) {
+  border: 1px solid $color-accent;
+}
+
+table:not([class]) {
+  border-style: hidden;
+}
+
 
 /*************************************************************************
                              ORANGE-DARK-COLOR
