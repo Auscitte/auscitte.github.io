@@ -10,6 +10,7 @@ tags:
     - symbol file
     - PDB
     - separated code
+    - reverse engineering
 ---
 
 ## Locating All Code Blocks Belonging to a (Fragmented) Function with pdbparse

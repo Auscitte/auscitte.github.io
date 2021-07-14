@@ -8,7 +8,7 @@ description: Introduces a general approach to machine code reverse engineering a
 tags:
     - Windows 10
     - radare2
-    - reversing
+    - reverse engineering
     - decompilation
 ---
 

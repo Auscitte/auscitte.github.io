@@ -9,6 +9,7 @@ tags:
     - pdbparse
     - symbol file
     - PDB
+    - reverse engineering
 ---
 
 ## Preface
