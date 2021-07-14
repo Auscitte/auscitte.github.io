@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Bringing My OS Back from the Abyss &#58 Restoring Windows Registry (Part 3)
+author: Ry Auscitte
 category: systems blog
 comments: true
 description: A registry recovery procedure walk-through.

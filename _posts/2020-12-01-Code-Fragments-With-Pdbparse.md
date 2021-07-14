@@ -1,6 +1,7 @@
 ---
 layout: post
 title: A Quick Note &#58 Locating All Code Blocks Belonging to a (Fragmented) Function with pdbparse
+author: Ry Auscitte
 category: systems blog
 comments: true
 description: Shows how to compute addresses of all code fragments belonging to the same function with the help of a pdb file.

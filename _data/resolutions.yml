@@ -83,3 +83,18 @@ abyss_partII_assign_type_to_address.png:
 abyss_partII_UNICODE_STRING_Typedef.png:
   width: 423
   height: 290
+establisher_stack_frame.png:
+  width: 858
+  height: 375
+_C_specific_handler.png:
+  width: 1063
+  height: 316
+pefileseh_C_specific_handler.png:
+  width: 1063
+  height: 316
+pefileseh_establisher_stack_frame.png:
+  width: 858
+  height: 375
+pefileseh_class_diagram.png:
+  width: 578
+  height: 1118

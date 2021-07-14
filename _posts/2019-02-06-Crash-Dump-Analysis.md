@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Bringing My OS Back from the Abyss &#58 Windows Crash Dump Analysis (Part 1)
+author: Ry Auscitte
 category: systems blog
 comments: true
 description: A Windows crash dump analysis walkthrough

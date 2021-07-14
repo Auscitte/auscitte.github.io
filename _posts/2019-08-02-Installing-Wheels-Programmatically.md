@@ -1,6 +1,7 @@
 ---
 layout: post
 title: A Quick Note &#58 Installing Python Wheels Programmatically
+author: Ry Auscitte
 category: data science blog
 comments: true
 description: Explains how to code a wheel installiation script in Python 

@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Bringing My OS Back from the Abyss &#58 Reversing basesrv.dll Initialization Procedure (Part 2)
+author: Ry Auscitte
 category: systems blog
 comments: true
 description: Introduces a general approach to machine code reverse engineering and gives a sample of a step-by-step reversing process; touches on the subject of automatic decompilation.

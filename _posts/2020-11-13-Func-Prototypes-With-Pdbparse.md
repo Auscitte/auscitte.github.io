@@ -1,6 +1,7 @@
 ---
 layout: post
 title: On Using pdbparse to Retrieve Type Information from PDB Files
+author: Ry Auscitte
 category: systems blog
 comments: true
 description: Explains how to extend pdbparse python library with the functionality of retrieving function prototypes, variable declarations, and structure definitions from Microsoft pdb files
