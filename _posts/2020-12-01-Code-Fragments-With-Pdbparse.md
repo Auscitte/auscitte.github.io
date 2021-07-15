@@ -183,7 +183,7 @@ For your convenience all relevant snippets of python code are collected in a sin
 
 **_Update._** Recently I came across an [article](https://codemachine.com/articles/x64_deep_dive.html) expanding on the subject. Therein, the phonomenon is claimed to be the result of applying the **_Basic Blocks Tools (BBT)_**, which is a kind of **_"profile-based optimization"_**. It is meant to increase **_"spacial locality of code"_** by grouping the most often executed branches within a module together so that they fit on a single page, if possible, thereby reducing the process' working set. The frequency of execution for the code blocks is said to be obtained with the help of a profiler. 
 
-Even though I did not researh (in any depth) the subject myself, the strategy sounds perfectly reasonable to me.
+Even though I did not research (in any depth) the subject myself, the strategy sounds perfectly reasonable to me.
 
 ## References:
 
