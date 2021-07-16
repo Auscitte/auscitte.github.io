@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Boots for Walking Backwards &#58 Teaching pefile How to Understand SEH-Related Data in 64-bit PE Files
+title: Boots for Walking Backwards&#58 Teaching pefile How to Understand SEH-Related Data in 64-bit PE Files
 author: Ry Auscitte
 category: systems blog
 comments: true
@@ -1063,14 +1063,14 @@ While most of the information presented here could be found elsewhere, the reade
 
 1. Ero Carrera, [pefile][pefile] : a Python module to read and work with PE (Portable Executable) files
 2. [Intel® 64 and IA-32 Architectures Software Developer’s Manual][intel], Volume 3A: System Programming Guide, Part 1
-3. Ken Johnson, [Programming against the x64 exception handling support][x64sehskywing]
+3. Ken Johnson, [Programming against the x64 exception handling support][x64sehskywing], Nynaeve: Adventures in Windows debugging and reverse engineering
 4. Matt Miller, [Improving Automated Analysis of Windows x64 Binaries][x64scape], Uninformed, June 2006
 5. Andrea Allievi, [Exceptional behavior: the Windows 8.1 X64 SEH Implementation][x64seh8.1]
 6. [Exceptional Behavior - x64 Structured Exception Handling][osrseh], OSR Online. The NT Insider, Vol 13, Issue 3, 23 June 2006
 7. Matt Pietrek, [A Crash Course on the Depths of Win32 Structured Exception Handling][x86seh], Microsoft Systems Journal, January 1997
 8. Mark E. Russinovich, David A. Solomon, and Alex Ionescu. (2012), Exception Dispatching, in Windows Internals, Part 1: Covering Windows Server 2008 R2 and Windows 7 (6th. ed.). Microsoft Press, USA.
 9. [x64 exception handling][msseh], in x64 Software Conventions, Microsoft Docs
-10. Ken Johnson, [Frame pointer omission (FPO) optimization and consequences when debugging][FPO]
+10. Ken Johnson, [Frame pointer omission (FPO) optimization and consequences when debugging][FPO], Nynaeve: Adventures in Windows debugging and reverse engineering
 11. [Chained unwind info structures][chained], x64 exception handling, Microsoft Docs
 12. Ry Auscitte, [A Quick Note: Locating All Code Blocks Belonging to a (Fragmented) Function with pdbparse][sep]
 13. Ry Auscitte, [Decompilers: Comparative Analysis and Outcome][abyss2frag], in Bringing My OS Back from the Abyss: Reversing basesrv.dll Initialization Procedure (Part 2)
