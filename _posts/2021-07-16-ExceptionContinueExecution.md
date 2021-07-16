@@ -4,7 +4,7 @@ title: A Quick Note&#58 What Is EXCEPTION_CONTINUE_EXECUTION Good for?
 author: Ry Auscitte
 category: systems blog
 comments: true
-description: A brief note on feasibility of EXCEPTION_CONTINUE_EXECUTION in SEH.
+description: A brief note on the specifics of implementing an exception handler that returns EXCEPTION_CONTINUE_EXECUTION.
 tags:
     - SEH
 ---
