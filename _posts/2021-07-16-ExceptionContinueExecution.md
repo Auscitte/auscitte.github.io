@@ -92,7 +92,7 @@ The statement has been translated into a sequence of three instructions: `mov ra
 
 Our exception filter accepts a structure `EXCEPTION_POINTERS` as a parameter. Inside it, there is the `ContextRecord` field that gives us the execution context, frozen at the the point in time when the exception occurred. What if we set  `ContextRecord->Rip` to the address of the first instruction in the sequence? Provided Windows initializes RIP with the supplied value, the statement `**ppAddr = 666` will be executed in its entirety, thereby enabling the correct value of `address` to be loaded. To this end, we must offset RIP by `0xA = 0x7FF7C76A1752 - 0x7FF7C76A1748`
 
-{% highlight none linenos %}
+{% highlight c linenos %}
 pep->ContextRecord->Rip -= 0xA;
 {% endhighlight %}
 
