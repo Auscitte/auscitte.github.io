@@ -120,28 +120,28 @@ int filter(int n_except, _EXCEPTION_POINTERS* pep, int** ppaddr, int* ptemp)
         printf("Attempting to fix the problem in filter() RIP=0x%llX Addr=0x%llX\n", 
             pep->ContextRecord->Rip, pep→ExceptionRecord→ExceptionAddress);
 
-            *ppaddr = ptemp;
+        *ppaddr = ptemp;
 
-            pep->ContextRecord->Rip -= 0xA;
+        pep->ContextRecord->Rip -= 0xA;
 
-            return EXCEPTION_CONTINUE_EXECUTION;
-	}
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
 
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
 int main()
 {
-        int temp = 0;
-        int* address = NULL;
+    int temp = 0;
+    int* address = NULL;
 
-        __try {
-            do_potentially_dangerous_assignment(&address);
-        }
-        __except (filter(GetExceptionCode(), GetExceptionInformation(),
-                         &address, &temp)) {
+    __try {
+        do_potentially_dangerous_assignment(&address);
+    }
+    __except (filter(GetExceptionCode(), GetExceptionInformation(),
+                     &address, &temp)) {
 
-            printf("Should never get here\n");
+        printf("Should never get here\n");
     }
 
     return 0;
