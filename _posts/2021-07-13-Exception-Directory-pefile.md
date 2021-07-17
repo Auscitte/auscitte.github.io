@@ -6,7 +6,7 @@ category: systems blog
 comments: true
 description: Explains how SEH-related data is stored in 64-bit PE+ files and used by Windows to perform stack unwinding and documents the process of implementing an extension to pefile that would read relevant sections of PE+ images.
 tags:
-    - PE+
+    - PE
     - stack unwinding
     - prolog
     - epilog
