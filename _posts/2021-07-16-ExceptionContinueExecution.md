@@ -118,7 +118,7 @@ int filter(int n_except, _EXCEPTION_POINTERS* pep, int** ppaddr, int* ptemp)
     if (n_except == EXCEPTION_ACCESS_VIOLATION) {
 
         printf("Attempting to fix the problem in filter() RIP=0x%llX Addr=0x%llX\n", 
-            pep->ContextRecord->Rip, pep→ExceptionRecord→ExceptionAddress);
+            pep->ContextRecord->Rip, pep->ExceptionRecord->ExceptionAddress);
 
         *ppaddr = ptemp;
 
