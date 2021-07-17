@@ -20,6 +20,11 @@ Particularly faithful readers stoically following the adventure of [bringing my 
 
 That said, my focus was on x64 native code specifically and, while my implementation should work with IA64 binaries by extension, it does not take into account other architectures (such as ARM). I left those for another willing sole to work on. 
 
+{% capture alert-text %}
+Anyone believing that the source code is better than a thousand words documenting it may proceed straight to the [implementation](https://gist.github.com/Auscitte/1433a78d71c5f01c889243f45c04de01).
+{% endcapture %}
+{% include note-box.html text=alert-text %}
+
 ## Introduction
 
 Windows implements a mechanism called **_Structured Exception Handling (SEH)_** that gives users, applications, and drivers an opportunity to respond to exceptions in a stratified fashion. Assuming the reader could not have possibly avoided exposure to the ubiquitous information on the subject, I will only recap the main points. 
