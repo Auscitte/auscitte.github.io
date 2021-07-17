@@ -16,6 +16,11 @@ tags:
 
 Recently a need arose for a method of extracting function prototypes from Microsoft **_pdb_** files, a method that could be used under Linux, preferably, in a form of a python script. As I had already been using [Brendan Dolan-Gavitt’s python library](https://github.com/moyix/pdbparse) for parsing pdb files, all that needed to be done was to extend it with the code that would handle prototype-related information. While I was on it, I added retrieving global variable declarations and structure definitions to the pile. This post walks you through the steps I took in order to reverse pdb file format and suggests one of possible implementations. That said, provided here is not a complete implementation, but merely a demonstration that is intended to assist in getting you started should you face a similar task. This is also the reason why I decided against submitting a pull request to the pdbparse repository on github. Without further ado, let us begin.
 
+{% capture alert-text %}
+Anyone who believes that the source code is better than a thousand words documenting it, may proceed straight to the implementation by clicking [this link](https://gist.github.com/Auscitte/37aa7b2d3be058cb6b4d5b8b4c13477a)
+{% endcapture %}
+{% include note-box.html text=alert-text %}
+
 ## Introduction
 
 According to [Wikipedia](https://en.wikipedia.org/wiki/Program_database), **_Program Database (PDB)_** is a proprietary file format developed by Microsoft for storing debugging-related data such as types, variable names and addresses, tables linking binary instructions to line numbers within source files, etc. This data is extracted from the source code and at the stage of linking is packed into a file with the same name as that of the executable (an application or dynamic-link library) being built and .pdb extension (unless specified otherwise by the compiler and linker options). Such files are often referred to as “symbol files”.
