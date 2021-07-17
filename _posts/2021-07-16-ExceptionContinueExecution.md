@@ -156,6 +156,7 @@ So this cumbersome trick does the job, but I cannot recall it being mentioned in
 
 As is, presented here is not a feasible approach due to the abysmal lack of portability and, therefore, it should not be used in practice in any shape or form (some other, more versatile, way of identifying the relative address of the fist instruction is needed). However, it "satiated" my curiosity to find out that it could be applied in principle. 
 
+-- Ry Auscitte
 
 ## References:
 

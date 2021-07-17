@@ -80,6 +80,8 @@ else:
 
 Using these simple code snippets, one can easily put together an installation script tailored to the task one is faced with. 
 
+-- Ry Auscitte
+
 ## References
 
 Brett Cannon, [The challenges in designing a library for PEP 425 (aka wheel tags)](https://snarky.ca/the-challenges-in-designing-a-library-for-pep-425/), 2019

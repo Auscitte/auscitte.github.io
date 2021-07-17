@@ -1539,7 +1539,7 @@ In the end, we were able to localize the issue to a particular function. It turn
 
 Further investigation is left for parts [2]({{ site.baseurl }}/systems%20blog/ServerDllInitialization-reversing) and [3]({{ site.baseurl }}/systems%20blog/Registry-Recovery).
 
-Until then, stay healthy, stay happy, and stay proficient.
+Until then, stay healthy, stay happy, and stay proficient. ;-)
 
---Ry Auscitte :-)
+-- Ry Auscitte
 
