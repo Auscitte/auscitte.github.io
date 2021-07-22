@@ -156,4 +156,11 @@ main img,
   bottom: 0;
 }
 
+.social-toolbar {
+  display: flex;
+  justify-content: center; 
+}
 
+.social-toolbar > svg {
+  margin: 15px
+}
