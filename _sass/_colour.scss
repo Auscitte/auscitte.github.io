@@ -99,7 +99,7 @@ main {
 }
 
 .site-title-block {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 
@@ -222,7 +222,6 @@ table:not([class]) {
 //---------------------------FONT
 
 article h1,
-.site-title-block h1,
 article > h2,
 article > h3,
 article > h4,
@@ -232,6 +231,10 @@ article > h6,
 .link-to-post,
 .link-to-post:visited {
   color: $color-accent-dark;
+}
+
+.site-title-block h1 {
+  color: $color-accent
 }
 
 /*************************************************************************
