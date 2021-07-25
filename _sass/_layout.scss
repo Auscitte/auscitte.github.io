@@ -169,3 +169,23 @@ main img,
   align-items: center;
   gap: 10px 
 }
+
+.site-title-block {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.site-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.site-title > h1 {
+  text-align: center;
+}
