@@ -158,9 +158,14 @@ main img,
 
 .social-toolbar {
   display: flex;
-  justify-content: center; 
+  flex-direction: row;
+  justify-content: center;
+  gap: 25px;
 }
 
-.social-toolbar > svg {
-  margin: 15px
+.social-toolbar > span {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px 
 }
