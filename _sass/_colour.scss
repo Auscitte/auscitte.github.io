@@ -94,9 +94,14 @@ main a:hover,
 }
 
 //---------------------------BACKGROUND
-main, .site-title-block {
+main {
   background-color: $color-white;
 }
+
+.site-title-block {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
 
 /*************************************************************************
                              CODE-COLOR
