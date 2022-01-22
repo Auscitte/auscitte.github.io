@@ -101,3 +101,42 @@ pefileseh_class_diagram.png:
 potentially_dangerous_assignment.png:
   width: 639
   height: 253
+cvxpyfit_formula01.png:
+  width: 697
+  height: 105
+cvxpyfit_formula02.png:
+  width: 628
+  height: 168
+cvxpyfit_formula04.png:
+  width: 729
+  height: 106
+cvxpyfit_formula03.png:
+  width: 729
+  height: 106
+cvxpyfit_iterative_part_min_log.png:
+  width: 1101
+  height: 480
+cvxpyfit_iterative_part_min.png:
+  width: 841
+  height: 538
+cvxpyfit_heatmap.png:
+  width: 712
+  height: 533
+cvxpyfit_coord_desc_num_iter.png:
+  width: 640
+  height: 480
+cvxpyfit_coord_desc_log.png:
+  width: 951
+  height: 514
+cvxpyfit_coord_desc.png:
+  width: 848
+  height: 484
+cvxpyfit_convex_ineq.png:
+  width: 427
+  height: 318
+cvxpyfit_bisection.png:
+  width: 640
+  height: 480
+cvxpyfit_convexcones.png:
+  width: 928
+  height: 444
