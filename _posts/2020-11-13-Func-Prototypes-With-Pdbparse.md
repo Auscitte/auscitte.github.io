@@ -10,6 +10,7 @@ tags:
     - symbol file
     - PDB
     - reverse engineering
+redirect_from: /systems blog/Func-Prototypes-With-Pdbparse
 ---
 
 ## Preface

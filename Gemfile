@@ -6,3 +6,4 @@ gem 'jekyll-paginate'
 gem "kramdown-parser-gfm"
 gem  'dimensions'
 gem 'yaml'
+gem 'jekyll-redirect-from'

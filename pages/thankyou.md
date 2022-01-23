@@ -2,6 +2,7 @@
 layout: page
 title: Thank You!
 comments: false
+sitemap: false
 css: /resources/css/thankyou.css
 ---
 

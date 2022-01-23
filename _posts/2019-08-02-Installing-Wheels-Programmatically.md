@@ -7,6 +7,7 @@ comments: true
 description: Explains how to code a wheel installiation script in Python 
 tags:
     - Python
+redirect_from: /data science blog/Installing-Wheels-Programmatically
 ---
 
 ## A Quick Note: Installing Python Wheels Programmatically

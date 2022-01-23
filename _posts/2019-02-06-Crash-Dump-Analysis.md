@@ -9,6 +9,7 @@ tags:
     - Windows 10
     - WinDbg
     - crash dump
+redirect_from: /systems blog/Crash-Dump-Analysis
 ---
 
 ## Introduction

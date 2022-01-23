@@ -9,6 +9,7 @@ tags:
     - Windows 10
     - registry
     - volume shadow snapshots
+redirect_from: /systems blog/Registry-Recovery
 ---
 
 ## Introdution

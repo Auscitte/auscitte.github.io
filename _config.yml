@@ -50,14 +50,10 @@ contact_PK:
 paginate: 10
 
 # Set permalink
-permalink: /:categories/:title
+permalink: /:slugified_categories/:title
 
 # MathJax support
 math: true
-
-collections:
-- definitions
-
 
 highlighter_class_name: "highlight"
 #syntax_highlighter_opts seems to have no effect on {% highlight %}
@@ -79,6 +75,7 @@ sass:
 plugins:
   - jekyll-paginate
   - jekyll-sitemap # add /sitemap.xml file
+  - jekyll-redirect-from
 
 paginate_path: /_pages/page:num
 

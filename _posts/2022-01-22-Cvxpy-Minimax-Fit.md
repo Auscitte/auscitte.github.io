@@ -18,6 +18,7 @@ math_macros:
       body: \\operatorname*\{minimize\}
     - name: subject
       body: \\operatorname*\{subject to\}
+redirect_from: /data science blog/Cvxpy-Minimax-Fit
 ---
 
 ## In Place of an Introduction

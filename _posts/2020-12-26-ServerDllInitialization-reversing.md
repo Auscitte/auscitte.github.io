@@ -10,6 +10,7 @@ tags:
     - radare2
     - reverse engineering
     - decompilation
+redirect_from: /systems blog/ServerDllInitialization-reversing
 ---
 
 {% capture alert-text %}

@@ -11,6 +11,7 @@ tags:
     - PDB
     - separated code
     - reverse engineering
+redirect_from: /systems blog/Code-Fragments-With-Pdbparse
 ---
 
 ## Locating All Code Blocks Belonging to a (Fragmented) Function with pdbparse
