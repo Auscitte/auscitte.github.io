@@ -86,6 +86,7 @@ main a:hover,
 #footer-quote,
 .env-header,
 .code-header,
+.definition-header,
 .table th,
 #wrapper > header a,
 #wrapper > header a:visited,
@@ -356,6 +357,16 @@ article > h6,
 }
 
 /*************************************************************************
+                         DEFINITION-COLOR
+/*************************************************************************/
+//TODO: declare common colors with darcula
+.definition-body {
+  background-color: #2B2B2B;
+  color: #A9B7C6;
+}
+
+
+/*************************************************************************
                              BOX-SHADOW
 /*************************************************************************/
 .contact-form input:focus,
@@ -368,6 +379,7 @@ article > h6,
   border-color: $color-accent;
 }
 
+.definition-header,
 .code-header {
  background-color: #4A4A4A;
 }

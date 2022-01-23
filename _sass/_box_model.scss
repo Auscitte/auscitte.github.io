@@ -58,6 +58,7 @@ article > blockquote {
 article > blockquote,
 .table,
 figure,
+.definition-body,
 .alert {
   margin-bottom: $l-h-baseline-double;
 }
@@ -237,6 +238,10 @@ article {
  padding-bottom: $l-h-baseline-double;
 }
 
+.definition-body {
+ padding: $l-h-baseline-double;
+}
+
 /*************************************************************************
                              PADDING-BOTTOM
 /*************************************************************************/
@@ -322,6 +327,10 @@ article ol ol {
   cursor: pointer;
 }
 
+.definition-header {
+  text-align: right;
+  padding: 5px;
+}
 .code-header-title {
   text-align: right;
   display:table-cell;
