@@ -155,7 +155,7 @@ One more trivial transformation later, we get:
 
 $$
 \begin{align*}
-\minimize_{s, a_j, b_l}   \quad & s &(j = 0,\dots,2, l = 1,\dots, 2)\\
+\minimize_{s, a_j, b_l}   \quad & s &(j = \overline{0,2};\;l = \overline{1,2})\\
 \subject \quad & \frac{a_0 + a_1 \cdot t_i + a_2 \cdot t_i^2 - y_i - b_1 \cdot (y_i \cdot t_i) - b_2 \cdot (y_i \cdot t_i^2) }{1 + b_1 \cdot t_i + b_2 \cdot t_i^2} \le s &\\ 
 \quad & \frac{-a_0 - a_1 \cdot t_i - a_2 \cdot t_i^2 + y_i + b_1 \cdot (y_i \cdot t_i) + b_2 \cdot (y_i \cdot t_i^2) }{1 + b_1 \cdot t_i + b_2 \cdot t_i^2} \le s &(y_i = e^{t_i})\\
 \quad & 1 + b_1 \cdot t_i + b_2 \cdot t_i^2 \ge \xi & (i = 1,\dots,k)
@@ -188,7 +188,7 @@ $$
 \end{align*}
 $$
 
-Unfortunately, not much can be said about $$f_i(x,s) = \frac{\vec{c_i}^T \cdot \vec{x} - y_i}{\vec{d_i}^T \cdot \vec{x} + 1} - s$$ for sum of two quasiconvex functions, even if the resulting function is additively separable (i.e. $$\exists$$ independent $$x$$ and $$y$$ s.t. $$f(x, y) = h(x) + g(y)$$), is not necessarily quasiconvex.  For now it appears (if we approach the subject strictly formally and read the problem declaration as stated) it is an optimization problem in standard form with a linear objective and constraints $$f_i(x, s) \le 0$$ of unidentifiable (to the extent the course has taught us) curvature. It does not fit the formal definition of (quasi-)convex optimization problem. 
+Unfortunately, not much can be said about $$f_i(x,s) = \frac{\vec{c_i}^T \cdot \vec{x} - y_i}{\vec{d_i}^T \cdot \vec{x} + 1} - s$$ for sum of two quasiconvex functions, even if the resulting function is _additively separable_ (i.e. $$\exists$$ independent $$x$$ and $$y$$ s.t. $$f(x, y) = h(x) + g(y)$$), is not necessarily quasiconvex.  For now it appears (if we approach the subject strictly formally and read the problem declaration as stated) it is an optimization problem in standard form with a linear objective and constraints $$f_i(x, s) \le 0$$ of unidentifiable (to the extent the course has taught us) curvature. It does not fit the formal definition of (quasi-)convex optimization problem. 
 
 On this note, I am concluding the presentation and henceforth consider the problem of minimal rational fit to the exponential properly introduced.
 
@@ -200,11 +200,11 @@ I begin by introducing the method students were expected to use. My stoic reader
 
 ### The Idea Behind the Method
 
-The previous section was concluded with the statement that the problem as given (in its last reincarnation) did not fit the definition of convex optimization problem in standard form. The said, the formal definition is purely syntactical, meaning: the fact the problem fails to satisfy this definition does not necessarily imply that it cannot be transformed into the one that does. What we are looking for is optimizing a convex function over a convex set, determined by implicit (via intersection of domains of all the functions involved) and explicit constraints, and this is exactly what we happen to have. Take a closer look at the first two constraints: $$\frac{\vec{c_i}^T \cdot \vec{x} - y_i}{\vec{d_i}^T \cdot \vec{x} + 1} \le s$$ and $$\frac{(-\vec{c_i})^T \cdot \vec{x} + y_i}{\vec{d_i}^T \cdot \vec{x} + 1} \le s$$. _**Level sets**_ of quasiconvex functions, i.e sets $$S_{\alpha} = \{x \mid f(x) \le \alpha\}$$, are, by definition of quasiconvexity, convex (for all alphas) and linear fractional functions happen to be quasiconvex. Consequently, if we treat $$s$$ not as a variable, but as a constant (or a problem parameter if you will), we obtain constraints (on $$\vec{x}$$) defining convex sets.
+The previous section was concluded with the statement that the problem as given (in its last reincarnation) did not fit the definition of convex optimization problem in standard form. The said, the formal definition is purely syntactical, meaning: the fact the problem fails to satisfy this definition does not necessarily imply that it cannot be transformed into the one that does. What we are looking for is _optimizing a convex function over a convex set_, determined by implicit (via intersection of domains of all the functions involved) and explicit constraints, and this is exactly what we happen to have. Take a closer look at the first two constraints: $$\frac{\vec{c_i}^T \cdot \vec{x} - y_i}{\vec{d_i}^T \cdot \vec{x} + 1} \le s$$ and $$\frac{(-\vec{c_i})^T \cdot \vec{x} + y_i}{\vec{d_i}^T \cdot \vec{x} + 1} \le s$$. _**Level sets**_ of quasiconvex functions, i.e sets $$S_{\alpha} = \{x \mid f(x) \le \alpha\}$$, are, by definition of quasiconvexity, _convex_ (for all alphas) and linear fractional functions happen to be quasiconvex. Consequently, if we treat $$s$$ not as a variable, but as a constant (or a problem parameter if you will), we obtain constraints (on $$\vec{x}$$) defining convex sets.
 
 The same applies to $$ -\vec{d^T} \cdot \vec{x} - 1 \le - \xi$$, but the situation is even simpler by virtue of $$-\vec{d^T} \cdot \vec{x} - 1$$ being affine (i.e. convex) and $$\xi$$ -- a constant.
 
-Now that $$s$$ is a parameter, there is no need to minimize the objective, thus, keeping in mind that intersection of convex sets is itself convex, we have obtained a convex feasibility problem! 
+Now that $$s$$ is a parameter, there is no need to minimize the objective, thus, keeping in mind that intersection of convex sets is itself convex, we have obtained a _convex feasibility problem_! 
 
 The general idea behind the technique can be summarized in a few sentences. Given a quasiconvex ratio function $$f(x) = \frac{p(x)}{q(x)}$$ where $$p(x)$$ is convex, while $$q(x)$$ is concave and positive, one defines a parameterized family of functions $$\phi_t(x)$$  with a non-negative parameter $$t$$, such that the following holds: $$\forall x \; \phi_t(x) \le 0 \Leftrightarrow f(x) \le t$$. $$\phi_t(x)$$ can be constructed as follows: $$\phi_t(x) = p(x) - t \cdot q(x)$$. Notice that, $$-t \cdot q(x)$$ is convex, $$q(x)$$ being concave and $$t$$ non-negative, and, as a result, $$\phi_t(x)$$ is also convex as a sum of two convex functions. Constraints in our problem fit this framework perfectly well, therefore, the technique, when applied to our problem, produces a parameterized family of convex feasibility problems: 
 
@@ -286,7 +286,7 @@ $$
 \end{align*}
 $$
 
-Variable `z` requires an explanation. Perhaps, the reader remembers a trick with substituting a very small $$\xi$$ for 0 aiming to circumvent the "no strict inequalities" rule. I have some news about it, as per tradition, good and bad. The good news is, formally speaking, we do not really need it: cvxpy offers `pos` attribute one can set to True for a variable, thereby demanding it to be positive. This is exactly what we will do, adding $$1 + b_1 \cdot t_i + b_2 \cdot t_i^2 = z_i$$ constraints along the way. The bad news is that, at present, setting this attribute does not seem to accomplish anything. Take a look at [cvxpy implementation](https://github.com/cvxpy/cvxpy/blob/a7fea2fe95bfa4698738f4748092a69790dae2c6/cvxpy/reductions/cvx_attr2constr.py#L134) 
+Variable `z` requires an explanation. Perhaps, the reader remembers a trick with substituting a very small $$\xi$$ for 0 aiming to circumvent the "no strict inequalities" rule. I have some news about it, as per tradition, good and bad. The good news is, formally speaking, we do not really need it: cvxpy offers `pos` attribute one can set to `True` for a variable, thereby demanding it to be positive. This is exactly what we will do, adding $$1 + b_1 \cdot t_i + b_2 \cdot t_i^2 = z_i$$ constraints along the way. The bad news is that, at present, setting this attribute does not seem to accomplish anything. Take a look at [cvxpy implementation](https://github.com/cvxpy/cvxpy/blob/a7fea2fe95bfa4698738f4748092a69790dae2c6/cvxpy/reductions/cvx_attr2constr.py#L134) 
 
 {% include code-block-header.html title="An Excerpt from cvxpy's attr2constr.py" %}
 {% highlight python linenos %}
@@ -355,7 +355,7 @@ Bookkeeping functionality aside, this is a straightforward implementation of bin
 
 One might find the line `self.call_solver()` somewhat furtive. Indeed, which solver should we choose?
 
-As it has been mentioned already, treating $$s$$ as a parameter rather than a variable left us with a series of convex optimization problems. In this particular case the situation is even better -- not only are the constraints convex, they are linear (or rather, affine, if one must maintain an air of punctiliousness about them) in all the variables: $$a_0$$, $$a_1$$, $$a_2$$, $$b_1$$, $$b_2$$, and $$\vec{z}$$! The fact that all the expressions used in `declare_constraints()` are affine can easily be checked by examining the entries we put into the constraints array; however, the idea of making sure _**cvxpy**_ also classifies them as such seems a capital one.
+As it has been mentioned already, treating $$s$$ as a parameter rather than a variable left us with a series of convex optimization problems. In this particular case the situation is even better -- not only are the constraints convex, they are _linear_ (or rather, _affine_, if one must maintain an air of punctiliousness about them) in all the variables: $$a_0$$, $$a_1$$, $$a_2$$, $$b_1$$, $$b_2$$, and $$\vec{z}$$! The fact that all the expressions used in `declare_constraints()` are affine can easily be checked by examining the entries we put into the constraints array; however, the idea of making sure _cvxpy_ also classifies them as such seems a capital one.
 
 {% highlight python linenos %}
 class FitProblem:
@@ -374,7 +374,7 @@ bp.print_curvature()
 {% endhighlight %}
 
 {% capture alert-text %}
-A few words on unconventional use of the term _**curvature**_ in _**cvxpy**_. _**cvxpy**_ pays special attention to the types of functions constituting constraints and objective: in particular, whether they are convex or concave; doing so allows to recognize the problem as belonging to a particular class and identify the most appropriate solver to call. The term curvature was appropriated for this purpose. In the context of _**cvxpy**_, curvature is not a number, but a type of function: constant, affine, convex, concave or unknown.
+A few words on unconventional use of the term _**curvature**_ in _**cvxpy**_. _cvxpy_ pays special attention to the types of functions constituting constraints and objective: in particular, whether they are convex or concave; doing so allows to recognize the problem as belonging to a particular class and identify the most appropriate solver to call. The term curvature was appropriated for this purpose. In the context of _cvxpy_, curvature is not a number, but a type of function: constant, affine, convex, concave or unknown.
 {% endcapture %}
 {% include info-box.html text=alert-text %} 
 
@@ -387,7 +387,7 @@ Curvature of constraint 2 : AFFINE
 Curvature of constraint 3 : AFFINE
 {% endhighlight %}
 
-Feasibility problems with affine constraints belong to the linear programs (LP) category (historically, optimization problems of certain classes, when written down in symbolic form, have been called "programs" so I will use the terms interchengeably), hence, theoretically, we could employ an LP solver for the task. For instance, a staple of optimization methods-related scholastic pursuits, the simplex method, should do the job. However, practice sometimes fails to meet theory. Attempting to use _**SCIPY**_ solver that came with the cvxpy brought no joy: it turned out, their simplex method implementation did not support constraint specification in matrix form and the amount of effort put into expanding matrix equasions row by row would have been hard to justify. Other methods (interior point, for example) ran into numerical issues on some iterations of binary search. I could try and get to the bottom of the problem, but it was not worth it: on the iterations where SCIPY showed no issues, _**ECOS**_ still run much faster. So I decided to go with the latter.
+Feasibility problems with affine constraints belong to the _**linear programs (LP)**_ category (historically, optimization problems of certain classes, when written down in symbolic form, have been called "programs" so I will use the terms interchengeably), hence, theoretically, we could employ an LP solver for the task. For instance, a staple of optimization methods-related scholastic pursuits, the _simplex method_, should do the job. However, practice sometimes fails to meet theory. Attempting to use _SCIPY_ solver that came with the _cvxpy_ brought no joy: it turned out, their simplex method implementation did not support constraint specification in matrix form and the amount of effort put into expanding matrix equasions row by row would have been hard to justify. Other methods (interior point, for example) ran into numerical issues on some iterations of binary search. I could try and get to the bottom of the problem, but it was not worth it: on the iterations where _SCIPY_ showed no issues, _**ECOS**_ still run much faster. So I decided to go with the latter.
 
 {% highlight python linenos %}
 def call_solver(self):
@@ -401,7 +401,7 @@ This section can be skipped as non-essential to understanding the algorithm or i
 {% endcapture %}
 {% include note-box.html text=alert-text %} 
 
-Embedded Conic Solver ([ECOS][ECOS]) accepts convex second-order cone programs of the type:
+_**Embedded Conic Solver ([ECOS][ECOS])**_ accepts convex second-order cone programs of the type:
 
 $$
 \begin{align*}
@@ -429,15 +429,15 @@ Also, convex cones are recognizable by their "pointy" shapes.
 
 Taking the cone $$\mathcal{K}$$ to be a _**positive orthant**_ $$\mathbb{R}_+^n$$ (a generalization of the notion of positive quadrant to $$n$$ dimensions), one obtains regular linear inequalities, the problem thereby reducing to an LP.
 
-Whether it is in any way condusive to progress on the task at hand is up for debate, but, with all probability, the most curious of the readers would like to know how the problems are represented and processed internally (by cvxpy). Let us all succumb to the temptation and peer inside. Along the way, we will also make sure that _**ECOS**_, indeed, solves a linear program. 
+Whether it is in any way condusive to progress on the task at hand is up for debate, but, with all probability, the most curious of the readers would like to know how the problems are represented and processed internally (by _cvxpy_). Let us all succumb to the temptation and peer inside. Along the way, we will also make sure that _ECOS_, indeed, solves a linear program. 
 
-A good place to start an investiagtion is a call to `Problem.solve()` with `verbose` flag set to `True`. Careful inspection of whatever appears on the console informs us that _**cvxpy**_ has identified our program as following their DCP (Disciplined Conic Program) rules (adhering to the rules guarantees that the curvature of all the constraints in the problem is known) and suitable for solving with ECOS; but before being handed over to a solver, the program must undergo the transformation: 
+A good place to start an investiagtion is a call to `Problem.solve()` with `verbose` flag set to `True`. Careful inspection of whatever appears on the console informs us that _cvxpy_ has identified our program as following their _DCP (Disciplined Conic Program)_ rules (adhering to the rules guarantees that the curvature of all the constraints in the problem is known) and suitable for solving with _ECOS_; but before being handed over to a solver, the program must undergo the transformation: 
 
 {% highlight none linenos %}
 Dcp2Cone -> CvxAttr2Constr -> ConeMatrixStuffing -> ECOS 
 {% endhighlight %}
 
-According to the [documentation](https://www.cvxpy.org/api_reference/cvxpy.reductions.dcp2cone.html), `Dcp2Cone` reduction "takes as input (minimization) DCP problems and converts them into problems with affine objectives and conic constraints whose arguments are affine." In the process, `Dcp2Cone()` calls `CvxAttr2Constr()`, where the attributes found in variable declarations (`pos` in our case) are handled, followed by `ConeMatrixStuffing()` that constructs $$\vec{c}, A, \vec{b}, G, \vec{h}$$ - matrices and vectors to be passed to ECOS, and concluded by `ECOS()` that invokes its namesake solver. Why not take a closer look at the last [call](https://github.com/cvxpy/cvxpy/blob/c5f42fa753f8322ae55d841f78110e5dc9b26e12/cvxpy/reductions/solvers/conic_solvers/ecos_conif.py#L138)?
+According to the [documentation](https://www.cvxpy.org/api_reference/cvxpy.reductions.dcp2cone.html), `Dcp2Cone` reduction "takes as input (minimization) DCP problems and converts them into problems with affine objectives and conic constraints whose arguments are affine." In the process, `Dcp2Cone()` calls `CvxAttr2Constr()`, where the attributes found in variable declarations (`pos` in our case) are handled, followed by `ConeMatrixStuffing()` that constructs $$\vec{c}, A, \vec{b}, G, \vec{h}$$ - matrices and vectors to be passed to _ECOS_, and concluded by `ECOS()` that invokes its namesake solver. Why not take a closer look at the last [call](https://github.com/cvxpy/cvxpy/blob/c5f42fa753f8322ae55d841f78110e5dc9b26e12/cvxpy/reductions/solvers/conic_solvers/ecos_conif.py#L138)?
 
 {% include code-block-header.html title="An Excerpt from cvxpy's ecos_conif.py" %}
 {% highlight python linenos %}
@@ -447,9 +447,9 @@ solution = ecos.solve(data[s.C], data[s.G], data[s.H],
     **solver_opts)
 {% endhighlight %}
 
-Observe that the matrix names are the same as those used for the ECOS problem statement in mathematical notation, which, of course, is not a coincidence.
+Observe that the matrix names are the same as those used for the _ECOS_ problem statement in mathematical notation, which, of course, is not a coincidence.
 
-After exploring cvxpy source code for a little while, I managed to find a quick way of extracting the matrices passed to ECOS. For convenience, let us temporarily reduce the number of data points from 201 to 11,
+After exploring _cvxpy_ source code for a little while, I managed to find a quick way of extracting the matrices passed to _ECOS_. For convenience, let us temporarily reduce the number of data points from 201 to 11,
 
 {% highlight python linenos %}
 def define_domain_bounds(self):
@@ -504,7 +504,7 @@ Indeed, they are! Now let us examine the constraints.
 [-1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.]
 {% endhighlight %}
 
-Note that the generated matrices contain enough zeros to deem them sparse, so cvxpy, reasonably, uses appropriate data structure from numpy to store the constraint coefficients for equalities and inequalities and pass them to ECOS, who, working in conglomerate, also understands sparse matrices. On our end, the matrices must be transfomed back into dense ones before printing. 
+Note that the generated matrices contain enough zeros to deem them sparse, so _cvxpy_, reasonably, uses appropriate data structure from numpy to store the constraint coefficients for equalities and inequalities and pass them to _ECOS_, who, working in conglomerate, also understands sparse matrices. On our end, the matrices must be transfomed back into dense ones before printing. 
  
 Interpreting $$A$$ and $$b$$ should not be a challenge. I think, one will find that setting vector of variables to $$\vec{x} = (z_1, \dots, z_k, b_1, b_2, a_0, a_1, a_2)$$ translates the constraint $$\vec{1} + b_1 \cdot \vec{t} + b_2 \cdot \vec{t} \odot \vec{t} = \vec{z}$$ (or equivalently, $$-\vec{z} + b_1 \cdot \vec{t} + b_2 \cdot \vec{t} \odot \vec{t} = -\vec{1}$$) into its matrix form $$A \cdot \vec{x} = \vec{b}$$ with $$A$$ specified above.
 
@@ -565,7 +565,7 @@ All that remains to be done now is making sure that the inequalities are taken w
 (zero: 11, nonneg: 33, exp: 0, soc: [], psd: [], p3d: [])
 {% endhighlight %}
 
-It turns out, cvxpy uses two cones: one consisting of a single point $$(0,\dots,0)$$ in 11-dimensional space (which is there to facilitate the equality constraints: $$\vec{1} + b_1 \cdot \vec{t} + b_2 \cdot \vec{t} \odot \vec{t} - \vec{z} \in \{(0,\dots,0)\}$$) and another one, a positive orthant in 33-dimentional space (for the 33 ineqialities we have just deduced). Cones of all other types are set to 0 dimensions as they should (leading to conclusion that ECOS, in fact, receives an instance of a linear program). 
+It turns out, _cvxpy_ uses two cones: one consisting of a single point $$(0,\dots,0)$$ in 11-dimensional space (which is there to facilitate the equality constraints: $$\vec{1} + b_1 \cdot \vec{t} + b_2 \cdot \vec{t} \odot \vec{t} - \vec{z} \in \{(0,\dots,0)\}$$) and another one, a positive orthant in 33-dimentional space (for the 33 ineqialities we have just deduced). Cones of all other types are set to 0 dimensions as they should (leading to conclusion that _ECOS_, in fact, receives an instance of a linear program). 
 
 I hope the reader enjoyed this brief tour of "under the hood". Now back to the task at hand!
 
@@ -589,7 +589,7 @@ Bisection method took 10 iterations and 0.027 ms to solve the problem
 Attained objective value is 0.023317278116957378
 {% endhighlight %}
 
-Well, bisection finds a solution to the accuracy requested in a reasonable amount of time while taking a modest number of steps. The issue with this method is numerical instability. For starters, it is sensitive to the initial value of the parameter $$s$$; for example, even though the optimal value ends up being significantly less than 0.1, setting $$u$$ to 0.1 results in an exception.
+Well, bisection finds a solution to the accuracy requested in a reasonable amount of time while taking a modest number of steps. The issue with this method is _numerical instability_. For starters, it is sensitive to the initial value of the parameter $$s$$; for example, even though the optimal value ends up being significantly less than 0.1, setting $$u$$ to 0.1 results in an exception.
 
 Likewise, an attempt to solve the same program, but with a higher accuracy, leads to the same unfortunate outcome. Of course, one can tackle the issue by adjusting solver's parameters, for example, like this:
 
@@ -616,7 +616,7 @@ In search for the solution, I came across [a post on stack overflow][sobisection
 
 Although this approach does allow to compute the solution with a higher accuracy (i.e. smaller $$\epsilon$$) in this particular case, it is a tough balancing act in general. Let me explain why.
 
-At heart of the ECOS solver algorithm is a fancy variant of _**interior point method**_ [the authors describe][ECOSpaper] as "a standard primal-dual Mehrotra predictor-corrector interior-point method with self-dual embedding". Consider a typical feasibility problem ECOS is designed for, but with inequalities relative to the ordinary positive orthant (no sophisticated cones); _minimax rational fit to the exponential_ happens to be of this kind. It can be transformed into an optimization problem with an extra variable $$u$$ (if the optimal value of $$u$$ turns out to be positive, the original problem is infeasible). 
+At heart of the _ECOS_ solver algorithm is a fancy variant of _**interior point method**_ [the authors describe][ECOSpaper] as "a standard primal-dual Mehrotra predictor-corrector interior-point method with self-dual embedding". Consider a typical feasibility problem _ECOS_ is designed for, but with inequalities relative to the ordinary positive orthant (no sophisticated cones); _minimax rational fit to the exponential_ happens to be of this kind. It can be transformed into an optimization problem with an extra variable $$u$$ (if the optimal value of $$u$$ turns out to be positive, the original problem is infeasible). 
 
 $$
 \begin{align*}
@@ -635,7 +635,7 @@ $$
 \end{align*}
 $$
 
-for an increasing parameter $$t$$, following a so-called central path. Solution to this problem for a particular $$t$$ gives us feasible (but not necessarily optimal) points for the main primal problem and its dual. As $$t$$ goes to infinity, points on the central path approach optimal solution to the main problem and, therefore, the duality gap, a gap between primal and dual objectives, vanishes. It is now clear why the length of duality gap can be (and is!) used as a stopping criterion. ECOS's abstol parameter sets "absolute tolerance on the duality gap". By increasing it, we are terminating the algorithm earlier and thus potentially reducing the accuracy, the very thing we have set out to increase!
+for an increasing parameter $$t$$, following a so-called _central path_. Solution to this problem for a particular $$t$$ gives us feasible (but not necessarily optimal) points for the main primal problem and its dual. As $$t$$ goes to infinity, points on the central path approach optimal solution to the main problem and, therefore, the _duality gap_, a gap between primal and dual objectives, vanishes. It is now clear why the length of duality gap can be (and is!) used as a stopping criterion. ECOS's `abstol` parameter sets "absolute tolerance on the duality gap". By increasing it, we are terminating the algorithm earlier and thus potentially reducing the accuracy, the very thing we have set out to increase!
 
 {% capture alert-text %}
 The theory of duality (in the context of convex optimization) lies beyond the scope of this publication. Readers unfamiliar with the subject are encouraged to do their own research.
@@ -662,15 +662,15 @@ This objective is neither convex nor continuous (the indicator function spoiling
 
 Underlying K-means is a _**coordinate ascent/descent**_ algorithm. In general terms, the algorithm consists in maximizing/minimizing over a (proper) subset of coordinates of a vector variable while remaining coordinates remain fixed; it is performed in an iterative manner alternating which subset is "fixed" at each step. For K-means, the vector variable is $$(c_1,\dots,c_n,\mu_1^{(0)},\dots,\mu_1^{(d)},\dots,\mu_K^{(0)},\dots,\mu_K^{(d)})$$ and its coordinates are partitioned into $$M$$ and $$\vec{c}$$. Multiple iterations are necessary because $$M$$ and $$\vec{c}$$ are not independent.
 
-Below is a sketch of K-means algorithm. 
+Below is a sketch of _K-means_ algorithm. 
 
 * **Initialize** $$M$$ with a set of random vectors
 * **Iterate**
-    * **Step 1** For fixed $$M$$:
+    * **Step 1**: For fixed $$M$$:
 		 
     $$c_i = \argmin_{k \in \{1,\dots, K\} } \left\lVert\vec{x_i} - \vec{\mu_k}\right\rVert^2_2 \mbox{  (computed in a loop over k)}$$
 		
-    * **Step 2** For fixed $$\vec{c}$$: 
+    * **Step 2**: For fixed $$\vec{c}$$: 
 		
     $$\vec{\mu_k} = \argmin_{\vec{\mu_k}} \sum_{i:\; c_i = k} \left\lVert\vec{x_i} - \vec{\mu_k}\right\rVert^2_2 = \frac{1}{n_k} \cdot \sum_{i:\; c_i = k} x_i$$
 * **Until** $$M$$ and $$\vec{c}$$ stop changing
@@ -690,9 +690,9 @@ For convenience, _**log-likelihood**_ ($$log \mathcal{L}(\vec{\theta}) = l(\vec{
 
 $$\vec{\theta}_{ML} = \argmax_{\vec{\theta}} \mathcal{L}(\vec{\theta}) = \argmax_{\vec{\theta}} l(\vec{\theta}) = \argmax_{\vec{\theta}} \sum_{i = 1}^{n} logp(x_i \mid \vec{\theta}) $$
 
-When the probability density is log-concave in parameters $$\vec{\theta}$$, one may enjoy a convex optimization problem with nice properties like any local maximum being a global one. Some even admit of an analytical solution (for example, $$x_i \stackrel{iid}{\sim} \mathcal{N}(x\mid\mu, \sigma)$$). Other times, however, maximizing over $$\vec{\theta}$$ is tricky, but if we divide the distribution parameters $$\vec{\theta} = [\vec{\theta}_1, \vec{\theta}_2]$$ into two groups, it might be easy to compute  $$\vec{\theta}_{1, ML} = \argmax_{\vec{\theta}_1} l(\vec{\theta}_1 \mid \vec{\theta}_2)$$ and $$\vec{\theta}_{2, ML} = \argmax_{\vec{\theta}_2} l(\vec{\theta}_2 \mid \vec{\theta}_1)$$. As my perceptive reader will, no doubt, have guessed, the coordinate ascent algorithm alternates between steps 1 and 2, maximizing log-likelihood over $$\vec{\theta}_{\langle step \rangle}$$ while keeping $$\vec{\theta}_{\langle 3 - step \rangle}$$ fixed.
+When the probability density is _log-concave_ in parameters $$\vec{\theta}$$, one may enjoy a convex optimization problem with nice properties like any local maximum being a global one. Some even admit of an analytical solution (for example, $$x_i \stackrel{iid}{\sim} \mathcal{N}(x\mid\mu, \sigma)$$). Other times, however, maximizing over $$\vec{\theta}$$ is tricky, but if we divide the distribution parameters $$\vec{\theta} = [\vec{\theta}_1, \vec{\theta}_2]$$ into two groups, it might be easy to compute  $$\vec{\theta}_{1, ML} = \argmax_{\vec{\theta}_1} l(\vec{\theta}_1 \mid \vec{\theta}_2)$$ and $$\vec{\theta}_{2, ML} = \argmax_{\vec{\theta}_2} l(\vec{\theta}_2 \mid \vec{\theta}_1)$$. As my perceptive reader will, no doubt, have guessed, the coordinate ascent algorithm alternates between steps 1 and 2, maximizing log-likelihood over $$\vec{\theta}_{\langle step \rangle}$$ while keeping $$\vec{\theta}_{\langle 3 - step \rangle}$$ fixed.
 
-The ubiquitously renowned _**expectation maximization (EM)**_ algorithm takes the similar approach with two alternating optimization steps. We are in the same probabilistic setting, but imagine that now, in addition to the observed data $$X$$, there are also latent variables $$z_i$$, $$i = 1, \dots, m$$, values of which are unknown. 
+The ubiquitously renowned _**expectation maximization (EM)**_ algorithm takes the similar approach with two alternating optimization steps. We are in the same probabilistic setting, but imagine that now, in addition to the observed data $$X$$, there are also _latent_ variables $$z_i$$, $$i = 1, \dots, m$$, values of which are unknown. 
 
 The task is to maximize the likelihood of the marginal distribution: 
 $$p(x_1,\dots,x_n\mid\theta) = \idotsint p(x_1,\dots,x_n, z_1,\dots,z_m\mid\theta) \,dz_1 \dots dz_m = \int p(X, Z\mid\theta) \,dZ $$ 
@@ -705,7 +705,7 @@ A few relatively straightforward formula manipulations will produce the followin
 
 $$l(\theta, q) = log p(X\mid\theta) = \int q(Z) \cdot log \left( \frac{p(X, Z \mid \theta)}{q(Z)} \right) \,dZ - \int q(Z) \cdot log \left( \frac{p(Z\mid X,\theta)}{q(Z)} \right) \,dZ$$
 
-where $$q(Z)$$ is an arbitrary distribution (that makes $$l()$$ a high-order function or a _**functional**_).
+where $$q(Z)$$ is an arbitrary distribution (that makes $$l()$$ a high-order function or a _functional_).
 
 Writing down the likelihood in this form makes it possible to construct the expectation maximization algorithm:
 
@@ -715,7 +715,7 @@ Writing down the likelihood in this form makes it possible to construct the expe
     
     $$q(Z)_{ML} = \argmax_q l(q \mid \theta)$$
     
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Take a closer look at the second summation term in the expression for $$l(\theta, q)$$ above. One can easily recognize Kullback–Leibler divergence between $$q(Z)$$ and $$p(Z\mid X,\theta)$$, which is always positive except for when $$q(Z) = p(Z\mid X,\theta)$$. It gives us the solution:
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Take a closer look at the second summation term in the expression for $$l(\theta, q)$$ above. One can easily recognize _Kullback–Leibler divergence_ between $$q(Z)$$ and $$p(Z\mid X,\theta)$$, which is always positive except for when $$q(Z) = p(Z\mid X,\theta)$$. It gives us the solution:
     
     $$q(Z)_{ML} = p(Z\mid X,\theta)$$
     
@@ -915,7 +915,7 @@ Attained objective value is 0.022732236042735998
 
 The performace is comparable to that of bisection. It so happens, coordinate descent completed in the same number of steps as did bisection, but took (roughly) twice as long to do the computation: after all, we are solving two optimization problems per step, not one. The running time is higher, but so is the accuracy. We have achieved a higher (though only marginaly so on account of the bisection implementation being very precise to begin with) accuracy without encounering any numerical issues!
 
-In fact, this algorithm turned out to be numerically robust with relation to variation in initial values as well. Why not take advantage of this "bonus feature" and see how number of iterations depends on initial value of $$s$$? 
+In fact, this algorithm turned out to be _numerically robust_ with relation to variation in initial values as well. Why not take advantage of this "bonus feature" and see how number of iterations depends on initial value of $$s$$? 
 
 {% highlight python linenos %}
 cdp = CoordinateDescentFitProblem()
