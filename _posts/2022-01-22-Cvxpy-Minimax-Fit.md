@@ -986,7 +986,7 @@ Recall from the previous discussion that the terms responsible for non-convexity
 
 $$
 \begin{align*}
-\minimize_{s, a_j, b_l, b_{1,s}, b_{2,s}} \quad & s &(j = 0,\dots,2;\; l = 1,\dots, 2)\\
+\minimize_{s, a_j, b_l, b_{1,s}, b_{2,s}} \quad & s &(j = \overline{0,2};\; l = \overline{1,2})\\
 \subject \; \quad & a_0 + a_1 \cdot t_i + a_2 \cdot t_i^2 - y_i \cdot z_i  \le s + b_{1,s} \cdot t_i + b_{2,s} \cdot t_i^2 & (y_i = e^{t_i})\\
 \quad & a_0 + a_1 \cdot t_i + a_2 \cdot t_i^2 - y_i \cdot z_i \ge -s - b_{1,s} \cdot t_i - b_{2,s} \cdot t_i^2 &\\
 \quad & 1 + b_1 \cdot t_i + b_2 \cdot t_i^2 = z_i & \\
