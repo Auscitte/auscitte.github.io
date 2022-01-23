@@ -654,7 +654,7 @@ Here is a quick recap of the relevant material.
 
 Consider _**K-means clustering**_. Given $$n$$ points in $$\mathbb{R}^d$$: $$\vec{x_1} \in \mathbb{R}^d, \dots, \vec{x_n} \in \mathbb{R}^d$$, the task is to partition them in $$K$$ clusters with proximity of two points determined by Euclidean distance between them. It can be restated as an optimization problem:
 
-$$M^*, \vec{c}^* = \argmin_{\vec{c},\; M} \sum_{i=1}^{n} \sum_{k=1}^{K} \mathbb{1} \{c_i = k\} \cdot \left\lVert\vec{x_i} - \vec{\mu_k}\right\rVert_2^2$$
+$$M^*, \vec{c}^* = \argmin_{\vec{c},\; M} \sum_{i=1}^{n} \sum_{k=1}^{K} \unicode{x1D7D9} \{c_i = k\} \cdot \left\lVert\vec{x_i} - \vec{\mu_k}\right\rVert_2^2$$
 
 where $$c_i \in \{1,\dots,K\} \; (i = 1,\dots,n)$$ assigns $$i^{th}$$ point to its cluster and each of $$\vec{\mu_i} \in \mathbb{R}^d \; (i=1,\dots,K)$$ is a cluster centroid. A collection of vectors $$\vec{\mu_i}$$, stacked horizontally, form a matrix: $$M = [\vec{\mu_1}, \dots, \vec{\mu_K}] \subseteq \mathbb{R}^{d \times K}$$.
 
