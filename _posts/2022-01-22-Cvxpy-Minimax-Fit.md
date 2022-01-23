@@ -4,11 +4,20 @@ title: Iterative Partial Minimization for Non-Convex Optimization&#58 Bisection 
 author: Ry Auscitte
 category: data science blog
 comments: true
-uses_math: true
 description: A widely-used approach to solving a non-convex optimization problem consists in deriving a series of convex problems (to which standard methods of convex optimizations apply) in such a way that their solutions converge to that of the original problem. In this post, two techniques for deriving such problem series are explained by example. We will also throw a cursory glance at what goes on "behind the scenes" as cvxpy converts an optimization program to the format understandable by ECOS. 
 tags:
     - cvxpy
     - optimization
+uses_math: true
+math_macros:
+    - name: argmin
+      body: \\operatorname*\{argmin\}
+    - name: argmax
+      body: \\operatorname*\{argmax\}
+    - name: minimize
+      body: \\operatorname*\{minimize\}
+    - name: subject
+      body: \\operatorname*\{subject to\}
 ---
 
 ## In Place of an Introduction
@@ -202,9 +211,9 @@ The general idea behind the technique can be summarized in a few sentences. Give
 $$
 \begin{align*}
 \minimize_{\vec{x}}   \quad & 0 &\\
-\subject \quad & \vec{c}^T \cdot \vec{x} - y_i - s \cdot (\vec{d}^T \cdot \vec{x} + 1) \le 0 &\\ 
-\quad & (-\vec{c})^T \cdot \vec{x} + y_i - s \cdot (\vec{d}^T \cdot \vec{x} + 1) \le 0 & \\
-\quad & \ (-\vec{d})^T \cdot \vec{x} - 1 + \xi \le 0 & (i = 1,\dots,k)
+\subject \quad & \vec{c_i}^T \cdot \vec{x} - y_i - s \cdot (\vec{d_i}^T \cdot \vec{x} + 1) \le 0 &\\ 
+\quad & (-\vec{c_i})^T \cdot \vec{x} + y_i - s \cdot (\vec{d_i}^T \cdot \vec{x} + 1) \le 0 & \\
+\quad & \ (-\vec{d_i})^T \cdot \vec{x} - 1 + \xi \le 0 & (i = 1,\dots,k)
 \end{align*}
 $$
 
@@ -741,7 +750,7 @@ I begin by reminding the reader what the problem in question was.
 $$
 \begin{align*}
 \minimize_{s, a_j, b_l}   \quad & s &(j = 0,\dots,2;\; l = 1,\dots, 2)\\
-\subject       \quad & \Big|\frac{a_0 + a_1 \cdot t_i + a_2 \cdot t_i^2}{1 + b_1 \cdot t_i + b_2 \cdot t_i^2} - y_i\Big| \le s & (y_i = e^{t_i})\\
+\subject       \quad & \left\lvert\frac{a_0 + a_1 \cdot t_i + a_2 \cdot t_i^2}{1 + b_1 \cdot t_i + b_2 \cdot t_i^2} - y_i\right\rvert \le s & (y_i = e^{t_i})\\
 \quad & 1 + b_1 \cdot t_i + b_2 \cdot t_i^2 > 0 & (i = 1,\dots,k)
 \end{align*}
 $$

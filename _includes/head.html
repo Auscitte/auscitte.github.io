@@ -33,12 +33,13 @@
                 processEnvironments: true
             },
             TeX: {
+            {% if page.math_macros %}
                 Macros: {
-                   argmin: ["\\operatorname*\{argmin\}"],
-                   argmax: ["\\operatorname*\{argmax\}"],
-                   minimize: ["\\operatorname*\{minimize\}"],
-                   subject: ["\\operatorname*\{subject to\}"]
-                }
+                {% for m in page.math_macros %}
+		    {{ m.name }}: ["{{m.body}}"],
+                {% endfor %}
+               }
+            {% endif %}
             }
         });
     </script>
