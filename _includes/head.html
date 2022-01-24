@@ -1,10 +1,11 @@
 <head>
     <title>
+        {% assign full_title = site.title | append: " " | append: site.sub-title %} 
         {% if page.title %}
-        {{ page.title }}
+        {{ page.title | replace: "$SITE_TITLE$", full_title }}
         {% else %}
         {{ site.title }} {{ site.sub-title }}
-        {% endif%}
+        {% endif %}
     </title>
     {% if page.description %}
     <meta name="description" content="{{ page.description}}"/>

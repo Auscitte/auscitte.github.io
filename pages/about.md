@@ -1,6 +1,6 @@
 ---
 layout: page
-title: About
+title: About $SITE_TITLE$
 description: More information about me and this website.
 ---
 
