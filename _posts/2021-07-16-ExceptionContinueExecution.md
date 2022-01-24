@@ -164,7 +164,7 @@ As is, presented here is not a feasible approach due to the abysmal lack of port
 {% assign pefileseh_post = site.posts | where:"id", "/posts/Exception-Directory-pefile"  | first %}
 
 1. Matt Pietrek, [A Crash Course on the Depths of Win32 Structured Exception Handling][x86seh], Microsoft Systems Journal, January 1997
-2. {{ pefileseh_post.author }}, [{{ pefileseh_post.title | replace: "&#58", ":" }}][pefileseh]
+2. {% include post-internal-reference.html post_id = "Exception-Directory-pefile" %}
 
 [x86seh]: https://bytepointer.com/resources/pietrek_crash_course_depths_of_win32_seh.htm
 [pefileseh]: {% post_url 2021-07-13-Exception-Directory-pefile %}
