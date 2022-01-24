@@ -4,7 +4,7 @@
         {% if page.title %}
         {{ page.title | replace: "$SITE_TITLE$", full_title }}
         {% else %}
-        {{ site.title }} {{ site.sub-title }}
+        {{ full_title }}
         {% endif %}
     </title>
     {% if page.description %}
