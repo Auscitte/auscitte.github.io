@@ -50,7 +50,7 @@ contact_PK:
 paginate: 10
 
 # Set permalink
-permalink: /:slugified_categories/:title
+permalink: /posts/:title
 
 # MathJax support
 math: true

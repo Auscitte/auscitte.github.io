@@ -1104,8 +1104,8 @@ While most of the information presented here could be found elsewhere, the reade
 [FPO]: http://www.nynaeve.net/?p=97
 [chained]: https://docs.microsoft.com/en-us/cpp/build/exception-handling-x64#chained-unwind-info-structures
 [sep]: {%post_url 2020-12-01-Code-Fragments-With-Pdbparse %}
-[abyss2frag]: {{ site.baseurl }}/systems-blog/ServerDllInitialization-reversing#decompilers-comparative-analysis-and-outcome
-[abyss2cc]: {{ site.baseurl }}/systems-blog/ServerDllInitialization-reversing#calling-convention-in-64-bit-windows
+[abyss2frag]: {{ site.baseurl }}/posts/ServerDllInitialization-reversing#decompilers-comparative-analysis-and-outcome
+[abyss2cc]: {{ site.baseurl }}/posts/ServerDllInitialization-reversing#calling-convention-in-64-bit-windows
 [prologepilog]: https://docs.microsoft.com/en-us/cpp/build/prolog-and-epilog
 [abiframes]: https://www.gamasutra.com/view/news/178446/Indepth_Windows_x64_ABI_Stack_frames.php
 [mscc]: https://docs.microsoft.com/en-us/cpp/build/x64-calling-convention
