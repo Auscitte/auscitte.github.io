@@ -12,6 +12,8 @@
     {% endif %}
     <link rel="canonical" href="{{ site.url }}{{ page.url | replace:'index.html',''}}">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="author" content="{{ site.owner }}" />
+    <meta name="copyright" content="{{ site.owner }}" />
     <link rel="stylesheet" href="{{ site.baseurl }}/resources/css/main.css"/>
     {% if page.css %}
     <link rel="stylesheet" href="{{ site.baseurl }}{{ page.css }}"/>
@@ -21,9 +23,9 @@
     <link rel="apple-touch-icon" sizes ="120x120" href="{{ site.baseurl }}/resources/images/blue_owl_120.png">
     <link rel="apple-touch-icon" sizes ="76x76" href="{{ site.baseurl }}/resources/images/blue_owl_76.png">
     <link rel="apple-touch-icon" sizes ="96x96" href="{{ site.baseurl }}/resources/images/blue_owl_96.png">
-    {% if jekyll.environment == 'production' %}
+    <!-- {% if jekyll.environment == 'production' %}
     {% include analytics.html %}
-    {% endif %}
+    {% endif %} -->
 
     {% if page.uses_math %}
     <script type="text/x-mathjax-config">
