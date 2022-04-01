@@ -1,6 +1,6 @@
 ---
 layout: post
-title: A quick Note&#58 Some Trivia about Joint Expectations
+title: A quick Note&#58 Some &#171;Trivia&#187; about Joint Expectations
 author: Ry Auscitte
 category: data science blog
 comments: true
