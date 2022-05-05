@@ -70,7 +70,7 @@ This formula can be simplified further. Suppose $$f$$ is _additively separable_,
 $$E[\widehat{\Theta}] = E_{Z_1}[f_1(Z_1)] + \dots + E_{Z_n}[f_n(Z_n)]$$
 
 {% capture alert-text %}
-Note that $Z_i$ have the distribution identical to that of $Z$; as a result, an ostensibly widely-used "syntactical" shortcut consists in taking the expectation of $f$ w.r.t. $Z$  and not $Z_i$ (which is what ultimately leads to the confusion this post intends to resolve): 
+Note that $Z_i$ have the distribution identical to that of $$Z$$; as a result, an ostensibly widely-used "syntactical" shortcut consists in taking the expectation of $$f$$ w.r.t. $$Z$$  and not $$Z_i$$ (which is what ultimately leads to the confusion this post intends to resolve): 
 $$E[\widehat{\Theta}] = E_{Z_1}[f_1(Z_1)] + \dots + E_{Z_n}[f_n(Z_n)] = E_Z\left[\sum_{i=1}^{n}f_i(Z)\right]$$
 But it is important to understand what is behind the trick.
 {% endcapture %}
