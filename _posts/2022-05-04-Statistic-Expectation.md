@@ -310,7 +310,7 @@ I could have gone on forever with this recursive process of turning sample stati
 
 A special kind of delight lies in seeing the theoretical results (above all, those one has come up with on her own) work in practice. This section is for those of my readers who like to code. We will conduct experiments illustrating unbiasedness of linear regression estimators and confirm that the statistics mentioned in the "theoretical" part of the post, being random in nature, indeed, come from the distributions we deduced. 
 
-I will post the key code fragments for the purposes of clarity, whereas tedious plotting-related functionality will be omitted. Not to worry: an accompanying R notebook containing the code in all its entirety can be found [here]({{ site.url }}/pages/LS-estimator-expectation.nb.html).
+I will post the key code fragments for the purposes of clarity, whereas tedious plotting-related functionality will be omitted. Not to worry: an accompanying R notebook containing the code in all its entirety can be found [here]({{ site.url }}/pages/LS-estimator-expectation.nb.html) or [here](https://www.kaggle.com/code/rauscitte/ls-estimator-expectation).
 
 ### Generative Models Implementation
 
@@ -629,6 +629,7 @@ Prompted by a mundane task of computing an estimator's expectation arising as a 
 -- Ry Auscitte
 
 ## References
+
 1. Stephen Boyd and Lieven Vandenberghe (2004), [Convex optimization][cvxtextbook], Cambridge university press
 2. {% include post-internal-reference.html post_id = "Expectation-xy" %}
 3. Javed Hussain, [Lecture 16 (Part 1): Weak vs Strong law of large numbers (intuition, differences and similarities)][convergint], Introduction to Mathematical Probability, Sukkur IBA University
