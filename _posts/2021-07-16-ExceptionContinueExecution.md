@@ -161,8 +161,6 @@ As is, presented here is not a feasible approach due to the abysmal lack of port
 
 ## References:
 
-{% assign pefileseh_post = site.posts | where:"id", "/posts/Exception-Directory-pefile"  | first %}
-
 1. Matt Pietrek, [A Crash Course on the Depths of Win32 Structured Exception Handling][x86seh], Microsoft Systems Journal, January 1997
 2. {% include post-internal-reference.html post_id = "Exception-Directory-pefile" %}
 

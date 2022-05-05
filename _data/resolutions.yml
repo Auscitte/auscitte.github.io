@@ -140,3 +140,30 @@ cvxpyfit_bisection.png:
 cvxpyfit_convexcones.png:
   width: 928
   height: 444
+sammean_variance.png:
+  width: 929
+  height: 574
+sammean_mean.png:
+  width: 929
+  height: 574
+sammean_distribution.png:
+  width: 770
+  height: 475
+sammean_convergence_var.png:
+  width: 691
+  height: 370
+sammean_convergence_rate.png:
+  width: 689
+  height: 386
+sammean_consistency.png:
+  width: 929
+  height: 574
+sammean_clt_beta.png:
+  width: 929
+  height: 406
+sammean_clt_2.png:
+  width: 929
+  height: 406
+sammean_beta_pdf.png:
+  width: 770
+  height: 475
