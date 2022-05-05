@@ -631,12 +631,12 @@ Prompted by a mundane task of computing an estimator's expectation arising as a 
 ## References
 
 1. Stephen Boyd and Lieven Vandenberghe (2004), [Convex optimization][cvxtextbook], Cambridge university press
-2. {% include post-internal-reference.html post_id = "Expectation-xy" %}
-3. Javed Hussain, [Lecture 16 (Part 1): Weak vs Strong law of large numbers (intuition, differences and similarities)][convergint], Introduction to Mathematical Probability, Sukkur IBA University
-4. Robert Gallager, [6.262 Discrete Stochastic Processes, Spring 2011][stocproc], MIT
-5. Robert Gallager, [Renewals and the Strong Law of Large Numbers][convexmpl], MIT, Discrete Stochastic Processes (2011), MIT 
-6. Felix Pahl, [Sample Variance Converges Almost Surely][varconv]
-7. Douglas Shafer and Zhiyi Zhang, [The Sampling Distribution of the Sample Mean][sampldistr], Beginning Statistics (2012)
+2. Javed Hussain, [Lecture 16 (Part 1): Weak vs Strong law of large numbers (intuition, differences and similarities)][convergint], Introduction to Mathematical Probability, Sukkur IBA University
+3. Robert Gallager, [6.262 Discrete Stochastic Processes, Spring 2011][stocproc], MIT
+4. Robert Gallager, [Renewals and the Strong Law of Large Numbers][convexmpl], MIT, Discrete Stochastic Processes (2011), MIT 
+5. Felix Pahl, [Sample Variance Converges Almost Surely][varconv]
+6. Douglas Shafer and Zhiyi Zhang, [The Sampling Distribution of the Sample Mean][sampldistr], Beginning Statistics (2012)
+7. {% include post-internal-reference.html post_id = "Expectation-xy" %}
 
 [cvxtextbook]: https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf
 [expectxypost]: {% post_url 2022-03-31-Expectation-xy %}
