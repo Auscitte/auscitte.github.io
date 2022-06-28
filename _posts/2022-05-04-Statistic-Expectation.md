@@ -7,6 +7,11 @@ comments: true
 description: Explains what exactly computing the expectation of a sample statistic and, in particular, an estimator entails.
 tags:
     - statistics
+    - expected value
+    - linear regression
+    - convergence
+    - LLN
+    - R
 uses_math: true
 math_macros:
     - name: argmin
@@ -19,7 +24,7 @@ math_macros:
 
 The subject about to be discussed will, in all probability, seem trivial for the majority of people in statistics and data science. However, it may be considered a source of confusion among undergraduates and "casual mathematicians" such as, say, software engineers who, thanks to AI with machine learning as its flagship having marched in and set up steady camp in the ever-changing world of software, all of a sudden, find themselves reading tons of papers on statistical models.
 
-This post intends to clarify how an expected value of a sample statistic is computed. We, if the reader would care to join the discussion, will focus on a particular kind of statistics -- an estimator. I have taken quite a few statistics-related classes, but in none of them were the subtleties involved in the procedure stated explicitly, so writing this post seems worth the effort. This is the way I understand the subject, should you find an issue with my interpretation I am open for discussion.
+This post intends to clarify how an expected value of a sample statistic is computed. We, if the reader would care to join the discussion, will focus on a particular kind of statistics -- an estimator. I have taken quite a few statistics-related classes, but in none of them were the subtleties involved in the procedure stated explicitly, so writing this post seems worth the effort. This is the way I understand the subject; should you find an issue with my interpretation, I am open for discussion.
 
 ## Derivation: General Case
 
@@ -50,7 +55,7 @@ $$\widehat{\theta}^{(3)} = f(z_1^{(3)}, \dots, z_n^{(3)})$$
 
 $$\dots$$
 
-In this context we can talk about $$n$$ _independent_ random variables $$Z_1, \dots, Z_n$$, _identically distributed_ with the density function $$p(Z_i \mid \theta^{*})$$. That is, $$Z_i$$ have exactly the same distribution as does $$Z$$. Moreover, the estimator is itself can be viewed as a random variable, dependent on $$Z_i$$ in accordance with the relation $$\widehat{\Theta} = f(Z_1, \dots, Z_n)$$. The distribution of $$\widehat{\Theta}$$ is yet to be determined ;-) It depends on $$p$$ and $$f$$ and should be identified on the case by case basis.
+In this context we can talk about $$n$$ _independent_ random variables $$Z_1, \dots, Z_n$$, _identically distributed_ with the density function $$p(Z_i \mid \theta^{*})$$. That is, $$Z_i$$ have exactly the same distribution as does $$Z$$. Moreover, the estimator is itself can be viewed as a random variable, dependent on $$Z_i$$ in accordance with the relation $$\widehat{\Theta} = f(Z_1, \dots, Z_n)$$. The distribution of $$\widehat{\Theta}$$ is yet to be determined ;-) It depends on $$p$$ and $$f$$ and should be identified on a case by case basis.
 
 How would you compute an expectation in this interpretation? In my opinion, the procedure below is sound. 
 

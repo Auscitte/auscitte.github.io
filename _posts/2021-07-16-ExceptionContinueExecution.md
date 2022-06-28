@@ -7,6 +7,7 @@ comments: true
 description: A brief note on the specifics of implementing an exception handler that returns EXCEPTION_CONTINUE_EXECUTION.
 tags:
     - SEH
+    - Windows
 redirect_from: /systems blog/ExceptionContinueExecution
 ---
 

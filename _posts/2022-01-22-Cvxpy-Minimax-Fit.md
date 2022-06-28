@@ -8,6 +8,10 @@ description: A widely-used approach to solving a non-convex optimization problem
 tags:
     - cvxpy
     - optimization
+    - ECOS
+    - bisection
+    - coordinate descent
+    - quasiconvexity
 uses_math: true
 math_macros:
     - name: argmin

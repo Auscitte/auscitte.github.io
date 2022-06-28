@@ -7,6 +7,7 @@ comments: true
 description: Brings to the reader's attention a trivial property of joint expectations that many people use without giving it too much thought.
 tags:
     - statistics
+    - expected value
 uses_math: true
 ---
 

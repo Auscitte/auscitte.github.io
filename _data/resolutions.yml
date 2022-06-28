@@ -167,3 +167,51 @@ sammean_clt_2.png:
 sammean_beta_pdf.png:
   width: 770
   height: 475
+loglossdc_sklearn_vs_0p_logloss.png:
+  width: 583
+  height: 379
+loglossdc_regular_tree.png:
+  width: 486
+  height: 381
+loglossdc_precision_recall.png:
+  width: 1073
+  height: 355
+loglossdc_percentage_complete_certainty.png:
+  width: 583
+  height: 379
+loglossdc_partial_logloss_sklearn_vs_0p.png:
+  width: 1073
+  height: 355
+loglossdc_on_training_data.png:
+  width: 1073
+  height: 715
+loglossdc_logloss_eps.png:
+  width: 583
+  height: 379
+loglossdc_information_gain.png:
+  width: 899
+  height: 337
+loglossdc_fp_fn_error_rates_vs_precision_recall.png:
+  width: 1073
+  height: 715
+loglossdc_f1_score.png:
+  width: 1073
+  height: 355
+loglossdc_big_tree.png:
+  width: 800
+  height: 423
+loglossdc_balanced_tree.png:
+  width: 625
+  height: 381
+loglossdc_balanced_precision_recall.png:
+  width: 1073
+  height: 355
+loglossdc_balanced accuracy.png:
+  width: 583
+  height: 379
+loglossdc_adaboost.png:
+  width: 1073
+  height: 1435
+loglossdc_accuracy_logloss.png:
+  width: 1073
+  height: 355
