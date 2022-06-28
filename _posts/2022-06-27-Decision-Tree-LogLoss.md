@@ -458,7 +458,7 @@ graph
 {% endhighlight %}
 {% include orig-size-centered-fig.html filename="loglossdc_balanced_tree.png" alt="?" %}
 {% capture alert-text %}
-	Let us ignore for now the fact that the `TimeDateStamp` feature found its way to the top tier, while `Characteristic`, being an OR bitfield, should be treated differently. The topic of feature engineering, important as it is, lies beyond the scope of our discussion. 
+	Let us ignore for now the fact that the `TimeDateStamp` feature found its way to the top tier, and that `Characteristic`, being an OR bitfield, should be treated differently. The topic of feature engineering, important as it is, lies beyond the scope of our discussion. 
 {% endcapture %}
 {% include note-box.html text=alert-text %}
 
