@@ -118,7 +118,7 @@ On this note, I am completing the introductory section of the post. Of course, t
 
 ## The Phenomenon, at your Service
 
-The theory review done and dusted, we can proceed to the more exciting investigative part of the work, and the reader is invited to join in the endeavor. As per tradition, I am omitting the plotting-related code as non-essential to understanding the experiments, but it can still be found in the notebook, available on [github](https://github.com/Auscitte/ds-labs/blob/main/PE_Malware_DecisionTree_LogLoss.ipynb).
+The theory review done and dusted, we can proceed to the more exciting investigative part of the work, and the reader is invited to join in the endeavor. As per tradition, I am omitting the plotting-related code as non-essential to understanding the experiments, but it can still be found in the notebook, available on [github](https://github.com/Auscitte/ds-labs/blob/main/PE_Malware_DecisionTree_LogLoss.ipynb) and [kaggle](https://www.kaggle.com/code/rauscitte/pe-malware-decisiontree-logloss).
 
 The "subject" of our "investigation" will be introduced in the course of a simple experiment; **_scikit-learn_** (sklearn for short) is the machine learning framework of choice for this experiment. We begin by loading the dataset and splitting it into training and validation subsets. (The same deterministic random state will be passed to all the functions where it is applicable throughout the notebook to ensure reproducibility of the experimental results.)
 
