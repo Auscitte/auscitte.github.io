@@ -6,7 +6,7 @@ category: data science blog
 comments: true
 description: Investigates a curious phenomenon pertaining to decision trees, that of cross-entropy and accuracy metrics displaying coinciding (rather than opposite, as they normally do) trends.
 tags:
-    - machine learning
+    - sklearn
     - decision tree
     - log-loss
     - cross-entropy

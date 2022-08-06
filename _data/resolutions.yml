@@ -215,3 +215,48 @@ loglossdc_adaboost.png:
 loglossdc_accuracy_logloss.png:
   width: 1073
   height: 355
+pechecksums_val_pdf_hist.png:
+  width: 1200
+  height: 600
+pechecksums_val_inval_pdfs.png:
+  width: 900
+  height: 450
+pechecksums_val_inval_boxplot.png:
+  width: 1050
+  height: 300
+pechecksums_val_collisions_hist.png:
+  width: 1200
+  height: 375
+pechecksums_totallyunscaled.png:
+  width: 1200
+  height: 375
+pechecksums_pe_sizes.png:
+  width: 521
+  height: 326
+pechecksums_malw_pdf_hist.png:
+  width: 750
+  height: 450
+pechecksums_malware_pdf_hist.png:
+  width: 750
+  height: 450
+pechecksums_inval_pdf_hist.png:
+  width: 1200
+  height: 600
+pechecksums_inval_collisions_hist.png:
+  width: 1200
+  height: 375
+pechecksums_benign_val_violin.png:
+  width: 1050
+  height: 450
+pechecksums_benign_pdf_hist.png:
+  width: 750
+  height: 450
+pechecksums_all_pdf_hist.png:
+  width: 1200
+  height: 600
+pechecksums_all_collisions_hist.png:
+  width: 1200
+  height: 375
+pechecksums_all_boxplot.png:
+  width: 900
+  height: 300
