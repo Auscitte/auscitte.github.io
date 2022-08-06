@@ -179,8 +179,10 @@ pre code {
   h3 { color: #e93f00; }
 </style>
 <div id="introduction" class="section level2">
-<h2>Introduction</h2>
 <p>This is a companion notebook for my <a href="{% post_url 2022-08-05-PE-Checksum-Distribution %}">blog post</a>.</p>
+
+<h2>Introduction</h2>
+
 <p>It is a known (among compiler developers) fact that checksums stored in the headers of Windows portable executable (PE) files are not actually checked by the operating system, with the exception for critical processes and libraries loaded into their address spaces (drivers, in particular). For this reason, it is not uncommon to come across a PE binary with an invalid checksum. In this notebook, a distribution of checksums collected from a typical Windows system is examined and compared to that for the checksums found in a mix of malware and benign modules from a known dataset.</p>
 </div>
 <div id="plotting-related-functionality" class="section level2">
