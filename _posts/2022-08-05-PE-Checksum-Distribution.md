@@ -85,7 +85,7 @@ There must be a universal law of PE checksum distribution, according to which an
 
 Thus far, the outcome of this experiment looks interesting, but let us dig a little deeper, shall we?
 
-A closer look inside the csv files seems to be a reasonable next step, which is done in R with minimum hustle and bustle. Following the established tradition, I am omitting portions of code (plotting-reated, in particular) I deem irrelevant; the complete code can be found [here]({{ site.url }}/pages/CheckSumStats.html) (static html) and [here](https://github.com/Auscitte/ds-labs/blob/main/CheckSumStats/CheckSumStats.Rmd) (fork'able R notebook).
+A closer look inside the csv files seems to be a reasonable next step, which is done in R with minimum hustle and bustle. Following the established tradition, I am omitting portions of code (plotting-reated, in particular) I deem irrelevant; the complete code can be found [here]({{ site.url }}/pages/CheckSumStats.html) (static html) and [here](https://www.kaggle.com/code/rauscitte/distribution-of-valid-and-invalid-pe-checksums) (fork'able R notebook).
 
 Let us begin by examining a bird's-eye view of the data: first, for the valid checksums 
 
@@ -201,7 +201,7 @@ Keeping the figure above in mind, let us now plot the distribution in a more con
 
 {% include orig-size-centered-fig.html filename="pechecksums_val_pdf_hist.png" alt="collision counts and PDF for valid checksums" %}
 
-Looking at the collision counts plot by itself, one would expect a bimodal PDF; however, the density plot assumes a different shape on account of the second "would-be-peak" being averaged out by lower values “from the same bin”.	Here, the relatively narrow peak we predicted earlier is clearly visible, while the long thin tail is less so on account of its length having been concealed by logarithmic scale. Such a PDF shape implies that the probabiity of a random checksum value falling in the tight region around 10<sup>5</sup> is much higher as compared to the rest of the range.
+Considering the collision counts plot by itself, one would expect a bimodal PDF; however, the density plot assumes a different shape on account of the second "would-be-peak" being averaged out by lower values “from the same bin”.	Here, the relatively narrow peak we predicted earlier is clearly visible, while the long thin tail is less so on account of its length having been concealed by logarithmic scale. Such a PDF shape implies that the probabiity of a random checksum value falling in the tight region around 10<sup>5</sup> is much higher as compared to the rest of the range.
 
 ### Distribution of Invalid Checksums: A Detailed View
 
