@@ -201,7 +201,7 @@ Keeping the figure above in mind, let us now plot the distribution in a more con
 
 {% include orig-size-centered-fig.html filename="pechecksums_val_pdf_hist.png" alt="collision counts and PDF for valid checksums" %}
 
-Considering the collision counts plot by itself, one would expect a bimodal PDF; however, the density plot assumes a different shape on account of the second "would-be-peak" being averaged out by lower values “from the same bin”.	Here, the relatively narrow peak we predicted earlier is clearly visible, while the long thin tail is less so on account of its length having been concealed by logarithmic scale. Such a PDF shape implies that the probabiity of a random checksum value falling in the tight region around 10<sup>5</sup> is much higher as compared to the rest of the range.
+Considering the collision counts plot by itself, one would expect a bimodal PDF; however, the density plot assumes a different shape on account of the second "would-be-peak" being outweighed by lower values “from the same bin”. Here, the relatively narrow peak we predicted earlier is clearly visible, while the long thin tail is less so on account of its length having been concealed by logarithmic scale. Such a PDF shape implies that the probabiity of a random checksum value falling in the tight region around 10<sup>5</sup> is significantly higher as compared to the rest of the range.
 
 ### Distribution of Invalid Checksums: A Detailed View
 
