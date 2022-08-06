@@ -796,7 +796,7 @@ In the end, an interplay between decreasing error rate and increasing confidence
 ## References
 
 1. Andrew Ng, [Machine Learning Yearning][yearning]
-2. Mauricio Jara, [Benign and malicious PE Files Dataset for malware detection][pe-malware]
+2. Mauricio Jara, [Benign and Malicious PE Files Dataset for Malware Detection][pe-malware]
 3. [Virusshare][virusshare]: Repository of malware
 4. Jason Brownlee, [A Gentle Introduction to Cross-Entropy for Machine Learning][cross-entropy]
 5. Lei Mao, [Cross Entropy, KL Divergence, and Maximum Likelihood Estimation][ce-kld-mle]
