@@ -649,12 +649,10 @@ The native PE base relocation table is located in the _.reloc_ section and it is
 
 Following the [documentation][pe], it is easy to dissect the section data into the fields of a relocation block.
 
-\begin{itemize}
-\item 72 9f 01 00 (4 bytes) -- page RVA
-\item 0a 00 00 00 (4 bytes) -- size of entire block (including the page RVA and itself), i.e. 0xA = 4 + 4 + 2
-\item 0 (4 bits) -- type
-\item 0 00 (12 bits) -- offset
-\end{itemize}
+* `72 9f 01 00` (4 bytes) -- page RVA
+* `0a 00 00 00` (4 bytes) -- size of entire block (including the page RVA and itself), i.e. 0xA = 4 + 4 + 2
+* `0` (4 bits) -- type
+* `0 00` (12 bits) -- offset
 
 The block holds one entry only and its type is `IMAGE_REL_BASED_ABSOLUTE (0)`, which corresponds to: "The base relocation is skipped. This type can be used to pad a block."
 
