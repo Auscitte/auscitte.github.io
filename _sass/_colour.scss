@@ -27,6 +27,7 @@ $color-info-dark: darken($color-info, 10);
 $color-warning-dark: darken($color-warning, 15);
 $color-success-dark: darken($color-success, 10);
 $color-note-dark: darken($color-note, 10);
+$color-info-extra-dark: darken($color-info, 65);
 
 /*************************************************************************
                              BLUE-COLOR
@@ -113,6 +114,19 @@ main {
   background-color: $color-code;
 }
 
+//color of a rouge-highlight block inside an info note
+.info {
+  .highlight {
+      background-color: $color-info-extra-dark;
+      pre {
+         background-color: $color-info-extra-dark;
+         color: $color-info;
+      }
+      code {
+         background-color: $color-info-extra-dark;
+      }
+  }
+}
 /*************************************************************************
                              PAGINATOR-COLOR
 /*************************************************************************/
@@ -130,7 +144,7 @@ main {
 
 //---------------------------BORDER
 .preview {
-  border-bottom-color: $color-paginator;;
+  border-bottom-color: $color-paginator;
 }
 
 /*************************************************************************

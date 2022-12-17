@@ -260,3 +260,27 @@ pechecksums_all_collisions_hist.png:
 pechecksums_all_boxplot.png:
   width: 900
   height: 300
+secure_boot_certs.png:
+  width: 838
+  height: 576
+secure_boot_update.png:
+  width: 813
+  height: 467
+secure_boot_vars.png:
+  width: 804
+  height: 464
+pe_elf_cert_table_access.png:
+  width: 840
+  height: 521
+pe_elf_dynamic.png:
+  width: 423
+  height: 164
+pe_elf_new_shim_sections.png:
+  width: 525
+  height: 242
+pe_elf_relocations.png:
+  width: 568
+  height: 343
+pe_elf_vendor_cert_section.png:
+  width: 703
+  height: 350

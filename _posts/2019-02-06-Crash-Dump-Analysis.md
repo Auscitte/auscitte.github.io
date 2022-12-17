@@ -22,7 +22,7 @@ Result of this unfortunate choice was that Windows failed to boot, displaying a 
 
 Let us see how far one can get given the lack of proper environment for debugging. 
 
-This write-up will be detailed enough for a person without prior reversing experience (apart from that in basic assembler) to follow without any difficulty. 
+This write-up will be detailed enough for a person without prior reversing experience (apart from that in basic assembly) to follow without any difficulty. 
 
 ## Getting Started
 

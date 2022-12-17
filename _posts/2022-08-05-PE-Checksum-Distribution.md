@@ -2,7 +2,7 @@
 layout: post
 title: A Universal Law of CheckSum Values Distribution in PE Files
 author: Ry Auscitte
-category: systems blog
+category: data science blog
 comments: true
 description: It is a known (among compiler developers) fact that checksums stored in the headers of Windows portable executable (PE) files are not actually checked by the operating system, with the exception for critical processes and libraries loaded into their address spaces (drivers, in particular). For this reason, it is not uncommon to come across a PE binary with an invalid checksum. In this post, a distribution of checksums collected from a typical Windows system is examined and compared to that for the checksums found in a mix of malware and benign modules from a known dataset. We look into the algorithm computing the checksum values in order to explain the results.
 tags:
