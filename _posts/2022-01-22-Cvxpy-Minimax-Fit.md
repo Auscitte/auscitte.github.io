@@ -231,7 +231,7 @@ The binary search is carried out as follows: we solve the feasibility problem wi
 The necessary groundwork laid, it is time to get down to coding. I will use [**cvxpy**][cvxpy] for the purpose. Where no random number generation was involved, I found that it worked just as well as _**matlab**_ for all the problems in the course. Here is the version I was using:
 
 {% highlight bash linenos %}
-:~$ pip3 list \mid grep cvxpy
+:~$ pip3 list | grep cvxpy
 cvxpy                  1.1.18
 {% endhighlight %}
 

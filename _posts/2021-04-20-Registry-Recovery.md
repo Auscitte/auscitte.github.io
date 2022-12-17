@@ -18,7 +18,7 @@ The [previous installment]({{ site.baseurl }}/systems%20blog/ServerDllInitializa
 
 “Heh! Baby girl,” you will, no doubt, say in reply, chuckling, “I would have bet my bottom dollar that the broken registry was the thing that would not let Windows boot without your fancy-schmancy bug-check analyses and reverse-engineerings.” Indeed, registry corruptions are to OS crashes as burnt capacitors are to electronics failures and one could definitely have saved some time by taking a shortcut and checking the registry for consistency right away. However, being methodical in performing troubleshooting procedures gives one a chance to gain a deeper insight into what is happening “under the hood” and, by this means, broaden one’s knowledge. On this note, let us begin.
 
-“Wait a minute,”  you might interject, “doesn’t Windows back up its registry every now and then?” It used to. Not anymore. According to the Microsoft’s [documentation](https://docs.microsoft.com/en-us/troubleshoot/windows-client/deployment/system-registry-no-backed-up-regback-folder), starting from the build 1803, Windows 10 no longer maintains “spare” copies of its register hives which is “intended to help reduce the overall disk footprint size of Windows” (the backup files could still be found in the `%SystemRoot%"\System32\config\RegBack` directory, but they are of zero size). Bugcheck analysis, along with other information, outputs this string: "`BUILDDATESTAMP_STR:  180410-1804`" for the system in question. I was one build too late! Now it is recommended that we use Windows restore points in case the registry needs to be restored to some earlier state. 
+“Wait a minute,”  you might interject, “doesn’t Windows back up its registry every now and then?” It used to. Not anymore. According to the Microsoft’s [documentation](https://docs.microsoft.com/en-us/troubleshoot/windows-client/deployment/system-registry-no-backed-up-regback-folder), starting from the build 1803, Windows 10 no longer maintains “spare” copies of its register hives which is “intended to help reduce the overall disk footprint size of Windows” (the backup files could still be found in the `%SystemRoot%\System32\config\RegBack` directory, but they are of zero size). Bugcheck analysis, along with other information, outputs this string: "`BUILDDATESTAMP_STR:  180410-1804`" for the system in question. I was one build too late! Now it is recommended that we use Windows restore points in case the registry needs to be restored to some earlier state. 
 
 For the record, the list of restore points turned out to be empty; Mocrosoft’s _sfc_ utility had also been given a try, with the same, dismal, outcome. 
 
@@ -233,7 +233,7 @@ def has_next(self):
     """
     regf = self.first_hbin().parent()
     if regf.hbins_size() + regf.first_hbin_offset() == self._offset_next_hbin:
-            return False
+        return False
     
     #Looping over blocks until a valid bin is found
     while self._offset_next_hbin < len(self._buf): 
@@ -242,7 +242,7 @@ def has_next(self):
             return True
         except (ParseException, struct.error): #skipping the damaged block
                self._offset_next_hbin += 0x1000 #each block is 4Kb in size
-        return False
+    return False
 {% endhighlight %}
 
 With this little adjustment in place, we can now write a python script that would read the hive block by block while assembling the key/values hierarchy. The functionality is divided among three classes:  `BrokenRegistry`, `BrokenKey`, and `BrokenValue`. The main purpose of the latter two is to keep track of the parent/container for the corresponding key/value. `BrokenRegistry` is the class that attempts to load a corrupt registry; among its methods is `_load_broken()` that does the job.
@@ -254,14 +254,14 @@ def _load_broken(self, reg):
     for hb in reg._regf.hbins():
         for cl in hb.cells():
             if cl.is_free():
-	    continue
+	        continue
             cell = cl.child()
 	if isinstance(cell, VKRecord):
 	    #Omitted: creating an instance of BrokenValue
 	    pass
 	elif isinstance(cell, NKRecord):
 	    #Omitted: creating an instance of BrokenKey
-                pass
+            pass
 {% endhighlight %}
 
 I am not going over the entire script here because, for the most part, it is tedious and mind-numbingly dull, but anyone interested in the details is more than welcome to peruse [the complete version](https://gist.github.com/Auscitte/444a3c27fad5aaaf9b372eac2e37ea0c). 

@@ -41,7 +41,7 @@ Listed below are the versions of pdbparse and its dependencies that I have insta
 
 {% include code-block-header.html title="Versions of pdbparse and its Dependencies" %}
 {% highlight none linenos %}
-ubuntu@ubuntu:~$ pip3 list 
+$ pip3 list 
 Package                Version      
 ---------------------- -------------
 construct              2.9.52       
@@ -133,7 +133,7 @@ Not a workaround, but a minor fix for an operator precedence issue:
 
 {% include code-block-header.html title="Fix for an Operator Precedence Issue" %}
 {% highlight none linenos %}
-ubuntu@ubuntu:~$ diff /usr/local/lib/python3.8/dist-packages/pdbparse/dbi.py dbi.py
+$ diff /usr/local/lib/python3.8/dist-packages/pdbparse/dbi.py dbi.py
 160c160
 < Name = "Name" / CString(encoding = "utf8").parse(Names[NameRef[j]:])
 ---
@@ -282,8 +282,8 @@ Then I employed pdbparse’s **_pdb_dump_** utility to dissect the symbol file i
 
 {% include code-block-header.html title="Searching Global Symbols Stream For g_Message" %}
 {% highlight shell linenos %}
-ubuntu@ubuntu:~$ pdb_dump.py hiworld.pdb
-ubuntu@ubuntu:~$ strings hiworld.pdb.008 | grep g_Message
+$ pdb_dump.py hiworld.pdb
+$ strings hiworld.pdb.008 | grep g_Message
 ?g_Message@@3UTextHolder@@A
 g_Message
 {% endhighlight %}
@@ -497,7 +497,7 @@ At that point the situation did not look staggeringly promising. Yes, I found sy
 
 {% include code-block-header.html title="Printing Out a List of References to Procedures in Global Symbols" %}
 {% highlight shell linenos %}
-ubuntu@ubuntu:~$ find -name "hiworld.pdb.*" -type f -print0 | xargs -0 strings -f | grep store_message
+$ find -name "hiworld.pdb.*" -type f -print0 | xargs -0 strings -f | grep store_message
 ./hiworld.pdb.014: store_message
 ./hiworld.pdb.008: ?store_message@@YAKPEAUTextHolder@@PEB_W@Z
 ./hiworld.pdb.008: store_message

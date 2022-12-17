@@ -4,7 +4,7 @@ title: A Universal Law of CheckSum Values Distribution in PE Files
 author: Ry Auscitte
 category: data science blog
 comments: true
-description: It is a known (among compiler developers) fact that checksums stored in the headers of Windows portable executable (PE) files are not actually checked by the operating system, with the exception for critical processes and libraries loaded into their address spaces (drivers, in particular). For this reason, it is not uncommon to come across a PE binary with an invalid checksum. In this post, a distribution of checksums collected from a typical Windows system is examined and compared to that for the checksums found in a mix of malware and benign modules from a known dataset. We look into the algorithm computing the checksum values in order to explain the results.
+description: It is a known (among compiler developers) fact that checksums stored in the headers of Windows portable executable (PE) files are not actually checked by the operating system, with the exception of critical processes and libraries loaded into their address spaces (drivers, in particular). For this reason, it is not uncommon to come across a PE binary with an invalid checksum. In this post, a distribution of checksums collected from a typical Windows system is examined and compared to that for the checksums found in a mix of malware and benign modules from a known dataset. We look into the algorithm computing the checksum values in order to explain the results.
 tags:
     - PE
     - checksum
@@ -399,7 +399,7 @@ if (n % 3 > 0) {
     do_work(n - (n % 3));
     if (n % 3 > 1) 
         do_work(n - (n % 3) + 1); 
-    }
+}
 {% endhighlight %}
 Thus, the number of times the loop condition is tested would decrease by a factor of 3.
 	
@@ -521,9 +521,9 @@ def main(args):
                 if not check_pe_magic_numbers(path, fsz):
                     continue
 
-            if not fsz in sizes:
-                sizes[fsz] = 0
-                sizes[fsz] += 1
+                if not fsz in sizes:
+                    sizes[fsz] = 0
+                    sizes[fsz] += 1
 
             except Exception as e:
                 print("Error accessing", path, "(", str(e), ")")

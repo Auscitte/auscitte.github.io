@@ -69,7 +69,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 '0x40'
 {% endhighlight %}
 
-Another relevant to the problem on our hands piece of information is the **_import table_**.
+Another relevant to the problem in hand piece of information is the **_import table_**.
 
 {% highlight python linenos %}
 
@@ -1317,7 +1317,7 @@ typedef struct _S {
 } S;
 {% endhighlight %}
 
-Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem on our hands and, as such, did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list. The head of this list is recorded in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
+Assuming the structures are reverse-engineered correctly (which I am not at all sure of for they did not seem to be relevant to the problem in hand and, as such, did not secure much of my time), the function seems to traverse a hierarchy of registry keys while filling in a single-linked list. The head of this list is recorded in the first field of `INIFILE_MAPPING` structure. Compare the definition of structure `S` to that of  `SINGLE_LIST_ENTRY` from ntdef.h. 
 
 Next come the global variables and declarations for subroutines.
 
