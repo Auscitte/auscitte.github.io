@@ -209,12 +209,12 @@ As mentioned before, the `dbxupdate.bin` file stored as part of the most recent 
 {% highlight none linenos %}
 >certutil -hashfile %windir%\System32\SecureBootUpdates\dbxupdate.bin MD5
 MD5 hash of C:\WINDOWS\System32\SecureBootUpdates\dbxupdate.bin:
-8d9919cb58914a1f234c682d247a6ee2
+·8d9919cb58914a1f234c682d247a6ee2·
 CertUtil: -hashfile command completed successfully.
 
 >certutil -hashfile %windir%\WinSxS\amd64_microsoft-windows-s..boot-firmwareupdate_31bf3856ad364e35_10.0.19041.1880_none_294d9e3cbae1ff57\dbxupdate.bin MD5
 MD5 hash of C:\WINDOWS\WinSxS\amd64_microsoft-windows-s..boot-firmwareupdate_31bf3856ad364e35_10.0.19041.1880_none_294d9e3cbae1ff57\dbxupdate.bin:
-8d9919cb58914a1f234c682d247a6ee2
+·8d9919cb58914a1f234c682d247a6ee2·
 CertUtil: -hashfile command completed successfully.
 {% endhighlight %}
 
@@ -246,13 +246,13 @@ drwxrwxr-x 2 * * 4096 Sep  8 15:55 r
 
 ./KB4535680/u/f:
 total 8
--rw-rw-r-- 1 * *   46 Sep 23  2019 dbupdate.bin
--rw-rw-r-- 1 * * 1368 Sep 23  2019 dbxupdate.bin
+-rw-rw-r-- 1 * *   46 ·Sep 23  2019· dbupdate.bin
+-rw-rw-r-- 1 * * 1368 ·Sep 23  2019· dbxupdate.bin
 
 ./KB4535680/u/r:
 total 8
--rw-rw-r-- 1 * *   46 Sep 23  2019 dbupdate.bin
--rw-rw-r-- 1 * * 2840 Sep 23  2019 dbxupdate.bin
+-rw-rw-r-- 1 * *   46 ·Sep 23  2019· dbupdate.bin
+-rw-rw-r-- 1 * * 2840 ·Sep 23  2019· dbxupdate.bin
 {% endhighlight %}
 
 Its respectable age had also been betrayed by the assembly versions the update was to install: 10.0.17763.793, 10.0.18362.411, 10.0.14393.3001, 10.0.10240.18575, and 10.0.17134.1060 -- all of it leading me to the conclusion that _KB4535680_ could not have been deployed **_after_** the  `amd64_microsoft-windows-s..boot-firmwareupdate_31bf3856ad364e35_10.0.19041.1_none_6ab72e7ea4dfef1b` assembly was.    
@@ -271,12 +271,12 @@ All the necessary versions of `dbxupdate.bin` secured, how are we to go about co
 {% highlight none linenos %}
 >certutil -hashfile .\UEFI\dbxupdate_x64_2022-08-12.bin MD5
 MD5 hash of .\UEFI\dbxupdate_x64_2022-08-12.bin:
-8d9919cb58914a1f234c682d247a6ee2
+·8d9919cb58914a1f234c682d247a6ee2·
 CertUtil: -hashfile command completed successfully.
 
 >certutil -hashfile %windir%\System32\SecureBootUpdates\dbxupdate.bin MD5
 MD5 hash of C:\WINDOWS\System32\SecureBootUpdates\dbxupdate.bin:
-8d9919cb58914a1f234c682d247a6ee2
+·8d9919cb58914a1f234c682d247a6ee2·
 CertUtil: -hashfile command completed successfully. 
 {% endhighlight %}
 
@@ -395,7 +395,7 @@ My script accepts paths to `dbxupdate.bin` and a (optional) DER-encoded certific
 >python dbxupdate_parser.py  %windir%\System32\SecureBootUpdates\dbxupdate.bin  MicCorKEKCA2011_2011-06-24.crt
 Container:
     Auth2 = Container:
-        TimeStamp = 2010-03-06 19:17:21+00:00
+        TimeStamp = ·2010-03-06 19:17:21+00:00·
         AuthInfo = Container:
             dwLength = 3318
             wRevision = 512
@@ -403,14 +403,14 @@ Container:
             CertType = u'{4aafd29d-68df-49ee-a98a-347d375665a7}' (total 38)
             CertData = ListContainer:
                 Container:
-                    C/N = u'Microsoft Corporation KEK CA 2011' (total 33)
+                    C/N = u'·Microsoft Corporation KEK CA 2011·' (total 33)
                     S/N = 1137338005320235767164219581974198572443238437
-                    Fingerprint = u'c6c68c9bd883e14469c725251201043fb7d4c3cd' (total 40)
-                    Chain = ListContainer:
+                    Fingerprint = u'·c6c68c9bd883e14469c725251201043fb7d4c3cd·' (total 40)
+                    ·Chain· = ListContainer:
                         Container:
                             C/N = u'Microsoft Corporation KEK CA 2011' (total 33)
                             S/N = 458269114596843440832515
-                            Fingerprint = u'31590bfd89c9d74ed087dfac66334b3931254b30' (total 40)
+                            Fingerprint = u'·31590bfd89c9d74ed087dfac66334b3931254b30·' (total 40)
                             Valid = u'2011-06-24 20:41:29+00:00 - 2026-06-24 20:51:29+00:00' (total 53)
                         Container:
                             C/N = u'Microsoft Windows UEFI Key Exchange Key' (total 39)
@@ -617,7 +617,7 @@ The first question in our agenda arises owing to one of our earlier observations
 {% highlight none linenos %}
 {
     "fileInfo": {
-        "md5": "45ac4530ada617e443e343c730a14dfe",
+        "md5": "·45ac4530ada617e443e343c730a14dfe·",
         "sha1": "3a2d8ecf4649b7d766b6579fc7044b3ba9bdf3a8",
         "sha256": "528728c4a643d366445d953c6357a45656795396c09ac93b8a984b74c4bda9c3",
         "size": 4961
@@ -639,7 +639,7 @@ The first question in our agenda arises owing to one of our earlier observations
 }
 {
     "fileInfo": {
-        "md5": "0d157dba3d91f8f5a12b39d68d9b4358",
+        "md5": "·0d157dba3d91f8f5a12b39d68d9b4358·",
         "sha1": "8d46cc1cd3c3f1729bab6c97b856a9e94da0acb6",
         "sha256": "0a15d385e02757ac103e51f52db5e2bdd3c83b60d8337a9c2ae74fbdb303dd9b",
         "size": 7085
@@ -661,7 +661,7 @@ The first question in our agenda arises owing to one of our earlier observations
 }
 {
     "fileInfo": {
-        "md5": "9275304214f847b261c64e599092c265",
+        "md5": "·9275304214f847b261c64e599092c265·",
         "sha1": "dfa0e7d8d342f460042986a130c360eab2b47009",
         "sha256": "a1fcafe3ce43172688ab6410140f704c0dfdbed3bf17c1b6ca59021fd979fa97",
         "size": 4011
