@@ -284,3 +284,15 @@ pe_elf_relocations.png:
 pe_elf_vendor_cert_section.png:
   width: 703
   height: 350
+exploring_winsxs.pdf:
+  width: 
+  height: 
+shlwapi_current.png:
+  width: 397
+  height: 509
+winsxs_update.png:
+  width: 738
+  height: 486
+shlwapi_current_base.png:
+  width: 404
+  height: 509

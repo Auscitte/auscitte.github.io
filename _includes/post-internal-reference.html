@@ -1,1 +1,1 @@
-{% assign post_url = "/posts/" | append: include.post_id  %} {% assign post_inst = site.posts | where:"id", post_url | first %} {{ post_inst.author }}, [{{ post_inst.title | replace: "&#58", ":" }}]({{ site.url }}/posts/{{ include.post_id }})
+{% assign post_url = "/posts/" | append: include.post_id  %} {% assign post_inst = site.posts | where:"id", post_url | first %} {{ post_inst.author }}, [{{ post_inst.title | replace: "&#58", ":" }}]({{ site.url }}/posts/{{ include.post_id }}) ({{ post_inst.date | date: "%Y"}}), {{ site.title }} {{ site.sub-title }}
