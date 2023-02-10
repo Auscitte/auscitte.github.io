@@ -470,7 +470,7 @@ It must be an impressive piece of chronicling taking us from the very origin, wh
 TpmTasks.dll: 10.0.19041.1880 <==> 10.0.19041.1889 <==> 10.0.19041.2311
 {% endhighlight %}
 
-Having counted a (recoverable) base version in for good measure, we conclude that the longest file sequence on this computer is four assembly versions long. 
+Having counted a (recoverable) base version in for good measure, we conclude that the longest file sequence on the test computer is four assembly versions long. 
 
 ## Postscriptum
 
