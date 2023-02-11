@@ -924,7 +924,7 @@ Separated blocks of code:
          Block end: 0x180004f8a ( length =  644 )
 {% endhighlight %}
 
-_basesrv.dll_ is loaded at its preferred base address of `0x180000000`; in terms RVAs, the blocks  of code constituting `ServerDllInitialization()`, hereby, are: `0x1680-0x23f2` and `0x4d06-0x4f8a`. Notice a gap between the `0x23f2` and `0x23f2` relative addresses; as pointed out [here][abyss2frag], “the body of `ServerDllInitialization()` is fragmented with the instructions from other functions, `BaseSrvInitializeIniFileMappings()` and `BaseSrvSaveIniFileMapping()`, squeezed in between its code blocks”. 
+_basesrv.dll_ is loaded at its preferred base address of `0x180000000`; in terms RVAs, the blocks  of code constituting `ServerDllInitialization()`, hereby, are: `0x1680-0x23f2` and `0x4d06-0x4f8a`. Notice a gap between the `0x23f2` and `0x4d06` relative addresses; as pointed out [here][abyss2frag], “the body of `ServerDllInitialization()` is fragmented with the instructions from other functions, `BaseSrvInitializeIniFileMappings()` and `BaseSrvSaveIniFileMapping()`, squeezed in between its code blocks”. 
 
 Now let us attempt obtaining the same list of code fragments by means of our extended pefile.
 
