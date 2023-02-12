@@ -14,7 +14,6 @@ module Jekyll
       priority :high
         
       def generate(site)
-          
           tagspath = "#{site.source}" + File::SEPARATOR + "tags" + File::SEPARATOR
           tagfiles = Set[]
               paths = Dir[tagspath + "*"]
