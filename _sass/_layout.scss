@@ -123,6 +123,15 @@ main img,
   position: absolute;
 }
 
+section {
+  position: relative;
+}
+
+.section-header {
+  position: absolute;
+  top: -10px;
+}
+
 /*************************************************************************
                                 LEFT
 /*************************************************************************/
@@ -188,4 +197,39 @@ main img,
 
 .site-title > h1 {
   text-align: center;
+}
+
+#index-page-wrapper-all-id {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#index-page-wrapper-left-id {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.tag-with-counts-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: 10px;
+}
+
+.tag-with-counts  {
+
+}
+
+.series-posts-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.series-posts-timestamp {
+  flex-shrink: 0; /* does not shrink */
 }

@@ -1,0 +1,28 @@
+{% for s in site.series %}
+<article class = "preview">
+    <h2><a class="link-to-post" href="{{ site.baseurl }}{{ s.url }}">{{ s.title }}</a></h2>
+    <div class = "series-about">
+        {% assign about_para = s.about | split: ' $ ' %}
+        {% for p in about_para %}
+        <p>{{ p }}</p>
+        {% endfor %}
+    </div>
+    {% for post_id in s.sequence %}
+        {% assign post_url = "/posts/" | append: post_id %}
+        {% assign post_inst = site.posts | where:"id", post_url | first %}
+        <div class = "series-posts-container">
+           <span class="series-posts-timestamp">
+            <small>
+                <time datetime="{{ page.date | date: '%d %m %Y'}}">
+                    {{ post_inst.date | date_to_string | upcase }}
+                </time>
+                <span class="tag-sep"> | </span>
+            </small>
+           </span>
+           <span class="series-posts-title"> 
+            <a class="link-to-post-thin" href="{{ site.url }}/posts/{{ post_id }}">{{ post_inst.title | replace: "&#58", ":" }}</a>
+           </span> 
+        </div>
+    {% endfor %}
+</article>
+{% endfor %}

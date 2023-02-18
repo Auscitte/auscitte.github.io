@@ -48,7 +48,12 @@ article > blockquote {
                              MARGIN-BOTTOM
 /*************************************************************************/
 
+.series-about > p {
+  margin-bottom: $l-h-baseline-half;
+}
+
 //---------------------------BASELINE
+.series-about,
 .contact-form input,
 .contact-form textarea {
   margin-bottom: $l-h-baseline;
@@ -119,9 +124,11 @@ article ol li:before {
 }
 
 //---------------------------BASELINE
+.section-header,
 article > blockquote,
 .alert,
 .env-header,
+section,
 #wrapper > header {
   padding-left: $l-h-baseline;
   padding-right: $l-h-baseline;
@@ -137,10 +144,11 @@ main {
 /*************************************************************************
                   MARGIN-LEFT_RIGHT AND ROUND CORNERS
 /*************************************************************************/
+section,
 main {
   margin-left: $l-h-content-container-margin;
   margin-right: $l-h-content-container-margin;
-  border-radius: 25px;
+  border-radius: 15px;
 }
 
 nav {
@@ -161,18 +169,26 @@ nav {
   margin-top: 10px;
 }
 
+section {
+  margin-top: $l-h-content-container-margin;
+  margin-bottom: $l-h-content-container-margin;
+}
+
 /*************************************************************************
                              PADDING-TOP-BOTTOM
 /*************************************************************************/
 
 //---------------------------BASELINE-HALF
-.lineno, .alert {
+.section-header,
+.lineno, 
+.alert {
   padding-top: $l-h-baseline-half;
   padding-bottom: $l-h-baseline-half;
 }
 
 //---------------------------BASELINE
 #footer-main,
+section,
 article {
   padding-bottom: $l-h-baseline;
   padding-top: $l-h-baseline;
@@ -204,6 +220,7 @@ article {
 /*************************************************************************/
 
 //---------------------------BASELINE-HALF
+.series-posts-container,
 figcaption {
   padding-top: $l-h-baseline-half;
 }
@@ -245,6 +262,7 @@ article {
 /*************************************************************************
                              PADDING-BOTTOM
 /*************************************************************************/
+
 
 //---------------------------0
 .bottomless {

@@ -96,6 +96,7 @@ main a:hover,
 }
 
 //---------------------------BACKGROUND
+section,
 main {
   background-color: $color-white;
 }
@@ -247,6 +248,15 @@ article > h6,
   color: $color-accent-dark;
 }
 
+//for non-bold fonts
+.link-to-post-thin,
+.link-to-post-thin:visited {
+  color: darken($color-accent-dark, 10);
+}
+.link-to-post-thin:hover {
+  color: darken($color-accent-dark, 20);
+}
+
 .site-title-block h1 {
   color: $color-accent
 }
@@ -361,7 +371,7 @@ article > h6,
                            MISC-COLOR
 /*************************************************************************/
 .link-to-post:hover {
-  color: darken($color-accent-dark, 5);
+  color: darken($color-accent-dark, 10);
 }
 
 .contact-form input[type="submit"]:hover {
@@ -402,3 +412,9 @@ article > h6,
   fill: $color-accent;
  }
 }
+
+.section-header {
+  background-color: $color-paginator;
+  color: darken($color-paginator-darkest, 10);
+}
+

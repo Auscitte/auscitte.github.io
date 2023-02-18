@@ -4,7 +4,7 @@ title: Bringing My OS Back from the Abyss &#58 Restoring Windows Registry (Part 
 author: Ry Auscitte
 category: systems blog
 comments: true
-description: A registry recovery procedure walk-through.
+description: A registry recovery procedure walk-through. Describes internal organization of Windows registry to the extent necessary to understand the recovery procedure and presents a python script implementing it; touches on the subject of VSS operation.
 tags:
     - Windows 10
     - registry

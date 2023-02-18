@@ -46,7 +46,8 @@ contact_PK:
 #          Optional variables
 ##########################################
 
-# Set maximum posts per page
+# Set maximum posts per page (currently not used)
+# Implemented a custom paginator for series of articles instead
 paginate: 10
 
 # Set permalink
@@ -59,6 +60,11 @@ highlighter_class_name: "highlight"
 #syntax_highlighter_opts seems to have no effect on {% highlight %}
 #syntax_highlighter_opts:
 #  css_class: "{{ highlighter_class_name }}"
+
+collections:
+  series:
+      output: true
+      permalink: /series/:name
 
 ##########################################
 #          Do not change these variables
@@ -73,7 +79,7 @@ sass:
     style: compressed
 
 plugins:
-  - jekyll-paginate
+  - jekyll-paginate # consider removing
   - jekyll-sitemap # add /sitemap.xml file
   - jekyll-redirect-from
 

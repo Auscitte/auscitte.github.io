@@ -952,7 +952,7 @@ It was a study beneficial in every way (the effect it had on my meeting deadline
 
 ## References
 
-1. Ry Auscitte, [A Tale of Omnipotence or How a Windows Update Broke Ubuntu Live CD]({% post_url 2022-12-16-Secure-Boot-Windows-Update %}) (2022), Notes of an Innocent Bystander (with a Chainsaw in Hand) 
+1. Ry Auscitte, [A Tale of Omnipotence or How a Windows Update Broke Ubuntu Live CD]({% post_url 2022-12-16-Secure-Boot-Windows-Update %}) (2022), Notes of an Innocent Bystander (with a Chainsaw in Hand)
 1. [Unified Extensible Firmware Interface (UEFI) Specification, Release 2.10][uefi-spec] (Aug 29, 2022), UEFI Forum 
 1. [Cabinet (file format)][wiki-cab], Wikipedia
 1. Jaime Geiger, [Extracting and Diffing Windows Patches in 2020][diff-patch]

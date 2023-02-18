@@ -1,0 +1,25 @@
+<!--
+The sorting solution is curtesy of Aleksei Kharlov; 
+it is a modified version of the one given in https://www.codeofclimber.ru/2015/sorting-site-tags-in-jekyll/
+-->
+
+<!--All in one line to avoid bogus spaces and newlines appearing in site_tags -->
+
+{% capture site_tags %}{% for tag in site.tags %}{{ tag | first | upcase }}#{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
+
+{% assign sorted_tags = site_tags | split: ',' | sort %}
+
+<div class="tag-with-counts-container">
+{% for tag in sorted_tags %} 
+{% assign tagKV = tag | split: '#' %}
+{% capture tag_word %}{{ tagKV[1] }}{% endcapture %}
+
+<span class="tag-with-counts">
+<small>
+<a href="{{ site.baseurl }}/tags/{{ tag_word | downcase | replace: " ", "-"}}.html">
+                    {{ tagKV[0] | replace: " ", "&nbsp"}}&nbsp;({{ site.tags[tag_word] | size }})
+</a>
+</small>
+</span>
+{% endfor %}
+</div>

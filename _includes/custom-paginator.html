@@ -1,0 +1,37 @@
+{% if page.id %}
+    {% for s in site.series %}
+        {% assign last_post = nil %}
+        {% assign found = nil %}
+        {% for post_id in s.sequence %}
+            {% assign post_url = "/posts/" | append: post_id %}
+
+            {% if found %}
+                {% assign next_post = post_url %}
+                {% break %}
+            {% endif %}
+
+            {% if post_url == page.id %}
+                {% assign found = true %}
+                {% if last_post %}
+                    {% assign previous_post = last_post %}
+                {% endif %}     
+            {% endif %}
+
+            {% assign last_post = post_url %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+
+<nav class="paginator">
+    <ul>
+        {% if previous_post %}
+        <li><a class="fancy-nav" href="{{ site.baseurl }}{{ previous_post }}">&lt;&nbsp;Previous</a></li>
+        {% endif %}
+        <li class="sep">&nbsp;</li>
+        <li><a class="fancy-nav" href="#">Top</a></li>
+        <li class="sep">&nbsp;</li>
+        {% if next_post %}
+        <li><a class="fancy-nav" href="{{ site.baseurl }}{{ next_post }}">Next&nbsp;&gt;</a></li>
+        {% endif %}
+    </ul>
+</nav>

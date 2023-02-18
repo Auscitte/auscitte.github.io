@@ -3,14 +3,30 @@
 {% include head.html %}
 <body style="background: url('{{ site.baseurl }}/resources/images/main_front.jpg') no-repeat fixed;
                             background-size: cover">
+
 <div id="wrapper">
     {% include title-header.html %}
-    <main id="start">
-        <div class="articles">
-            {{ content }}
-        </div>
-    </main>
-        {% include paginator.html %}
+
+<div id="index-page-wrapper-all-id">
+    <div id="index-page-wrapper-left-id">
+        <section id = "latest-posts-id">
+            <div class = "section-header">Latest {%if page.latest_count == 1 %}Post{% else %}Posts{% endif %}</div>
+            {% include latest-posts-preview.html post_count=page.latest_count %}
+        </section>
+
+        <section id = "series-id">
+             <div class = "section-header">Article Series</div>
+            {% include series-preview.html %}
+        </section>
+    </div>
+        
+    <section id = "tags_posts_count-id">
+        {% include tags-posts-count.html %}
+    </section>
+</div>
+    
+    {% include custom-paginator.html %}
+    
     <footer>
         {% include footer.html %}
     </footer>

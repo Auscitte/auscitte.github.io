@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<article>
+<h1>{{page.title}}</h1>
+<br/>
+<br/>
+{{ page.about }}
+</article>
+{% for post_id in page.sequence %}
+   {% assign post_url = "/posts/" | append: post_id %}
+   {% assign page = site.posts | where:"id", post_url | first %}
+   {% include articles.html %}
+{% endfor %}

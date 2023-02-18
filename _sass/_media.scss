@@ -59,14 +59,12 @@
   html {
     font-size: $f-s-desktop;
   }
-  
 }
 
-@media only screen and (min-width: $media-query-max-extra) {
-
-
-
-
+@media only screen and (min-width: $media-query-max-extra * 1.05 /*todo: replace with https://stackoverflow.com/questions/40012428/how-to-detect-css-flex-wrap-event*/) {
+  #tags_posts_count-id {
+    max-width: 0.3 * $media-query-max;
+  }  
 }
 
 
