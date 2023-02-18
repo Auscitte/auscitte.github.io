@@ -5,7 +5,12 @@ layout: default
 <h1>{{page.title}}</h1>
 <br/>
 <br/>
-{{ page.about }}
+<div class = "series-about">
+ {% assign about_para = page.about | split: ' $ ' %}
+ {% for p in about_para %}
+ <p>{{ p }}</p>
+ {% endfor %}
+</div>
 </article>
 {% for post_id in page.sequence %}
    {% assign post_url = "/posts/" | append: post_id %}
