@@ -18,6 +18,8 @@ $color-blue-dark: darken($color-blue, 15);
 $color-green-dark: darken($color-green, 15);
 $color-red-dark: darken($color-red, 15);
 
+$color-accent-extra-dark: darken($color-accent, 30);
+
 $color-info: lighten($color-blue, 45);
 $color-warning: lighten($color-accent, 45);
 $color-success: lighten($color-green, 45);
@@ -28,6 +30,8 @@ $color-warning-dark: darken($color-warning, 15);
 $color-success-dark: darken($color-success, 10);
 $color-note-dark: darken($color-note, 10);
 $color-info-extra-dark: darken($color-info, 65);
+
+$hover-delta: 10;
 
 /*************************************************************************
                              BLUE-COLOR
@@ -251,10 +255,10 @@ article > h6,
 //for non-bold fonts
 .link-to-post-thin,
 .link-to-post-thin:visited {
-  color: darken($color-accent-dark, 10);
+  color: $color-accent-extra-dark;
 }
 .link-to-post-thin:hover {
-  color: darken($color-accent-dark, 20);
+  color: darken($color-accent-extra-dark, $hover-delta);
 }
 
 .site-title-block h1 {
@@ -371,7 +375,7 @@ article > h6,
                            MISC-COLOR
 /*************************************************************************/
 .link-to-post:hover {
-  color: darken($color-accent-dark, 10);
+  color: darken($color-accent-dark, $hover-delta);
 }
 
 .contact-form input[type="submit"]:hover {

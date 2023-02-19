@@ -1,4 +1,4 @@
-/********** ***************************************************************
+/**************************************************************************
                              MARGIN=0-AUTO
 /*************************************************************************/
 .table table,
@@ -148,25 +148,25 @@ section,
 main {
   margin-left: $l-h-content-container-margin;
   margin-right: $l-h-content-container-margin;
-  border-radius: 15px;
+  border-radius: $round-corners-medium;
 }
 
 nav {
-  border-radius: 15px;
+  border-radius: $round-corners-medium;
   margin-left: $l-h-content-container-margin;
   margin-right: $l-h-content-container-margin;
   margin-top: $l-h-content-container-margin;
 }
 
 #footer-main {
-  border-radius: 15px 15px 15px 15px;
+  border-radius: $round-corners-medium $round-corners-medium $round-corners-medium $round-corners-medium;
   margin-left: $l-h-content-container-margin;
   margin-right: $l-h-content-container-margin;
 }
 
 .site-title-block {
-  border-radius: 15px 15px 15px 15px;
-  margin-top: 10px;
+  border-radius: $round-corners-medium $round-corners-medium $round-corners-medium $round-corners-medium;
+  margin-top: $l-h-content-container-margin;
 }
 
 section {
@@ -212,7 +212,7 @@ article {
 }
 
 .site-title-block {
-  padding: 10px;
+  padding: $l-h-content-container-margin;
 }
 
 /*************************************************************************
@@ -358,7 +358,7 @@ article ol ol {
 //settings for markdown tables
 //code blocks are also made of tables :), but with class names assigned to them 
 td:not([class]) {
-  padding: 10px;
+  padding: $l-h-content-container-margin;
 }
 
 table:not([class]) {

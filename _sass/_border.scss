@@ -1,4 +1,6 @@
-
+$round-corners-large: 20px;
+$round-corners-medium: 15px;
+$round-corners-tiny: 15px;
 
 $b-w-sep: 0.3rem;
 
@@ -35,11 +37,11 @@ $b-w-sep: 0.3rem;
 /*************************************************************************/
 
 .highlighter-rouge {
-  border-radius: 3px;
+  border-radius: $round-corners-tiny;
 }
 
 .section-header {
-  border-radius: 15px;
+  border-radius: $round-corners-medium;
 }
 
 /*************************************************************************
