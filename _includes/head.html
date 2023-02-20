@@ -1,16 +1,33 @@
 <head>
     <title>
-        {% assign full_title = site.title | append: " " | append: site.sub-title %} 
+        {% assign site_title = site.title | append: " " | append: site.sub-title %} 
         {% if page.title %}
-        {{ page.title | replace: "$SITE_TITLE$", full_title }}
+        {% assign page_title = page.title | replace: "$SITE_TITLE$", site_title %}
         {% else %}
-        {{ full_title }}
+        {% assign page_title = site_title %}
         {% endif %}
+        {{ page_title }}
     </title>
     {% if page.description %}
     <meta name="description" content="{{ page.description}}"/>
+    <meta property="og:description" content="{{ page.description}}"/>
     {% endif %}
-    <link rel="canonical" href="{{ site.url }}{{ page.url | replace:'index.html',''}}">
+    <meta property="og:site_name" content="{{ site_title }}">
+    <meta property="og:title" content="{{ page_title }}"/>
+    <meta property="og:url" content="{{ site.url }}{{ page.url | replace:'index.html',''}}"/>
+    <meta property="og:image" content="{{ site.baseurl }}/resources/images/blue_owl_120.png"/>
+    
+    {% if page.layout == "post" %}
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="{{ page.date }}"/>
+    <meta property="article:author" content="{{ site.owner }}"/>
+    {% for tag in page.tags %}
+    <meta property="article:tag" content="#{{ tag }}"/>
+    {% endfor %}
+    <meta name="keywords" content="{{ page.tags | join: ', ' }}" />
+    {% endif %}
+
+    <link rel="canonical" href="{{ site.url }}{{ page.url | replace:'index.html',''}}"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="author" content="{{ site.owner }}" />
     <meta name="copyright" content="{{ site.owner }}" />
@@ -18,15 +35,15 @@
     {% if page.css %}
     <link rel="stylesheet" href="{{ site.baseurl }}{{ page.css }}"/>
     {% endif %}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ site.baseurl }}/favicon.ico"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ site.baseurl }}/favicon.ico">
     <link rel="apple-touch-icon" sizes ="180x180" href="{{ site.baseurl }}/resources/images/mac-icon-180x180.png">
     <link rel="apple-touch-icon" sizes ="120x120" href="{{ site.baseurl }}/resources/images/blue_owl_120.png">
     <link rel="apple-touch-icon" sizes ="76x76" href="{{ site.baseurl }}/resources/images/blue_owl_76.png">
     <link rel="apple-touch-icon" sizes ="96x96" href="{{ site.baseurl }}/resources/images/blue_owl_96.png">
     <!-- TODO: This is the only way I got this font to load in firefox (adding an @import in main.scss does nothing); Lato works without it and it came with the theme, so I must be missing smth -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orienta" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Orienta" rel="stylesheet"/>
 
     <!-- {% if jekyll.environment == 'production' %}
     {% include analytics.html %}
