@@ -11,11 +11,16 @@
     {% if page.description %}
     <meta name="description" content="{{ page.description}}"/>
     <meta property="og:description" content="{{ page.description}}"/>
+    <meta name="twitter:description" content="{{ page.description}}"/>
     {% endif %}
     <meta property="og:site_name" content="{{ site_title }}">
     <meta property="og:title" content="{{ page_title }}"/>
     <meta property="og:url" content="{{ site.url }}{{ page.url | replace:'index.html',''}}"/>
-    <meta property="og:image" content="{{ site.baseurl }}/resources/images/blue_owl_120.png"/>
+    <meta property="og:image" content="{{ site.url }}/resources/images/blue_owl_120.png"/>
+    <meta name="twitter:title" content="{{ page_title }}"/>
+    
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:creator" content="{{ site.owner }}"/>
     
     {% if page.layout == "post" %}
     <meta property="og:type" content="article">
@@ -35,11 +40,11 @@
     {% if page.css %}
     <link rel="stylesheet" href="{{ site.baseurl }}{{ page.css }}"/>
     {% endif %}
-    <link rel="shortcut icon" type="image/x-icon" href="{{ site.baseurl }}/favicon.ico">
-    <link rel="apple-touch-icon" sizes ="180x180" href="{{ site.baseurl }}/resources/images/mac-icon-180x180.png">
-    <link rel="apple-touch-icon" sizes ="120x120" href="{{ site.baseurl }}/resources/images/blue_owl_120.png">
-    <link rel="apple-touch-icon" sizes ="76x76" href="{{ site.baseurl }}/resources/images/blue_owl_76.png">
-    <link rel="apple-touch-icon" sizes ="96x96" href="{{ site.baseurl }}/resources/images/blue_owl_96.png">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ site.url }}/favicon.ico">
+    <link rel="apple-touch-icon" sizes ="180x180" href="{{ site.url }}/resources/images/mac-icon-180x180.png">
+    <link rel="apple-touch-icon" sizes ="120x120" href="{{ site.url }}/resources/images/blue_owl_120.png">
+    <link rel="apple-touch-icon" sizes ="76x76" href="{{ site.url }}/resources/images/blue_owl_76.png">
+    <link rel="apple-touch-icon" sizes ="96x96" href="{{ site.url }}/resources/images/blue_owl_96.png">
     <!-- TODO: This is the only way I got this font to load in firefox (adding an @import in main.scss does nothing); Lato works without it and it came with the theme, so I must be missing smth -->
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
